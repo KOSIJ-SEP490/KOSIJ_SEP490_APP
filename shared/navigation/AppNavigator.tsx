@@ -1,19 +1,19 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import { FC } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { Ionicons } from '@expo/vector-icons'
+import { FC } from 'react'
 
 interface ScreenType {
-  name: string;
-  component: React.ComponentType<any>;
-  icon: keyof typeof Ionicons.glyphMap;
+  name: string
+  component: React.ComponentType<any>
+  icon: keyof typeof Ionicons.glyphMap
 }
 
 interface AppNavigatorProps {
-  screens: ScreenType[];
+  screens: ScreenType[]
 }
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator()
 
 const AppNavigator: FC<AppNavigatorProps> = ({ screens }) => {
   return (
@@ -24,14 +24,12 @@ const AppNavigator: FC<AppNavigatorProps> = ({ screens }) => {
           name={name}
           component={component}
           options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name={icon} size={size} color={color} />
-            ),
+            tabBarIcon: ({ color, size }) => <Ionicons name={icon} size={size} color={color} />
           }}
         />
       ))}
     </Tab.Navigator>
-  );
-};
+  )
+}
 
-export default AppNavigator;
+export default AppNavigator
