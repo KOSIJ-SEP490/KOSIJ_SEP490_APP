@@ -1,12 +1,10 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React from 'react'
+import { View, Text } from 'react-native'
 
-const HomeScreen = () => {
+export default function HomeScreen() {
   return (
     <View>
       <Text>Delivery Home Screen</Text>
     </View>
-  );
-};
-
-export default HomeScreen;
+  )
+}
