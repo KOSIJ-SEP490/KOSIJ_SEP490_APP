@@ -43,7 +43,7 @@ const LoginScreen = () => {
         <Text className='text-center text-xl font-medium mb-2'>Your Journey to Japan's Finest</Text>
         <Text className='text-center text-xl font-medium mb-12'>Koi Starts Here!</Text>
 
-        <Text className='text-center text-blue text-[32px] text-blue-600 font-bold mb-8'>LOGIN</Text>
+        <Text className='text-center text-blue text-[32px] font-bold mb-8'>LOGIN</Text>
 
         <TextInput
           className='bg-[#E8EEF9] rounded-lg px-6 py-4 mb-4'
@@ -80,7 +80,7 @@ const LoginScreen = () => {
               <Text className='text-gray-900 text-center text-lg'>Create new Account</Text>
             </TouchableOpacity>
 
-            <Text className='text-center text-gray-600 mb-6'>Or continue with</Text>
+            <Text className='text-center mb-6 font-semibold'>Or continue with</Text>
 
             <View className='flex-row justify-center space-x-6'>
               <TouchableOpacity className='bg-gray-100 p-4 rounded-xl'>
