@@ -22,7 +22,13 @@ interface User {
 interface AuthContextType {
   user: User | null
   login: (email: string, password: string) => Promise<void>
-  register: (email: string, password: string) => Promise<void>
+  register: (
+    email: string,
+    password: string,
+    confirmPassword: string,
+    fullName: string,
+    phoneNumber: string
+  ) => Promise<void>
   verifyOTP: (email: string, otp: string) => Promise<void>
   logout: () => Promise<void>
   loading: boolean
@@ -77,7 +83,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const data = await response.json()
         const token = data.value
-        console.log('Token: ' + token)
 
         const decoded: DecodedToken = jwtDecode(token)
         const role = decoded.role as 'Customer' | 'Consulting' | 'Delivery'
@@ -109,17 +114,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [setUser]
   )
 
-  const register = useCallback(async (email: string, password: string) => {
-    try {
-      await fetch('https://kosijapi.azurewebsites.net/api/authentication/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      })
-    } catch (error) {
-      console.error('Register error:', error)
-    }
-  }, [])
+  const register = useCallback(
+    async (email: string, password: string, confirmPassword: string, fullName: string, phoneNumber: string) => {
+      try {
+        const response = await fetch('https://kosijapi.azurewebsites.net/api/authentication/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, confirmPassword, fullName, phoneNumber })
+        })
+
+        if (!response.ok) {
+          const data = await response.json()
+          const errorMessage = data.message || 'An error occurred during register.'
+          Toast.show({
+            type: 'error',
+            text1: 'Register Failed',
+            text2: errorMessage
+          })
+          throw new Error(errorMessage)
+        }
+
+        const data = await response.json()
+
+        Toast.show({
+          type: 'success',
+          text1: 'Register Successful',
+          text2: data.message
+        })
+      } catch (error: any) {
+        Toast.show({
+          type: 'error',
+          text1: 'Registration Failed',
+          text2: error.message || 'An error occurred during registration.'
+        })
+      }
+    },
+    []
+  )
 
   const verifyOTP = useCallback(async (email: string, otp: string) => {
     try {
