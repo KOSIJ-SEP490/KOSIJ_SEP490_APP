@@ -1,8 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import Constants from 'expo-constants'
 import { AuthStackNavigationProp } from '../../types/navigationAuthType'
 import AuthContext from '@shared/context/AuthContext'
+
+const appRole = Constants.expoConfig?.extra?.appRole || 'customer'
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -73,12 +76,14 @@ const LoginScreen = () => {
               <Text className='text-white text-center text-lg font-semibold'>Sign In</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              className='bg-white rounded-lg py-4 mb-12 shadow-md border border-gray-100'
-              onPress={() => navigation.navigate('Register')}
-            >
-              <Text className='text-gray-900 text-center text-lg'>Create new Account</Text>
-            </TouchableOpacity>
+            {appRole === 'customer' && (
+              <TouchableOpacity
+                className='bg-white rounded-lg py-4 mb-12 shadow-md border border-gray-100'
+                onPress={() => navigation.navigate('Register')}
+              >
+                <Text className='text-gray-900 text-center text-lg'>Create new Account</Text>
+              </TouchableOpacity>
+            )}
 
             <Text className='text-center mb-6 font-semibold'>Or continue with</Text>
 

@@ -1,8 +1,9 @@
 import React, { useContext } from 'react'
 import { View, Text, Button, Alert, StyleSheet } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import AuthContext from '../../../../shared/context/AuthContext'
-import { AuthStackNavigationProp } from '../../../../shared/types/navigationAuthType'
+
+import AuthContext from '@shared/context/AuthContext'
+import { AuthStackNavigationProp } from '@shared/types/navigationAuthType'
 
 export default function SettingsScreen() {
   const authContext = useContext(AuthContext)
@@ -22,7 +23,7 @@ export default function SettingsScreen() {
         style: 'destructive',
         onPress: async () => {
           await logout()
-          navigation.navigate('Login')
+          navigation.replace('Login')
         }
       }
     ])
