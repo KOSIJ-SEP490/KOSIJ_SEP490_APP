@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = useCallback(
     async (email: string, password: string) => {
       try {
-        const response = await fetch('https://kosijapi.azurewebsites.net/api/authentication/login/email', {
+        const response = await fetch('https://kosij-api.azurewebsites.net/api/authentication/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = useCallback(
     async (email: string, password: string, confirmPassword: string, fullName: string, phoneNumber: string) => {
       try {
-        const response = await fetch('https://kosijapi.azurewebsites.net/api/authentication/register', {
+        const response = await fetch('https://kosij-api.azurewebsites.net/api/authentication/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, confirmPassword, fullName, phoneNumber })
@@ -152,17 +152,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     []
   )
 
-  const verifyOTP = useCallback(async (email: string, otp: string) => {
-    try {
-      await fetch('https://kosijapi.azurewebsites.net/api/authentication/otp-veriification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp })
-      })
-    } catch (error) {
-      console.error('OTP Verification error:', error)
-    }
-  }, [])
+  const verifyOTP = useCallback(
+    async (email: string, otp: string) => {
+      try {
+        const response = await fetch('https://kosij-api.azurewebsites.net/api/authentication/otp-veriification', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp })
+        })
+
+        if (!response.ok) {
+          const data = await response.json()
+          const errorMessage = data.message || 'Invalid OTP. Please try again.'
+          Toast.show({
+            type: 'error',
+            text1: 'OTP Verification Failed',
+            text2: errorMessage
+          })
+          throw new Error(errorMessage)
+        }
+
+        const data = await response.json()
+        const token = data.value
+
+        const decoded: DecodedToken = jwtDecode(token)
+        const role = decoded.role as 'Customer' | 'Consulting' | 'Delivery'
+        const expiresAt = decoded.exp * 1000
+
+        const userData = {
+          email,
+          token,
+          role,
+          expiresAt
+        }
+
+        Toast.show({
+          type: 'success',
+          text1: 'OTP Verified',
+          text2: `Welcome to KOSIJ!`
+        })
+
+        setUser(userData)
+        await AsyncStorage.setItem('user', JSON.stringify(userData))
+      } catch (error: any) {
+        Toast.show({
+          type: 'error',
+          text1: 'OTP Verification Failed',
+          text2: error.message || 'An error occurred during OTP verification.'
+        })
+      }
+    },
+    [setUser]
+  )
 
   const logout = useCallback(async () => {
     setUser(null)
