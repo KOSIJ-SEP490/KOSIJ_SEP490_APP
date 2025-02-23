@@ -1,7 +1,10 @@
-import React, { useState, useCallback, useContext } from 'react'
+'use client'
+
+import { useState, useCallback, useContext } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { AuthStackNavigationProp } from '../../types/navigationAuthType'
+import { Ionicons } from '@expo/vector-icons'
+import type { AuthStackNavigationProp } from '../../types/navigationAuthType'
 import AuthContext from '@shared/context/AuthContext'
 
 const SignUpScreen = () => {
@@ -12,6 +15,8 @@ const SignUpScreen = () => {
     password: '',
     confirmPassword: ''
   })
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const navigation = useNavigation<AuthStackNavigationProp>()
   const authContext = useContext(AuthContext)
   const [loading, setLoading] = useState(false)
@@ -23,7 +28,7 @@ const SignUpScreen = () => {
   const handleSignUp = useCallback(async () => {
     try {
       setLoading(true)
-      await authContext?.register(
+      const response = await authContext?.register(
         formData.email,
         formData.password,
         formData.confirmPassword,
@@ -31,9 +36,9 @@ const SignUpScreen = () => {
         formData.phoneNumber
       )
 
+      if (!response) return
+
       navigation.navigate('OTP', { email: formData.email })
-    } catch (error) {
-      console.error('Sign-up failed:', error)
     } finally {
       setLoading(false)
     }
@@ -55,6 +60,14 @@ const SignUpScreen = () => {
     ),
     []
   )
+
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev)
+  }, [])
+
+  const toggleConfirmPasswordVisibility = useCallback(() => {
+    setShowConfirmPassword((prev) => !prev)
+  }, [])
 
   return (
     <ScrollView className='flex-1 bg-white px-6 py-12' keyboardShouldPersistTaps='handled'>
@@ -90,23 +103,43 @@ const SignUpScreen = () => {
             accessibilityLabel='Phone number input'
           />
 
-          <TextInput
-            className='bg-[#E8EEF9] rounded-xl px-6 py-4'
-            placeholder='Password'
-            value={formData.password}
-            onChangeText={(value) => handleInputChange('password', value)}
-            secureTextEntry
-            accessibilityLabel='Password input'
-          />
+          <View className='relative'>
+            <TextInput
+              className='bg-[#E8EEF9] rounded-xl px-6 py-4 pr-12'
+              placeholder='Password'
+              value={formData.password}
+              onChangeText={(value) => handleInputChange('password', value)}
+              secureTextEntry={!showPassword}
+              accessibilityLabel='Password input'
+            />
+            <TouchableOpacity
+              className='absolute right-4 top-4'
+              onPress={togglePasswordVisibility}
+              accessibilityRole='button'
+              accessibilityLabel='Toggle password visibility'
+            >
+              <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={24} color='#888' />
+            </TouchableOpacity>
+          </View>
 
-          <TextInput
-            className='bg-[#E8EEF9] rounded-xl px-6 py-4 mb-5'
-            placeholder='Confirm Password'
-            value={formData.confirmPassword}
-            onChangeText={(value) => handleInputChange('confirmPassword', value)}
-            secureTextEntry
-            accessibilityLabel='Confirm password input'
-          />
+          <View className='relative'>
+            <TextInput
+              className='bg-[#E8EEF9] rounded-xl px-6 py-4 pr-12 mb-5'
+              placeholder='Confirm Password'
+              value={formData.confirmPassword}
+              onChangeText={(value) => handleInputChange('confirmPassword', value)}
+              secureTextEntry={!showConfirmPassword}
+              accessibilityLabel='Confirm password input'
+            />
+            <TouchableOpacity
+              className='absolute right-4 top-4'
+              onPress={toggleConfirmPasswordVisibility}
+              accessibilityRole='button'
+              accessibilityLabel='Toggle confirm password visibility'
+            >
+              <Ionicons name={showConfirmPassword ? 'eye-off' : 'eye'} size={24} color='#888' />
+            </TouchableOpacity>
+          </View>
         </View>
 
         <TouchableOpacity

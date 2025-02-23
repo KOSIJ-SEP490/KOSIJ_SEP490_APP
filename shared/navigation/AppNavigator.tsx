@@ -17,7 +17,14 @@ const Tab = createBottomTabNavigator()
 
 const AppNavigator: FC<AppNavigatorProps> = ({ screens }) => {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: { backgroundColor: '#264ECA', paddingTop: 7 },
+        tabBarActiveTintColor: 'white',
+        tabBarInactiveTintColor: 'white'
+      }}
+    >
       {screens.map(({ name, component, icon }) => (
         <Tab.Screen
           key={name}
