@@ -125,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (!response.ok) {
           const data = await response.json()
-          const errorMessage = data.message || 'An error occurred during register.'
+          const errorMessage = data.message || 'An error occurred during registration.'
           Toast.show({
             type: 'error',
             text1: 'Register Failed',
@@ -141,12 +141,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           text1: 'Register Successful',
           text2: data.message
         })
+
+        return data
       } catch (error: any) {
         Toast.show({
           type: 'error',
           text1: 'Registration Failed',
           text2: error.message || 'An error occurred during registration.'
         })
+        throw error // Re-throw the error to prevent navigation
       }
     },
     []
