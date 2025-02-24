@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, FlatList } from 'react-native'
+import { View, Text, TouchableOpacity, FlatList, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import MainLayout from '@apps/customer/layouts/MainLayout'
@@ -8,6 +8,10 @@ import type { RouteProp } from '@react-navigation/native'
 import TourCard from '@apps/customer/components/TourCard'
 import Divider from '@apps/customer/components/Divider'
 import { useTourCards } from '@apps/customer/hooks/useTour'
+import { useAllFarms } from '@apps/customer/hooks/useFarm'
+import FarmCard from '@apps/customer/components/FarmCard'
+import { useAllFeedbacks } from '@apps/customer/hooks/useFeedback'
+import FeedbackCard from '@apps/customer/components/FeedBackCard'
 
 type HomeScreenProps = {
   navigation: StackNavigationProp<CustomerStackParamList, 'Home'>
@@ -44,6 +48,8 @@ const menuItems: MenuItem[] = [
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const { tourCards } = useTourCards()
+  const { farms } = useAllFarms()
+  const { feedbacks } = useAllFeedbacks()
 
   const renderIcon = (item: MenuItem) => {
     if (item.iconType === 'ionicons') {
@@ -107,18 +113,48 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </TouchableOpacity>
         </View>
 
-        <FlatList
-          data={tourCards}
-          keyExtractor={(item) => item.id.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-          renderItem={({ item }) => (
-            <View className='mr-4'>
-              <TourCard {...item} />
-            </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 10 }}
+          style={{ height: 350 }}
+        >
+          {farms && farms.length > 0 ? (
+            farms.map((farm) => (
+              <View key={farm.id} className='mb-4'>
+                <FarmCard farm={farm} />
+              </View>
+            ))
+          ) : (
+            <Text className='text-center text-gray-500'>Loading</Text>
           )}
-        />
+        </ScrollView>
+      </View>
+
+      <Divider />
+
+      <View className='px-4 mb-6'>
+        <View className='flex-row justify-between items-center px-4 py-4'>
+          <Text className='text-base font-semibold'>Our Customer Feedbacks</Text>
+          <TouchableOpacity>
+            <Text className='text-blue text-sm'>View more</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 10 }}
+          style={{ height: 350 }}
+        >
+          {feedbacks && feedbacks.length > 0 ? (
+            feedbacks.map((feedback) => (
+              <View key={feedback.id} className='mb-4'>
+                <FeedbackCard feedback={feedback} />
+              </View>
+            ))
+          ) : (
+            <Text className='text-center text-gray-500'>Loading</Text>
+          )}
+        </ScrollView>
       </View>
     </MainLayout>
   )
