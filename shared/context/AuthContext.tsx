@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const token = data.value
 
         const decoded: DecodedToken = jwtDecode(token)
-        const role = decoded.role as 'Customer' | 'Consulting' | 'Delivery'
+        const role = (decoded.role as 'Customer' | 'Consulting' | 'Delivery') || 'Customer'
         const expiresAt = decoded.exp * 1000
 
         const userData = {
@@ -209,8 +209,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   )
 
   const logout = useCallback(async () => {
-    setUser(null)
     await AsyncStorage.removeItem('user')
+    setUser(null)
   }, [])
 
   return (
