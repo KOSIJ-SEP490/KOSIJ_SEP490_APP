@@ -38,7 +38,7 @@ export default function MainLayout({
 
           <Text className='text-white text-lg font-semibold text-center px-5'>{title}</Text>
         </ImageBackground>
-        <View className='flex-1 bg-white py-2 px-1 rounded-t-[40px] -mt-10 shadow-lg'>{children}</View>
+        <View className='flex-1 bg-white py-2 rounded-t-[40px] -mt-10 shadow-lg'>{children}</View>
       </View>
     </ScrollView>
   )
