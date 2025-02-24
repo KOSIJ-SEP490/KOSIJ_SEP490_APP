@@ -1,10 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Ionicons } from '@expo/vector-icons'
 import { FC } from 'react'
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native'
 
 interface ScreenType {
   name: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component: React.ComponentType<any>
   icon: keyof typeof Ionicons.glyphMap
 }
@@ -18,11 +19,18 @@ const Tab = createBottomTabNavigator()
 const AppNavigator: FC<AppNavigatorProps> = ({ screens }) => {
   return (
     <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: { backgroundColor: '#264ECA', paddingTop: 7 },
-        tabBarActiveTintColor: 'white',
-        tabBarInactiveTintColor: 'white'
+      screenOptions={({ route }) => {
+        const routeName = getFocusedRouteNameFromRoute(route) ?? 'Home'
+        const mainScreens = ['Home', 'Trips', 'Orders', 'Notifications', 'Settings']
+
+        return {
+          headerShown: false,
+          tabBarStyle: mainScreens.includes(routeName)
+            ? { backgroundColor: '#264ECA', paddingTop: 7 }
+            : { display: 'none' },
+          tabBarActiveTintColor: 'white',
+          tabBarInactiveTintColor: 'white'
+        }
       }}
     >
       {screens.map(({ name, component, icon }) => (

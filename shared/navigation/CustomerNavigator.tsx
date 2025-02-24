@@ -1,10 +1,10 @@
 import React from 'react'
 import AppNavigator from './AppNavigator'
-import TripsScreen from '../../apps/customer/screens/navbar/TripsScreen'
-import NotificationsScreen from '../../apps/customer/screens/navbar/NotificationsScreen'
-import OrdersScreen from '../../apps/customer/screens/navbar/OrdersScreen'
-import SettingsScreen from '../../apps/customer/screens/navbar/SettingsScreen'
-import HomeStackNavigator from '@apps/customer/navigation/HomeStackNavigation'
+import HomeStackNavigator from '@apps/customer/navigation/HomeStackNavigator'
+import TripsScreen from '@apps/customer/screens/navbar/TripsScreen'
+import OrdersScreen from '@apps/customer/screens/navbar/OrdersScreen'
+import NotificationsScreen from '@apps/customer/screens/navbar/NotificationsScreen'
+import SettingsScreen from '@apps/customer/screens/navbar/SettingsScreen'
 
 export default function CustomerNavigator() {
   return (
