@@ -103,6 +103,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setUser(userData)
         await AsyncStorage.setItem('user', JSON.stringify(userData))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         Toast.show({
           type: 'error',
@@ -143,13 +144,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         })
 
         return data
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         Toast.show({
           type: 'error',
           text1: 'Registration Failed',
           text2: error.message || 'An error occurred during registration.'
         })
-        throw error // Re-throw the error to prevent navigation
+        throw error
       }
     },
     []
@@ -197,6 +199,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         setUser(userData)
         await AsyncStorage.setItem('user', JSON.stringify(userData))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         Toast.show({
           type: 'error',

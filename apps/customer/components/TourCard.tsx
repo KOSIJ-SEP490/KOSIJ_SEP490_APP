@@ -33,13 +33,13 @@ export default function TourCard({
         <View className='space-y-2'>
           <View className='flex-row justify-between items-center'>
             <View className='flex-row items-center space-x-1 w-1/4'>
-              <Clock size={16} color='#6B7280' />
+              <Clock size={16} color='#000000' />
               <Text className='text-gray-600 text-xs'>
                 {days}D{nights}N
               </Text>
             </View>
             <View className='flex-row items-center space-x-1 w-3/4'>
-              <MapPin size={16} color='#6B7280' />
+              <MapPin size={16} color='#000000' />
               <Text className='text-gray-600 text-xs flex-shrink' numberOfLines={1}>
                 {departurePoint}
               </Text>
@@ -48,12 +48,12 @@ export default function TourCard({
 
           <View className='flex-row justify-between items-center'>
             <View className='flex-row items-center space-x-1 w-1/4'>
-              <Building size={16} color='#6B7280' />
+              <Building size={16} color='#000000' />
               <Text className='text-gray-600 text-xs'>{totalFarmVisit} Farms</Text>
             </View>
 
             <View className='flex-row items-center space-x-1 w-3/4'>
-              <MapPin size={16} color='#6B7280' />
+              <MapPin size={16} color='#000000' />
               <Text className='text-gray-600 text-xs flex-shrink' numberOfLines={1}>
                 {destinationPoint}
               </Text>
@@ -63,7 +63,7 @@ export default function TourCard({
 
         <View className='pt-2'>
           <Text className='text-sm font-bold text-right'>
-            <Text className='text-black'>Price From: </Text>
+            <Text className='text-black'>Standard Price: </Text>
             <Text className='text-red-600'>{standardPrice.toLocaleString('vi-VN')} VND</Text>
           </Text>
         </View>
