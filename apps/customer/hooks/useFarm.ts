@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { FarmType } from '../types/farm.type'
+import { Farm } from '../types/tour.type'
 
 export function useAllFarms() {
   const [farms, setFarms] = useState<FarmType[] | null>(null)
@@ -48,4 +49,30 @@ export function useFarmById(farmId: number) {
   }, [farmId])
 
   return { farm, error }
+}
+
+export function useFarmsByTour(farms: Farm[]) {
+  const [farmList, setFarmList] = useState<FarmType[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!farms || farms.length === 0) return
+
+    const fetchFarms = async () => {
+      try {
+        const farmPromises = farms.map((farm) =>
+          axios.get<{ message: string; value: FarmType }>(`https://kosij-api.azurewebsites.net/api/farm/${farm.id}`)
+        )
+
+        const resolvedFarms = await Promise.all(farmPromises)
+        setFarmList(resolvedFarms.map((res) => res.data.value))
+      } catch (err) {
+        setError('Failed to fetch farms.')
+      }
+    }
+
+    fetchFarms()
+  }, [farms])
+
+  return { farmList, error }
 }

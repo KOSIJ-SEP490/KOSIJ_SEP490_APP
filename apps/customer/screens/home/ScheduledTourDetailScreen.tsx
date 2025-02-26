@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Text, ActivityIndicator, ScrollView } from 'react-native'
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { useTourById } from '@apps/customer/hooks/useTour'
 import { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
@@ -9,6 +9,8 @@ import { TourPrice } from '@apps/customer/types/tour.type'
 import Divider from '@apps/customer/components/Divider'
 import ItineraryCard from '@apps/customer/components/ItineraryCard'
 import TourPolicyCard from '@apps/customer/components/TourPolicyCard'
+import FarmCard from '@apps/customer/components/FarmCard'
+import { useFarmsByTour } from '@apps/customer/hooks/useFarm'
 
 type ScheduledTourDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'ScheduledTourDetail'>
 
@@ -16,6 +18,7 @@ export default function ScheduledTourDetailScreen() {
   const route = useRoute<ScheduledTourDetailScreenRouteProp>()
   const { tourID } = route.params
   const { tour, error } = useTourById(tourID)
+  const { farmList, error: farmError } = useFarmsByTour(tour?.farms ?? [])
 
   const getAdultPrice = (tourPrices: TourPrice[]): number => {
     return tourPrices.find((price) => price.ageGroup === 'Adult')?.price ?? 0
@@ -33,7 +36,7 @@ export default function ScheduledTourDetailScreen() {
     <MainLayout title='' backgroundImage={tour.imageUrl} showBackButton={true}>
       <View className='p-4'>
         <View className='flex-row justify-center items-center px-4 pb-4'>
-          <Text className='text-base font-semibold'>{tour.tourName}</Text>
+          <Text className='text-lg font-semibold'>{tour.tourName}</Text>
         </View>
         <View className='flex-row justify-between items-center px-4 py-4'>
           <Text className='text-base font-semibold text-blue'>Tour Details</Text>
@@ -55,6 +58,24 @@ export default function ScheduledTourDetailScreen() {
         <View className='flex-row justify-between items-center px-4 py-4'>
           <Text className='text-base font-semibold text-blue'>Farms to Visit</Text>
         </View>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 10 }}
+          style={{ height: 550 }}
+        >
+          {farmError ? (
+            <Text className='text-center text-red-500'>{farmError}</Text>
+          ) : farmList.length > 0 ? (
+            farmList.map((farm) => (
+              <View key={farm.id} className='mb-4'>
+                <FarmCard farm={farm} />
+              </View>
+            ))
+          ) : (
+            <Text className='text-center text-gray-500'>Loading...</Text>
+          )}
+        </ScrollView>
       </View>
 
       <Divider />
