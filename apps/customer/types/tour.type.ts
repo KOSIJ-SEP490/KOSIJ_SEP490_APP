@@ -21,6 +21,7 @@ export interface TourType {
   tourStatus: string
   cancellationPolicy: Policy[]
   paymentPolicy: Policy[]
+  farms: Farm[]
 }
 
 export interface Trip {
@@ -48,4 +49,8 @@ export interface ItineraryDetail {
 
 export interface Policy {
   description: string
+}
+export interface Farm {
+  id: number
+  name: string
 }

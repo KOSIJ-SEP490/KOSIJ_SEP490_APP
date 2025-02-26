@@ -21,7 +21,7 @@ type HomeScreenProps = {
 type MenuItem = {
   name: string
   icon: string
-  screen: Exclude<keyof CustomerStackParamList, 'ScheduledTourDetail'>
+  screen: keyof CustomerStackParamList
   iconType: 'ionicons' | 'material'
 }
 
@@ -72,7 +72,12 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     >
       <View className='flex-row justify-around w-full mt-5'>
         {menuItems.map((item, index) => (
-          <TouchableOpacity key={index} onPress={() => navigation.navigate(item.screen)} className='items-center'>
+          <TouchableOpacity
+            key={index}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            onPress={() => navigation.navigate(item.screen as any)}
+            className='items-center'
+          >
             <View className='bg-blue-100 rounded-2xl'>{renderIcon(item)}</View>
             <Text className='text-[#2563EB] text-xs font-semibold'>{item.name}</Text>
           </TouchableOpacity>
@@ -107,7 +112,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
       <View className='px-4 mb-6'>
         <View className='flex-row justify-between items-center px-4 py-4'>
-          <Text className='text-base font-semibold'>Top Koi Farms to Visit</Text>
+          <Text className='text-base font-semibold'>Top Koi Farms</Text>
           <TouchableOpacity>
             <Text className='text-blue text-sm'>View more</Text>
           </TouchableOpacity>
@@ -116,7 +121,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 10 }}
-          style={{ height: 350 }}
+          style={{ height: 550 }}
         >
           {farms && farms.length > 0 ? (
             farms.map((farm) => (

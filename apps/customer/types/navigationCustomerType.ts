@@ -6,6 +6,7 @@ export type CustomerStackParamList = {
   Farms: undefined
   Kois: undefined
   ScheduledTourDetail: { tourID: number }
+  FarmDetail: { farmID: number }
 }
 
 export type CustomerStackNavigationProp = StackNavigationProp<CustomerStackParamList>

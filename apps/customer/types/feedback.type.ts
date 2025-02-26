@@ -1,9 +1,9 @@
-export interface FeedBackType {
-  id: 1
-  orderId: 1
-  customerId: 1
-  customerName: null
-  feedbackType: 'Tour'
-  rating: 4.7
-  review: 'Great tour! Friendly tour guide and beautiful scenery.'
+export interface FeedbackType {
+  id: number
+  orderId: number
+  customerId: number
+  customerName: string
+  feedbackType: string
+  rating: number
+  review: string
 }

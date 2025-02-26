@@ -68,3 +68,44 @@ export function useFeedbackById(feedbackId: number) {
 
   return { feedback, error }
 }
+
+export function useFeedbackByFarmId(farmId: number) {
+  const authContext = useContext(AuthContext)
+  const [feedbacks, setFeedbacks] = useState<FeedbackType[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!farmId || isNaN(farmId)) return
+    if (!authContext) {
+      setError('Auth context is not available.')
+      return
+    }
+
+    const { user } = authContext
+    if (!user) {
+      setError('User is not authenticated.')
+      return
+    }
+
+    const fetchFeedback = async () => {
+      try {
+        const response = await axios.get<{ message: string; value: FeedbackType[] }>(
+          `https://kosij-api.azurewebsites.net/api/farm/${farmId}/feedbacks`,
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`
+            }
+          }
+        )
+        setFeedbacks(response.data.value)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.response?.data?.detail || 'Failed to fetch feedback.')
+      }
+    }
+
+    fetchFeedback()
+  }, [farmId, authContext])
+
+  return { feedbacks, error }
+}
