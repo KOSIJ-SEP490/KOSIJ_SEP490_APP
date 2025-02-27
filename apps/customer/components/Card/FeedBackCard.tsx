@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 import { Star } from 'lucide-react-native'
-import { FeedbackType } from '../types/feedback.type'
+import { FeedbackType } from '../../types/feedback.type'
 
 const FeedbackCard: React.FC<{ feedback: FeedbackType }> = ({ feedback }) => {
   return (
