@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = useCallback(
     async (email: string, password: string) => {
       try {
-        const response = await fetch('https://kosij-api.azurewebsites.net/api/authentication/login', {
+        const response = await fetch('https://kosij.azurewebsites.net/api/authentication/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -84,17 +84,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const data = await response.json()
         const token = data.value
 
-        const decoded: DecodedToken = jwtDecode(token)
-        const role = (decoded.role as 'Customer' | 'Consulting' | 'Delivery') || 'Customer'
+        const decoded: any = jwtDecode(token)
+        console.log('Decoded Token:', decoded) // Debug log
+
+        const apiRole = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] as string
+        const role =
+          apiRole === 'ConsultingStaff' ? 'Consulting' : apiRole === 'DeliveryStaff' ? 'Delivery' : 'Customer'
         const expiresAt = decoded.exp * 1000
 
-        const userData = {
-          email,
-          token,
-          role,
-          expiresAt
-        }
+        const userData: User = { email, token, role, expiresAt }
 
+        console.log('User Data After Login:', userData)
         Toast.show({
           type: 'success',
           text1: 'Login Successful',
