@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { FarmType } from '../types/farm.type'
 import { Farm } from '../types/tour.type'
+import { API_BASE_URL } from '@env'
 
 export function useAllFarms() {
   const [farms, setFarms] = useState<FarmType[] | null>(null)
@@ -10,9 +11,7 @@ export function useAllFarms() {
   useEffect(() => {
     const fetchFarms = async () => {
       try {
-        const response = await axios.get<{ message: string; value: FarmType[] }>(
-          'https://kosij-api.azurewebsites.net/api/farms/active'
-        )
+        const response = await axios.get<{ message: string; value: FarmType[] }>(`${API_BASE_URL}farms/active`)
         setFarms(response.data.value)
       } catch (err) {
         setError('Failed to fetch farms.')
@@ -34,9 +33,7 @@ export function useFarmById(farmId: number) {
 
     const fetchFarm = async () => {
       try {
-        const response = await axios.get<{ message: string; value: FarmType }>(
-          `https://kosij-api.azurewebsites.net/api/farm/${farmId}`
-        )
+        const response = await axios.get<{ message: string; value: FarmType }>(`${API_BASE_URL}farm/${farmId}`)
 
         setFarm(response.data.value)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -61,7 +58,7 @@ export function useFarmsByTour(farms: Farm[]) {
     const fetchFarms = async () => {
       try {
         const farmPromises = farms.map((farm) =>
-          axios.get<{ message: string; value: FarmType }>(`https://kosij-api.azurewebsites.net/api/farm/${farm.id}`)
+          axios.get<{ message: string; value: FarmType }>(`${API_BASE_URL}farm/${farm.id}`)
         )
 
         const resolvedFarms = await Promise.all(farmPromises)

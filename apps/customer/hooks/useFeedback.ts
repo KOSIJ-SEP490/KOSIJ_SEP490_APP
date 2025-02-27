@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { FeedbackType } from '../types/feedback.type'
 import AuthContext from '@shared/context/AuthContext'
+import { API_BASE_URL } from '@env'
 
 export function useAllFeedbacks() {
   const authContext = useContext(AuthContext)
@@ -23,14 +24,11 @@ export function useAllFeedbacks() {
       }
 
       try {
-        const response = await axios.get<{ message: string; value: FeedbackType[] }>(
-          'https://kosij-api.azurewebsites.net/api/feedbacks',
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`
-            }
+        const response = await axios.get<{ message: string; value: FeedbackType[] }>(`${API_BASE_URL}feedbacks`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`
           }
-        )
+        })
         setFeedbacks(response.data.value)
       } catch (err) {
         setError('Failed to fetch feedback.')
@@ -53,7 +51,7 @@ export function useFeedbackById(feedbackId: number) {
     const fetchFeedback = async () => {
       try {
         const response = await axios.get<{ message: string; value: FeedbackType }>(
-          `https://kosij-api.azurewebsites.net/api/feedback/${feedbackId}`
+          `${API_BASE_URL}feedback/${feedbackId}`
         )
 
         setFeedback(response.data.value)
@@ -90,7 +88,7 @@ export function useFeedbackByFarmId(farmId: number) {
     const fetchFeedback = async () => {
       try {
         const response = await axios.get<{ message: string; value: FeedbackType[] }>(
-          `https://kosij-api.azurewebsites.net/api/farm/${farmId}/feedbacks`,
+          `${API_BASE_URL}farm/${farmId}/feedbacks`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`
