@@ -5,13 +5,14 @@ import MainLayout from '@apps/customer/layouts/MainLayout'
 import type { StackNavigationProp } from '@react-navigation/stack'
 import type { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import type { RouteProp } from '@react-navigation/native'
-import TourCard from '@apps/customer/components/TourCard'
+import TourCard from '@apps/customer/components/Card/Tour/TourCard'
 import Divider from '@apps/customer/components/Divider'
 import { useTourCards } from '@apps/customer/hooks/useTour'
 import { useAllFarms } from '@apps/customer/hooks/useFarm'
-import FarmCard from '@apps/customer/components/FarmCard'
+
 import { useAllFeedbacks } from '@apps/customer/hooks/useFeedback'
-import FeedbackCard from '@apps/customer/components/FeedBackCard'
+import FeedbackCard from '@apps/customer/components/Card/FeedBackCard'
+import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
 
 type HomeScreenProps = {
   navigation: StackNavigationProp<CustomerStackParamList, 'Home'>

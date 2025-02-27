@@ -7,9 +7,10 @@ import { useFarmById } from '@apps/customer/hooks/useFarm'
 import { Star } from 'lucide-react-native'
 import Divider from '@apps/customer/components/Divider'
 import { useKoiVarietyListByFarmId } from '@apps/customer/hooks/useKoi'
-import KoiCard from '@apps/customer/components/KoiCard'
+
 import { useFeedbackByFarmId } from '@apps/customer/hooks/useFeedback'
-import FeedbackCard from '@apps/customer/components/FeedBackCard'
+import FeedbackCard from '@apps/customer/components/Card/FeedBackCard'
+import KoiCard from '@apps/customer/components/Card/Koi/KoiCard'
 
 type FarmDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'FarmDetail'>
 

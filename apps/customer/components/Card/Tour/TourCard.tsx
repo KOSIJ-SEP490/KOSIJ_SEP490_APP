@@ -1,6 +1,6 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { Clock, MapPin, Building } from 'lucide-react-native'
-import { TourCardType } from '../types/tourCard.type'
+import { TourCardType } from '../../../types/tourCard.type'
 import type { StackNavigationProp } from '@react-navigation/stack'
 import type { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import { useNavigation } from '@react-navigation/native'

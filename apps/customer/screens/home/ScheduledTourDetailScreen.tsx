@@ -4,13 +4,13 @@ import { RouteProp, useRoute } from '@react-navigation/native'
 import { useTourById } from '@apps/customer/hooks/useTour'
 import { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import MainLayout from '@apps/customer/layouts/MainLayout'
-import TourDetailCard from '@apps/customer/components/TourDetailCard'
+import TourDetailCard from '@apps/customer/components/Card/Tour/TourDetailCard'
 import { TourPrice } from '@apps/customer/types/tour.type'
 import Divider from '@apps/customer/components/Divider'
-import ItineraryCard from '@apps/customer/components/ItineraryCard'
-import TourPolicyCard from '@apps/customer/components/TourPolicyCard'
-import FarmCard from '@apps/customer/components/FarmCard'
+import ItineraryCard from '@apps/customer/components/Card/Tour/ItineraryCard'
+import TourPolicyCard from '@apps/customer/components/Card/Tour/TourPolicyCard'
 import { useFarmsByTour } from '@apps/customer/hooks/useFarm'
+import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
 
 type ScheduledTourDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'ScheduledTourDetail'>
 
