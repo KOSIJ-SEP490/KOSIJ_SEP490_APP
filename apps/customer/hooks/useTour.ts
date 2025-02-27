@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { TourCardType } from '../types/tourCard.type'
 import { TourType } from '../types/tour.type'
+import { API_BASE_URL } from '@env'
 
 export function useAllTours() {
   const [tours, setTours] = useState<TourType[] | null>(null)
@@ -10,9 +11,7 @@ export function useAllTours() {
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const response = await axios.get<{ message: string; value: TourType[] }>(
-          'https://kosij-api.azurewebsites.net/api/tours'
-        )
+        const response = await axios.get<{ message: string; value: TourType[] }>(`${API_BASE_URL}tours?status=true`)
         setTours(response.data.value)
       } catch (err) {
         setError('Failed to fetch tours.')
@@ -32,9 +31,7 @@ export function useTourCards() {
   useEffect(() => {
     const fetchTourCards = async () => {
       try {
-        const response = await axios.get<{ message: string; value: TourType[] }>(
-          'https://kosij-api.azurewebsites.net/api/tours'
-        )
+        const response = await axios.get<{ message: string; value: TourType[] }>(`${API_BASE_URL}tours`)
         const mappedTourCards: TourCardType[] = response.data.value.map((tour) => ({
           id: tour.id,
           tourName: tour.tourName,
@@ -66,9 +63,7 @@ export function useTourById(tourId: number) {
     if (!tourId) return
     const fetchTour = async () => {
       try {
-        const response = await axios.get<{ message: string; value: TourType }>(
-          `https://kosij-api.azurewebsites.net/api/tour/${tourId}`
-        )
+        const response = await axios.get<{ message: string; value: TourType }>(`${API_BASE_URL}tour/${tourId}`)
 
         setTour(response.data.value)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

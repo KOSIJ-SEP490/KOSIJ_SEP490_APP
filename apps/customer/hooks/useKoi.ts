@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { KoiVarietyType } from '../types/koiVariety.type'
 import AuthContext from '@shared/context/AuthContext'
+import { API_BASE_URL } from '@env'
 
 export function useAllKoiVarieties() {
   const authContext = useContext(AuthContext)
@@ -23,14 +24,11 @@ export function useAllKoiVarieties() {
       }
 
       try {
-        const response = await axios.get<{ message: string; value: KoiVarietyType[] }>(
-          'https://kosij-api.azurewebsites.net/api/koi-varieties',
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`
-            }
+        const response = await axios.get<{ message: string; value: KoiVarietyType[] }>('${API_BASE_URL}koi-varieties', {
+          headers: {
+            Authorization: `Bearer ${user.token}`
           }
-        )
+        })
         setKoiVarieties(response.data.value)
       } catch (err) {
         setError('Failed to fetch koi varieties.')
@@ -66,7 +64,7 @@ export function useKoiVarietyById(koiId: number) {
 
       try {
         const response = await axios.get<{ message: string; value: KoiVarietyType }>(
-          `https://kosij-api.azurewebsites.net/api/koi-varieties/${koiId}`,
+          `${API_BASE_URL}koi-varieties/${koiId}`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`
@@ -110,7 +108,7 @@ export function useKoiVarietyListByFarmId(farmId: number) {
 
       try {
         const response = await axios.get<{ message: string; value: KoiVarietyType[] }>(
-          `https://kosij-api.azurewebsites.net/api/farm-variety/varieties/${farmId}`,
+          `${API_BASE_URL}farm-variety/varieties/${farmId}`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`

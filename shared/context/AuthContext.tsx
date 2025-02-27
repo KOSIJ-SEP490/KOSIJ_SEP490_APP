@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { jwtDecode } from 'jwt-decode'
+import { API_BASE_URL } from '@env'
 import Toast from 'react-native-toast-message'
 
 interface AuthProviderProps {
@@ -8,14 +9,15 @@ interface AuthProviderProps {
 }
 
 interface DecodedToken {
-  role: string
   exp: number
+  role?: string
+  [key: string]: unknown
 }
 
 interface User {
   email: string
   token: string
-  role: 'Customer' | 'Consulting' | 'Delivery'
+  role: 'Customer' | 'ConsultingStaff' | 'DeliveryStaff'
   expiresAt: number
 }
 
@@ -64,35 +66,31 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = useCallback(
     async (email: string, password: string) => {
       try {
-        const response = await fetch('https://kosij.azurewebsites.net/api/authentication/login', {
+        const response = await fetch(`${API_BASE_URL}authentication/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
         })
 
+        const data = await response.json()
+
         if (!response.ok) {
-          const data = await response.json()
-          const errorMessage = data.message || 'An error occurred during login.'
+          const errorMessage = data.errors?.[0] ?? data.message ?? 'An error occurred during login.'
           Toast.show({
             type: 'error',
             text1: 'Login Failed',
             text2: errorMessage
           })
-          throw new Error(errorMessage)
+          return
         }
 
-        const data = await response.json()
         const token = data.value
-
-        const decoded: any = jwtDecode(token)
-        console.log('Decoded Token:', decoded) // Debug log
-
-        const apiRole = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] as string
-        const role =
-          apiRole === 'ConsultingStaff' ? 'Consulting' : apiRole === 'DeliveryStaff' ? 'Delivery' : 'Customer'
+        const decoded: DecodedToken = jwtDecode(token)
+        const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+        const role = (decoded[roleClaim] as 'Customer' | 'ConsultingStaff' | 'DeliveryStaff') || 'Customer'
         const expiresAt = decoded.exp * 1000
 
-        const userData: User = { email, token, role, expiresAt }
+        const userData = { email, token, role, expiresAt }
 
         console.log('User Data After Login:', userData)
         Toast.show({
@@ -118,7 +116,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = useCallback(
     async (email: string, password: string, confirmPassword: string, fullName: string, phoneNumber: string) => {
       try {
-        const response = await fetch('https://kosij-api.azurewebsites.net/api/authentication/register', {
+        const response = await fetch(`${API_BASE_URL}authentication/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password, confirmPassword, fullName, phoneNumber })
@@ -126,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (!response.ok) {
           const data = await response.json()
-          const errorMessage = data.message || 'An error occurred during registration.'
+          const errorMessage = data.errors[0] || 'An error occurred during registration.'
           Toast.show({
             type: 'error',
             text1: 'Register Failed',
@@ -149,7 +147,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         Toast.show({
           type: 'error',
           text1: 'Registration Failed',
-          text2: error.message || 'An error occurred during registration.'
+          text2: error.errors[0] || 'An error occurred during registration.'
         })
         throw error
       }
@@ -160,7 +158,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const verifyOTP = useCallback(
     async (email: string, otp: string) => {
       try {
-        const response = await fetch('https://kosij-api.azurewebsites.net/api/authentication/otp-veriification', {
+        const response = await fetch(`${API_BASE_URL}authentication/otp-veriification`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, otp })
@@ -181,7 +179,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const token = data.value
 
         const decoded: DecodedToken = jwtDecode(token)
-        const role = decoded.role as 'Customer' | 'Consulting' | 'Delivery'
+        const role = decoded.role as 'Customer' | 'ConsultingStaff' | 'DeliveryStaff'
         const expiresAt = decoded.exp * 1000
 
         const userData = {
