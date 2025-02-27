@@ -5,8 +5,6 @@ import { NavigationContainer } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
 import AuthContext, { AuthProvider } from '@shared/context/AuthContext'
 import ConsultingNavigator from '@shared/navigation/ConsultingNavigator'
-import CustomerNavigator from '@shared/navigation/CustomerNavigator'
-import DeliveryNavigator from '@shared/navigation/DeliveryNavigator'
 
 export default function App() {
   return (
@@ -32,17 +30,5 @@ const MainNavigator = () => {
 
   const { user } = authContext
 
-  // 🔍 Ensure correct navigation based on user role
-  if (!user) return <AuthNavigator />
-
-  switch (user.role) {
-    case 'Customer':
-      return <CustomerNavigator />
-    case 'Consulting':
-      return <ConsultingNavigator />
-    case 'Delivery':
-      return <DeliveryNavigator />
-    default:
-      return <AuthNavigator />
-  }
+  return user ? <ConsultingNavigator /> : <AuthNavigator />
 }

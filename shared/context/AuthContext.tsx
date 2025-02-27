@@ -92,6 +92,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         const userData = { email, token, role, expiresAt }
 
+        console.log('User Data After Login:', userData)
         Toast.show({
           type: 'success',
           text1: 'Login Successful',
