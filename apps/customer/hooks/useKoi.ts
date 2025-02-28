@@ -24,7 +24,7 @@ export function useAllKoiVarieties() {
       }
 
       try {
-        const response = await axios.get<{ message: string; value: KoiVarietyType[] }>('${API_BASE_URL}koi-varieties', {
+        const response = await axios.get<{ message: string; value: KoiVarietyType[] }>(`${API_BASE_URL}koi-varieties`, {
           headers: {
             Authorization: `Bearer ${user.token}`
           }

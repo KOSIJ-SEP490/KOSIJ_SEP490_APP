@@ -16,10 +16,8 @@ const TourListCard: React.FC<{ tourCards: TourCardType[] }> = ({ tourCards }) =>
   const filteredTours = tourCards.filter((tour) => {
     const isDefaultFilter = filters.departurePoint === '' && filters.numberOfFarms === ''
 
-    // Always filter by price range
     const withinPriceRange = tour.standardPrice >= filters.priceRange[0] && tour.standardPrice <= filters.priceRange[1]
 
-    // Apply filters only if they are set
     const matchesDeparture = filters.departurePoint === '' || tour.departurePoint.includes(filters.departurePoint)
     const matchesFarmCount = filters.numberOfFarms === '' || tour.totalFarmVisit.toString() === filters.numberOfFarms
 

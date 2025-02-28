@@ -29,9 +29,9 @@ const LoginScreen = () => {
     if (authContext?.user) {
       if (authContext.user.role === 'Customer') {
         navigation.replace('CustomerNavigator')
-      } else if (authContext.user.role === 'Consulting') {
+      } else if (authContext.user.role === 'ConsultingStaff') {
         navigation.replace('ConsultingNavigator')
-      } else if (authContext.user.role === 'Delivery') {
+      } else if (authContext.user.role === 'DeliveryStaff') {
         navigation.replace('DeliveryNavigator')
       }
     }
