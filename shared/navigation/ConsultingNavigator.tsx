@@ -10,9 +10,9 @@ export default function ConsultingNavigator() {
   return (
     <AppNavigator
       screens={[
-        { name: 'Home', component: DashboardScreen, icon: 'home' },
-        { name: 'Trip', component: TripScreen, icon: 'newspaper-outline' },
-        { name: 'Notification', component: NotiScreen, icon: 'notifications' },
+        { name: 'Home', component: DashboardScreen, icon: 'home-outline' },
+        { name: 'Trip', component: TripScreen, icon: 'document-text-outline' },
+        { name: 'Notification', component: NotiScreen, icon: 'notifications-outline' },
         { name: 'Orders', component: OrdersScreen, icon: 'cart-outline' },
         { name: 'Settings', component: SettingsScreen, icon: 'settings-outline' }
       ]}
