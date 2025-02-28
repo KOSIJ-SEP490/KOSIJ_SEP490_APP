@@ -111,7 +111,7 @@ export default function FarmDetailScreen() {
 
       <View className='px-4 mb-5'>
         <View className='flex-row justify-between items-center px-4 py-4'>
-          <Text className='text-base font-semibold'>Available Koi Variety</Text>
+          <Text className='text-base font-semibold'>Feedbacks</Text>
         </View>
 
         <ScrollView

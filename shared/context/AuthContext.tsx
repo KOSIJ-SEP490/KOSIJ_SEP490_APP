@@ -72,10 +72,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           body: JSON.stringify({ email, password })
         })
 
-        const data = await response.json()
+        let data
+        const contentType = response.headers.get('content-type')
+
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json()
+        } else {
+          data = { message: await response.text() }
+        }
 
         if (!response.ok) {
-          const errorMessage = data.errors?.[0] ?? data.message ?? 'An error occurred during login.'
+          const errorMessage = data.message || 'An error occurred during login.'
           Toast.show({
             type: 'error',
             text1: 'Login Failed',
@@ -164,18 +171,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           body: JSON.stringify({ email, otp })
         })
 
+        let data
+        const contentType = response.headers.get('content-type')
+
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json()
+        } else {
+          data = { message: await response.text() }
+        }
+
         if (!response.ok) {
-          const data = await response.json()
-          const errorMessage = data.message || 'Invalid OTP. Please try again.'
+          const errorMessage = data.message || 'An error occurred during login.'
           Toast.show({
             type: 'error',
             text1: 'OTP Verification Failed',
             text2: errorMessage
           })
-          throw new Error(errorMessage)
+          return
         }
 
-        const data = await response.json()
         const token = data.value
 
         const decoded: DecodedToken = jwtDecode(token)

@@ -62,7 +62,7 @@ export default function ScheduledTourDetailScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 10 }}
-          style={{ height: 550 }}
+          style={{ height: 370 }}
         >
           {farmError ? (
             <Text className='text-center text-red-500'>{farmError}</Text>
