@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
 import React from 'react'
 import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native'
 
@@ -9,7 +11,15 @@ const trips = [
   { id: '5', title: 'Koi Serenity Journey', status: 'Completed' }
 ]
 
+type RootStackParamList = {
+  Orders: undefined
+  TourDetails: undefined
+}
+
+type OrdersScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Orders'>
 export default function TripScreen() {
+  const navigation = useNavigation<OrdersScreenNavigationProp>()
+
   return (
     <View className='flex-1 bg-white p-4'>
       {/* Header */}
@@ -28,7 +38,10 @@ export default function TripScreen() {
         data={trips}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'>
+          <TouchableOpacity
+            className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
+            onPress={() => navigation.navigate('TourDetails')}
+          >
             {/* Icon */}
             <View className='mr-3'>
               <Text>🛳️</Text>
@@ -46,7 +59,7 @@ export default function TripScreen() {
             <View className={`px-3 py-1 rounded-full ${item.status === 'Upcoming' ? 'bg-yellow-300' : 'bg-green-600'}`}>
               <Text className='text-white text-xs'>{item.status}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>
