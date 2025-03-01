@@ -56,10 +56,10 @@ const OtpScreen = () => {
           case 'Customer':
             navigation.replace('CustomerNavigator')
             break
-          case 'Consulting':
+          case 'ConsultingStaff':
             navigation.replace('ConsultingNavigator')
             break
-          case 'Delivery':
+          case 'DeliveryStaff':
             navigation.replace('DeliveryNavigator')
             break
           default:

@@ -4,7 +4,7 @@ import { Star, MapPin, Clock } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
 import { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { FarmType } from '@apps/customer/types/farm.type'
+import { FarmType } from '@apps/customer/types/Farm/farm.type'
 
 type NavigationProp = StackNavigationProp<CustomerStackParamList, 'FarmDetail'>
 

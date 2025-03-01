@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import TourCard from './TourCard'
-import { TourCardType } from '../../../types/tourCard.type'
+import { TourCardType } from '../../../types/Tour/tourCard.type'
 import TourFilter from '../../Filter/TourFilter'
 
 const TourListCard: React.FC<{ tourCards: TourCardType[] }> = ({ tourCards }) => {

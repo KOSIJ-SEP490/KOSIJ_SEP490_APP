@@ -126,7 +126,7 @@ export default function FarmDetailScreen() {
               </View>
             ))
           ) : (
-            <Text className='text-center text-gray-500'>Loading</Text>
+            <Text className='text-center text-gray-500'>No Feedbacks</Text>
           )}
         </ScrollView>
       </View>
