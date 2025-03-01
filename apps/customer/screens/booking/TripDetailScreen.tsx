@@ -7,7 +7,9 @@ import { useTourById } from '@apps/customer/hooks/useTour'
 import ChooseDate from '@apps/customer/components/Booking/ChooseDate'
 import { useTripById } from '@apps/customer/hooks/useTrip'
 import TripInfoCard from '@apps/customer/components/Card/Trip/TripInfoCard'
+import NumberOfCustomer from '@apps/customer/components/Booking/NumberOfCustomer'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
+import TotalPrice from '@apps/customer/components/Booking/TotalPrice'
 
 type TripDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'TripDetail'>
 
@@ -16,8 +18,10 @@ export default function TripDetailScreen() {
   const { tourID } = route.params
   const { tour } = useTourById(tourID)
   const { bookingData, setBookingData } = useBooking()
-  const [selectedTripId, setSelectedTripId] = useState<number | null>(bookingData.tripID || null)
-  const { trip: selectedTrip, error } = useTripById(selectedTripId || 0)
+
+  const [selectedTripId, setSelectedTripId] = useState<number | undefined>(bookingData.tripID)
+
+  const { trip: selectedTrip } = useTripById(selectedTripId ?? 0)
 
   const setTrip = (tripID: number) => {
     setBookingData((prev) => ({
@@ -28,7 +32,7 @@ export default function TripDetailScreen() {
   }
 
   useEffect(() => {
-    if (bookingData.tripID) {
+    if (bookingData.tripID !== undefined) {
       setSelectedTripId(bookingData.tripID)
     }
   }, [bookingData.tripID])
@@ -41,8 +45,10 @@ export default function TripDetailScreen() {
     )
   }
 
-  const handleDateSelect = (tripId: number) => {
-    setTrip(tripId)
+  const handleDateSelect = (tripId?: number) => {
+    if (tripId !== undefined) {
+      setTrip(tripId)
+    }
   }
 
   return (
@@ -51,15 +57,14 @@ export default function TripDetailScreen() {
         <ChooseDate trips={tour.tripsList} onDateSelect={handleDateSelect} selectedTripId={selectedTripId} />
       </View>
 
-      {error && (
-        <View className='mt-4 items-center'>
-          <Text className='text-red-500'>{error}</Text>
-        </View>
-      )}
-
       {selectedTrip ? (
-        <View className='mt-4 px-5'>
-          <TripInfoCard trip={selectedTrip} />
+        <View>
+          <View className='mt-4 px-5'>
+            <TripInfoCard trip={selectedTrip} />
+
+            <NumberOfCustomer tripPrices={selectedTrip.tripPrice ?? []} />
+          </View>
+          <TotalPrice />
         </View>
       ) : (
         <View className='mt-4 items-center'>

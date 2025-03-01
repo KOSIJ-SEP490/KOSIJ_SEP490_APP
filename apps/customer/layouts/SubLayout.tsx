@@ -13,7 +13,7 @@ export default function SubLayout({ children, title, showBackButton = false }: L
   const navigation = useNavigation()
 
   return (
-    <View className='flex-1 bg-white'>
+    <View className='flex-1'>
       <View className='bg-blue py-5 px-4 pt-14 flex-row items-center'>
         {showBackButton && (
           <TouchableOpacity onPress={() => navigation.goBack()} className='mr-3'>
@@ -29,7 +29,7 @@ export default function SubLayout({ children, title, showBackButton = false }: L
         overScrollMode='never'
         bounces={false}
       >
-        <View className='flex-1 bg-white py-2 rounded-t-[40px] -mt-5 shadow-lg'>{children}</View>
+        <View className='flex-1 bg-white rounded-t-[40px] -mt-5'>{children}</View>
       </ScrollView>
     </View>
   )
