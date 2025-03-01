@@ -1,25 +1,28 @@
+import React from 'react'
+import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import React from 'react'
-import { View, Text, FlatList, TextInput, TouchableOpacity } from 'react-native'
-
-const trips = [
-  { id: '1', title: 'Koi Serenity Journey', status: 'Upcoming' },
-  { id: '2', title: 'Koi Serenity Journey', status: 'Completed' },
-  { id: '3', title: 'Koi Serenity Journey', status: 'Completed' },
-  { id: '4', title: 'Koi Serenity Journey', status: 'Completed' },
-  { id: '5', title: 'Koi Serenity Journey', status: 'Completed' }
-]
+import { useTrips } from '@apps/consulting/api/useTrip.api'
 
 type RootStackParamList = {
   Orders: undefined
-  TourDetails: undefined
+  TourDetails: { id: number }
 }
 
-type OrdersScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Orders'>
-export default function TripScreen() {
-  const navigation = useNavigation<OrdersScreenNavigationProp>()
+type TripScreenNavigationProp = StackNavigationProp<RootStackParamList, 'TourDetails'>
 
+export default function TripScreen() {
+  const navigation = useNavigation<TripScreenNavigationProp>()
+  const { data: trips = [], isLoading, error } = useTrips()
+
+  console.log('Trips Data:', trips)
+
+  if (isLoading) return <ActivityIndicator size='large' color='#0000ff' />
+  if (error) return <Text className='text-red-500'>Failed to load trips.</Text>
+
+  const handleSelectTrip = (id: number) => {
+    navigation.navigate('TourDetails', { id })
+  }
   return (
     <View className='flex-1 bg-white p-4'>
       {/* Header */}
@@ -36,11 +39,11 @@ export default function TripScreen() {
       {/* Trip List */}
       <FlatList
         data={trips}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <TouchableOpacity
             className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
-            onPress={() => navigation.navigate('TourDetails')}
+            onPress={() => handleSelectTrip(item.id)}
           >
             {/* Icon */}
             <View className='mr-3'>
@@ -49,15 +52,19 @@ export default function TripScreen() {
 
             {/* Trip Details */}
             <View className='flex-1'>
-              <Text className='font-semibold'>{item.title}</Text>
-              <Text className='text-gray-500'>Trip ID: TRP-20241201</Text>
-              <Text className='text-gray-500'>Type: Custom</Text>
-              <Text className='text-blue-500'>2024-12-01 - 2024-12-03</Text>
+              <Text className='font-semibold'>{item.tourName}</Text>
+              <Text className='text-gray-500'>Trip ID: {item.id}</Text>
+              <Text className='text-gray-500'>Type: {item.tripType}</Text>
+              <Text className='text-blue-500'>
+                {new Date(item.departureDate).toLocaleDateString()} - {new Date(item.returnDate).toLocaleDateString()}
+              </Text>
             </View>
 
             {/* Status Badge */}
-            <View className={`px-3 py-1 rounded-full ${item.status === 'Upcoming' ? 'bg-yellow-300' : 'bg-green-600'}`}>
-              <Text className='text-white text-xs'>{item.status}</Text>
+            <View
+              className={`px-3 py-1 rounded-full ${item.tripStatus === 'Available' ? 'bg-yellow-300' : 'bg-green-600'}`}
+            >
+              <Text className='text-white text-xs'>{item.tripStatus}</Text>
             </View>
           </TouchableOpacity>
         )}
