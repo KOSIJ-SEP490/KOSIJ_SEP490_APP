@@ -37,11 +37,11 @@ const TripInfoCard: React.FC<TripInfoCardProps> = ({ trip }) => {
 
           <View className='flex-row justify-between'>
             <View className='flex-1 items-center p-2 border border-gray-300 rounded-md bg-blue-light'>
-              <Text className='font-bold text-base text-blue'>Start time</Text>
+              <Text className='font-bold text-base text-blue'>Start Date</Text>
               <Text>{trip.departureDate}</Text>
             </View>
             <View className='flex-1 items-center p-2 border border-gray-300 rounded-md ml-2 bg-blue-light'>
-              <Text className='font-bold text-base text-blue'>End time</Text>
+              <Text className='font-bold text-base text-blue'>End Date</Text>
               <Text>{trip.returnDate}</Text>
             </View>
           </View>

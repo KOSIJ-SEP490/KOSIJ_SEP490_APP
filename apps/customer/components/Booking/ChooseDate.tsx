@@ -45,7 +45,7 @@ export default function ChooseDate({ trips, onDateSelect, selectedTripId }: Choo
 
   return (
     <View>
-      <Text className='text-base font-semibold mb-2'>Choose Date</Text>
+      <Text className='text-base font-semibold mb-2 mt-2'>Choose Date</Text>
 
       <View className='flex-row items-center space-x-2'>
         <TouchableOpacity className='p-2 bg-gray-100 rounded-lg' onPress={() => setIsCalendarVisible(true)}>

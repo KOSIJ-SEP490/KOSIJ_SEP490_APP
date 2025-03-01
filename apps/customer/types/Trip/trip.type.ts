@@ -15,8 +15,10 @@ export interface TripType {
   consultingStaffId: string
 }
 
+export type AgeGroup = 'Adult' | 'Child' | 'Infant'
+
 export interface TripPrice {
-  ageGroup: string
+  ageGroup: AgeGroup
   description: string
   price: number
 }
