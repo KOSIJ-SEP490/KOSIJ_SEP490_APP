@@ -5,14 +5,17 @@ import AuthNavigator from '../../shared/navigation/AuthNavigator'
 import { NavigationContainer } from '@react-navigation/native'
 import Toast from 'react-native-toast-message'
 import AuthContext, { AuthProvider } from '@shared/context/AuthContext'
+import { BookingProvider } from './contexts/BookingContext'
 
 export default function App() {
   return (
     <AuthProvider>
-      <NavigationContainer>
-        <MainNavigator />
-        <Toast />
-      </NavigationContainer>
+      <BookingProvider>
+        <NavigationContainer>
+          <MainNavigator />
+          <Toast />
+        </NavigationContainer>
+      </BookingProvider>
     </AuthProvider>
   )
 }
