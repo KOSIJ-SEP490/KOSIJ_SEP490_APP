@@ -1,4 +1,4 @@
-import { FarmType } from './farm.type'
+import { FarmType } from '../Farm/farm.type'
 
 export interface KoiVarietyType {
   id: number

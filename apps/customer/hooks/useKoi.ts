@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
-import { KoiVarietyType } from '../types/koiVariety.type'
 import AuthContext from '@shared/context/AuthContext'
 import { API_BASE_URL } from '@env'
+import { KoiVarietyType } from '../types/Koi/koiVariety.type'
 
 export function useAllKoiVarieties() {
   const authContext = useContext(AuthContext)

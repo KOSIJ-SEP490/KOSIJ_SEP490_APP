@@ -1,4 +1,4 @@
-import { TourType } from '@apps/customer/types/tour.type'
+import { TourType } from '@apps/customer/types/Tour/tour.type'
 import { StaffDto } from './Staff.dto'
 
 export type TripDto = {

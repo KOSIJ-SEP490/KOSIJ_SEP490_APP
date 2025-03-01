@@ -1,23 +1,33 @@
 import React from 'react'
-import { View, Text, ActivityIndicator, ScrollView } from 'react-native'
-import { RouteProp, useRoute } from '@react-navigation/native'
+import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTourById } from '@apps/customer/hooks/useTour'
-import { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
+import { CustomerStackNavigationProp, CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import MainLayout from '@apps/customer/layouts/MainLayout'
 import TourDetailCard from '@apps/customer/components/Card/Tour/TourDetailCard'
-import { TourPrice } from '@apps/customer/types/tour.type'
+import { TourPrice } from '@apps/customer/types/Tour/tour.type'
 import Divider from '@apps/customer/components/Divider'
 import ItineraryCard from '@apps/customer/components/Card/Tour/ItineraryCard'
 import TourPolicyCard from '@apps/customer/components/Card/Tour/TourPolicyCard'
 import { useFarmsByTour } from '@apps/customer/hooks/useFarm'
 import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
+import { useBooking } from '@apps/customer/contexts/BookingContext'
 
 type ScheduledTourDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'ScheduledTourDetail'>
 
 export default function ScheduledTourDetailScreen() {
   const route = useRoute<ScheduledTourDetailScreenRouteProp>()
+  const navigation = useNavigation<CustomerStackNavigationProp>()
   const { tourID } = route.params
   const { tour, error } = useTourById(tourID)
+  const { setBookingData } = useBooking()
+
+  const setTour = (tourID: number) => {
+    setBookingData((prev) => ({
+      ...prev,
+      tourID
+    }))
+  }
   const { farmList, error: farmError } = useFarmsByTour(tour?.farms ?? [])
 
   const getAdultPrice = (tourPrices: TourPrice[]): number => {
@@ -30,6 +40,11 @@ export default function ScheduledTourDetailScreen() {
         {error ? <Text className='text-red-600'>{error}</Text> : <ActivityIndicator size='large' color='#6B7280' />}
       </View>
     )
+  }
+
+  const handleNavigateToTripDetail = () => {
+    setTour(tourID)
+    navigation.navigate('TripDetail', { tourID: tourID })
   }
 
   return (
@@ -101,7 +116,14 @@ export default function ScheduledTourDetailScreen() {
           <TourPolicyCard title='Registration' policies={tour.registrationConditions} />
           <TourPolicyCard title='Payment' policies={tour.paymentPolicy} />
           <TourPolicyCard title='Cancellation' policies={tour.cancellationPolicy} />
+          <TourPolicyCard title='Children Prices' policies={tour.tourPrices} />
         </View>
+      </View>
+
+      <View className='p-4 bg-white mb-5'>
+        <TouchableOpacity className='bg-blue rounded-lg py-3' onPress={handleNavigateToTripDetail}>
+          <Text className='text-white text-center text-lg font-semibold'>Select Tour</Text>
+        </TouchableOpacity>
       </View>
     </MainLayout>
   )

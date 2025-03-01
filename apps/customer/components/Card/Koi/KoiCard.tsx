@@ -1,4 +1,4 @@
-import { KoiVarietyType } from '@apps/customer/types/koiVariety.type'
+import { KoiVarietyType } from '@apps/customer/types/Koi/koiVariety.type'
 import { View, Text, Image } from 'react-native'
 
 const KoiCard: React.FC<{ koi: KoiVarietyType }> = ({ koi }) => {

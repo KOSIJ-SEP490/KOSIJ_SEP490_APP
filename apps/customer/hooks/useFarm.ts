@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { FarmType } from '../types/farm.type'
-import { Farm } from '../types/tour.type'
+import { FarmType } from '../types/Farm/farm.type'
+import { Farm } from '../types/Tour/tour.type'
 import { API_BASE_URL } from '@env'
 
 export function useAllFarms() {

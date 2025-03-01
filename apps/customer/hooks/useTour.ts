@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { TourCardType } from '../types/tourCard.type'
-import { TourType } from '../types/tour.type'
+import { TourCardType } from '../types/Tour/tourCard.type'
+import { TourType } from '../types/Tour/tour.type'
 import { API_BASE_URL } from '@env'
 
 export function useAllTours() {

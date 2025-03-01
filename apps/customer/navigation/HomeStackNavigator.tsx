@@ -2,11 +2,12 @@ import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import HomeScreen from '../screens/navbar/HomeScreen'
 import { CustomerStackParamList } from '../types/navigationCustomerType'
-import BookingScreen from '../screens/home/BookingScreen'
+import BookingScreen from '../screens/booking/BookingScreen'
 import KoisScreen from '../screens/kois/KoisScreen'
-import ScheduledTourDetailScreen from '../screens/home/ScheduledTourDetailScreen'
+import ScheduledTourDetailScreen from '../screens/booking/ScheduledTourDetailScreen'
 import FarmsScreen from '../screens/farms/FarmsScreen'
 import FarmDetailScreen from '../screens/farms/FarmDetailScreen'
+import TripDetailScreen from '../screens/booking/TripDetailScreen'
 
 const Stack = createStackNavigator<CustomerStackParamList>()
 
@@ -19,6 +20,7 @@ export default function CustomerStackNavigator() {
       <Stack.Screen name='Kois' component={KoisScreen} />
       <Stack.Screen name='ScheduledTourDetail' component={ScheduledTourDetailScreen} />
       <Stack.Screen name='FarmDetail' component={FarmDetailScreen} />
+      <Stack.Screen name='TripDetail' component={TripDetailScreen} />
     </Stack.Navigator>
   )
 }
