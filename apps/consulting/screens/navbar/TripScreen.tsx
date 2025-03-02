@@ -15,14 +15,14 @@ export default function TripScreen() {
   const navigation = useNavigation<TripScreenNavigationProp>()
   const { data: trips = [], isLoading, error } = useTrips()
 
-  console.log('Trips Data:', trips)
-
   if (isLoading) return <ActivityIndicator size='large' color='#0000ff' />
   if (error) return <Text className='text-red-500'>Failed to load trips.</Text>
 
   const handleSelectTrip = (id: number) => {
     navigation.navigate('TourDetails', { id })
   }
+  console.log('data trips: ', trips)
+
   return (
     <View className='flex-1 bg-white p-4'>
       {/* Header */}
