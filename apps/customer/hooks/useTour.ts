@@ -63,7 +63,9 @@ export function useTourById(tourId: number) {
     if (!tourId) return
     const fetchTour = async () => {
       try {
-        const response = await axios.get<{ message: string; value: TourType }>(`${API_BASE_URL}tour/${tourId}`)
+        const response = await axios.get<{ message: string; value: TourType }>(
+          `${API_BASE_URL}tour/${tourId}?tripType=Scheduled`
+        )
 
         setTour(response.data.value)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any

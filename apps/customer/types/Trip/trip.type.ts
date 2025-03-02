@@ -31,6 +31,8 @@ export interface TourResponse {
   imageUrl: string
   departurePoint: string
   destinationPoint: string
+  airline: string
+  hotelService: string
   days: number
   nights: number
   tourPriceInclude: string

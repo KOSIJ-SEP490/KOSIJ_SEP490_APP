@@ -88,10 +88,10 @@ const NumberOfCustomer: React.FC<NumberOfCustomerProps> = ({ tripPrices }) => {
 
   useEffect(() => {
     calculateTotalPrice()
-  }, [customerCount])
+  }, [customerCount, tripPrices])
 
   return (
-    <View className='my-10'>
+    <View className='my-10 mb-14'>
       <Text className='text-base font-semibold ml-2'>Number of Customers</Text>
       <View className='p-4 rounded-lg border border-gray-300 mt-3'>
         {tripPrices.map(({ ageGroup, price }) => {

@@ -40,7 +40,7 @@ export default function TripDetailScreen() {
   if (!tour) {
     return (
       <View className='flex-1 justify-center items-center'>
-        <Text className='text-red-500'>Tour not found!</Text>
+        <Text>Loading</Text>
       </View>
     )
   }
