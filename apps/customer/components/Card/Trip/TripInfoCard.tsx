@@ -8,7 +8,7 @@ interface TripInfoCardProps {
 }
 
 const TripInfoCard: React.FC<TripInfoCardProps> = ({ trip }) => {
-  const isSlotFull = trip.availableSlot === '30/30' || trip.daysRemaining <= 0
+  const isSlotFull = trip.availableSlot === '0/30' || trip?.availableSlot === '0/30' || trip.daysRemaining <= 0
   const displayedDaysRemaining = trip.daysRemaining <= 0 ? 0 : trip.daysRemaining
 
   return (
@@ -16,7 +16,9 @@ const TripInfoCard: React.FC<TripInfoCardProps> = ({ trip }) => {
       <View className='max-w-md w-full'>
         <View className='flex-row justify-between mb-3'>
           <Text className='text-base font-semibold'>Trip Information</Text>
-          <Text className='text-red-500 pt-1'>Days Remaining: {displayedDaysRemaining} days</Text>
+          <Text className='text-red-500 pt-1'>
+            {trip.daysRemaining < 0 ? 'Registration time exceeded' : `Days Remaining: ${displayedDaysRemaining} days`}
+          </Text>
         </View>
         <View className='p-4 border border-gray-300 rounded-lg bg-white'>
           <View className='flex-row justify-between mb-3'>
@@ -54,14 +56,14 @@ const TripInfoCard: React.FC<TripInfoCardProps> = ({ trip }) => {
             <View className='flex-row items-center space-x-1 mt-3 mb-2'>
               <Plane size={18} color='#000000' />
               <Text className='text-gray text-sm'>
-                <Text className='font-medium'>Airline:</Text> Vietnam Airlines (Tan Son Nhat airport)
+                <Text className='font-medium'>Airline:</Text> {trip.tourResponse.airline}
               </Text>
             </View>
 
             <View className='flex-row items-center space-x-1 my-2'>
               <Hotel size={18} color='#000000' />
               <Text className='text-gray text-sm'>
-                <Text className='font-medium'>Hotel:</Text> Junnie Hotel (Tokyo Str.Furina 2412, ABC)
+                <Text className='font-medium'>Hotel:</Text> {trip.tourResponse.hotelService}
               </Text>
             </View>
 

@@ -12,7 +12,8 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [bookingData, setBookingData] = useState<BookingDataType>({
     numberOfCustomers: { adult: 0, child: 0, infant: 0 },
     customerDetails: { adult: [], child: [], infant: [] },
-    pricing: { totalPrice: 0, adultPrice: 0, childPrice: 0, infantPrice: 0, visaPrice: 0, numberOfVisas: 0 }
+    pricing: { totalPrice: 0, adultPrice: 0, childPrice: 0, infantPrice: 0, visaPrice: 0, numberOfVisas: 0 },
+    notes: ''
   })
 
   return <BookingContext.Provider value={{ bookingData, setBookingData }}>{children}</BookingContext.Provider>
