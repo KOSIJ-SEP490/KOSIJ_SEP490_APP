@@ -8,6 +8,7 @@ import ScheduledTourDetailScreen from '../screens/booking/ScheduledTourDetailScr
 import FarmsScreen from '../screens/farms/FarmsScreen'
 import FarmDetailScreen from '../screens/farms/FarmDetailScreen'
 import TripDetailScreen from '../screens/booking/TripDetailScreen'
+import CustomerInformationScreen from '../screens/booking/CustomerInformationScreen'
 
 const Stack = createStackNavigator<CustomerStackParamList>()
 
@@ -21,6 +22,7 @@ export default function CustomerStackNavigator() {
       <Stack.Screen name='ScheduledTourDetail' component={ScheduledTourDetailScreen} />
       <Stack.Screen name='FarmDetail' component={FarmDetailScreen} />
       <Stack.Screen name='TripDetail' component={TripDetailScreen} />
+      <Stack.Screen name='CustomerInformation' component={CustomerInformationScreen} />
     </Stack.Navigator>
   )
 }

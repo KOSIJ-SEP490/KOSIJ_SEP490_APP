@@ -43,4 +43,5 @@ export interface BookingDataType {
   numberOfCustomers: NumberOfCustomers
   customerDetails: CustomerDetails
   pricing: Pricing
+  notes: string
 }
