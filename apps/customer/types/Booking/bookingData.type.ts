@@ -13,7 +13,6 @@ export interface CustomerInfo {
   phoneNumber: string
   passport?: string
   isRepresentative: boolean
-  hasVisa: boolean
 }
 
 export interface NumberOfCustomers {

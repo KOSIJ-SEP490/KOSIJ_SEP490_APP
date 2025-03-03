@@ -9,6 +9,8 @@ import FarmsScreen from '../screens/farms/FarmsScreen'
 import FarmDetailScreen from '../screens/farms/FarmDetailScreen'
 import TripDetailScreen from '../screens/booking/TripDetailScreen'
 import CustomerInformationScreen from '../screens/booking/CustomerInformationScreen'
+import RecheckBookingScreen from '../screens/booking/RecheckBookingScreen'
+import PaymentScreen from '../screens/booking/PaymentScreen'
 
 const Stack = createStackNavigator<CustomerStackParamList>()
 
@@ -23,6 +25,8 @@ export default function CustomerStackNavigator() {
       <Stack.Screen name='FarmDetail' component={FarmDetailScreen} />
       <Stack.Screen name='TripDetail' component={TripDetailScreen} />
       <Stack.Screen name='CustomerInformation' component={CustomerInformationScreen} />
+      <Stack.Screen name='RecheckBooking' component={RecheckBookingScreen} />
+      <Stack.Screen name='Payment' component={PaymentScreen} />
     </Stack.Navigator>
   )
 }
