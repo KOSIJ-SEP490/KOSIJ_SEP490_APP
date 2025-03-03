@@ -20,6 +20,10 @@ interface Passenger {
   isCheckIn: boolean
 }
 
+interface Ticket {
+  outboundTicketUrl?: string
+}
+
 const CollectTicket = ({ route }: Props) => {
   const navigation = useNavigation<StackScreenProps<RootStackParamList, 'CollectTicket'>['navigation']>()
   const { ticketImage, tripId } = route.params
@@ -31,6 +35,35 @@ const CollectTicket = ({ route }: Props) => {
   const toggleCheck = (id: number) => {
     setCheckedPassengers((prev) => ({ ...prev, [id]: !prev[id] }))
   }
+
+  const [ticketUrl, setTicketUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchTicket = async () => {
+      try {
+        const response = await axios.get<{ value: Ticket[] }>(
+          `https://kosij.azurewebsites.net/api/trip/${tripId}/airplane-tickets?ticketType=Outbound`,
+          {
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMTA1MzIzfQ.twjI4X8nXLIYao2sfsAhzYgNZWIgl_80q4dwhvZHcNM`,
+              Accept: 'application/json'
+            }
+          }
+        )
+
+        const tickets = response.data.value
+        const outboundTicket = tickets.find((ticket: any) => ticket.outboundTicketUrl)
+
+        if (outboundTicket) {
+          setTicketUrl(outboundTicket.outboundTicketUrl ?? null)
+        }
+      } catch (error) {
+        console.error('Error fetching ticket:', error)
+      }
+    }
+
+    fetchTicket()
+  }, [tripId])
 
   useEffect(() => {
     const fetchPassengers = async () => {
@@ -109,12 +142,12 @@ const CollectTicket = ({ route }: Props) => {
 
           {/* Ticket Image Upload */}
           <View className='mt-4 border-dashed border-2 border-gray-300 rounded-lg p-4 items-center'>
-            {ticketImage ? (
-              <Image source={{ uri: ticketImage }} className='w-full h-40 rounded-lg' />
+            {ticketUrl ? (
+              <Image source={{ uri: ticketUrl }} className='w-full h-56 rounded-lg' />
             ) : (
               <View className='items-center'>
                 <UploadCloud size={32} className='text-gray-400' />
-                <Text className='text-gray-500'>Upload ticket image</Text>
+                <Text className='text-gray-500'>No ticket available</Text>
               </View>
             )}
           </View>
