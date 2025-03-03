@@ -2,19 +2,88 @@ import { StackScreenProps } from '@react-navigation/stack'
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { ChevronLeft, ArrowRight, UploadCloud, CheckCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
-import { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Steps from './Steps.container'
+import axios from 'axios'
+import { Checkbox } from 'react-native-paper'
 
 type RootStackParamList = {
-  CollectTicket: { ticketImage: string }
+  CollectTicket: { ticketImage: string; tripId: number }
+  TourDetails: { id: number }
 }
 
 type Props = StackScreenProps<RootStackParamList, 'CollectTicket'>
 
+interface Passenger {
+  id: number
+  fullName: string
+  isCheckIn: boolean
+}
+
 const CollectTicket = ({ route }: Props) => {
-  const navigation = useNavigation()
-  const { ticketImage } = route.params || {}
+  const navigation = useNavigation<StackScreenProps<RootStackParamList, 'CollectTicket'>['navigation']>()
+  const { ticketImage, tripId } = route.params
   const [currentStep, setCurrentStep] = useState(1)
+  const [passengers, setPassengers] = useState<Passenger[]>([])
+
+  const [checkedPassengers, setCheckedPassengers] = useState<{ [key: number]: boolean }>({})
+
+  const toggleCheck = (id: number) => {
+    setCheckedPassengers((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  useEffect(() => {
+    const fetchPassengers = async () => {
+      try {
+        const response = await axios.get<{ value: Passenger[] }>(
+          `https://kosij.azurewebsites.net/api/trip/${tripId}/passengers`,
+          {
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMDYwMDQzfQ.JZGPPTbui4hAy6zc4Y4IfvVHeyiwfNiHMibFfilxR1U`,
+              Accept: 'application/json'
+            }
+          }
+        )
+
+        setPassengers(response.data.value)
+      } catch (error) {
+        console.error('Error fetching passengers:', error)
+      }
+    }
+
+    fetchPassengers()
+  }, [tripId])
+  console.log('Fetching passengers with tripId:', tripId)
+
+  const handleCheckIn = async () => {
+    const selectedPassengers = Object.entries(checkedPassengers)
+      .filter(([_, checked]) => checked)
+      .map(([id]) => ({ id: Number(id), isCheckIn: true }))
+
+    if (selectedPassengers.length === 0) {
+      alert('Please select at least one passenger to check in.')
+      return
+    }
+
+    try {
+      const response = await axios.put<{ value: string }>(
+        `https://kosij.azurewebsites.net/api/trip/${tripId}/passengers/check-in`,
+        { checkInPassengersRequest: selectedPassengers },
+        {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMDgyNzEzfQ.NPFL8RVmpNPw8Ot0VHKmrh6FC84nsPceYYCifZG18NY`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      alert(response.data.value || 'Check-in successful!')
+      navigation.navigate('TourDetails', { id: tripId })
+    } catch (error) {
+      console.error('Error during check-in:', error)
+      alert('Failed to check in passengers.')
+    }
+  }
 
   return (
     <View className='flex-1 bg-white px-4 pt-4'>
@@ -63,14 +132,16 @@ const CollectTicket = ({ route }: Props) => {
           <ScrollView className='mt-4' style={{ maxHeight: 400 }}>
             <View className='bg-gray-100 p-4 rounded-lg mt-4'>
               <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
-              {Array(8)
-                .fill('Wade Warren')
-                .map((name, index) => (
-                  <View key={index} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
-                    <Text>{name}</Text>
-                    <CheckCircle color={'#2563eb'} size={20} />
-                  </View>
-                ))}
+              {passengers.map((passenger, index) => (
+                <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
+                  <Text>{passenger.fullName}</Text>
+                  <Checkbox
+                    status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
+                    onPress={() => toggleCheck(passenger.id)}
+                    disabled={passenger.isCheckIn}
+                  />
+                </View>
+              ))}
             </View>
           </ScrollView>
         </ScrollView>
@@ -84,7 +155,7 @@ const CollectTicket = ({ route }: Props) => {
 
         <TouchableOpacity
           className={`px-4 py-2 rounded-full flex-row items-center ${currentStep === 1 ? '#264eca' : 'bg-green-600'}`}
-          onPress={() => (currentStep === 1 ? setCurrentStep(2) : alert('Done!'))}
+          onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleCheckIn())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>
           {currentStep === 1 ? (

@@ -3,19 +3,27 @@ import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'rea
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { ChevronLeft } from 'lucide-react-native'
 import axios from 'axios'
+import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 
 type TourDetailsScreenProps = {
   id: number
 }
 
+type RootStackParamList = {
+  TourDetails: { id: number }
+  CollectTicket: { ticketImage: string; tripId: number }
+}
+
+type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'TourDetails'>
+
 export default function TourDetailsScreen() {
-  const navigation = useNavigation()
+  const navigation = useNavigation<NavigationProps>()
   const route = useRoute()
   const { id } = route.params as TourDetailsScreenProps
   const [tourDetails, setTourDetails] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [participantList, setParticipantList] = useState<any>(null)
-
+  const apiImageUrl = 'https://example.com/ticket.jpg' // Example
   useEffect(() => {
     const fetchTourDetails = async () => {
       try {
@@ -74,6 +82,13 @@ export default function TourDetailsScreen() {
 
   console.log('Data:', participantList)
 
+  const getButtonText = () => {
+    if (!participantList?.value) return 'Start Trip'
+
+    const allCheckedIn = participantList.value.every((p: any) => p.isCheckIn === true)
+    return allCheckedIn ? 'Create Order' : 'Start Trip'
+  }
+
   return (
     <ScrollView>
       <View className='flex-1 mt-3 bg-white p-4'>
@@ -123,7 +138,7 @@ export default function TourDetailsScreen() {
 
         {/* Itinerary */}
         <View className='p-4 bg-white rounded-lg shadow-md mt-5'>
-          {tourDetails?.value?.tourDetails?.map((day: any, index: number) => (
+          {tourDetails?.value?.tourResponse?.tourDetails?.map((day: any, index: number) => (
             <View key={index} className='p-3 rounded-lg mb-2' style={{ backgroundColor: '#f6feff' }}>
               <Text className='font-bold'>
                 Day {day.day}: {day.itineraryName}
@@ -152,13 +167,23 @@ export default function TourDetailsScreen() {
         <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
           <Text className='font-bold'>Important Notes</Text>
           {tourDetails?.value?.notes?.map((note: any, index: number) => (
-            <View key={index} className='p-3 rounded-lg mb-2'>
+            <View key={index} className='p-3 rounded-lg mb-2 flex-row'>
               <Text className='font-bold' style={{ color: '#264ECA' }}>
                 #{index + 1}:
               </Text>
-              <Text className='font-medium'>{note.note}</Text>
+              <Text className='font-medium'> {note.note}</Text>
             </View>
           ))}
+        </View>
+        <View className='mt-10 ml-5 w-80'>
+          {/* Bottom Button */}
+          <TouchableOpacity
+            style={{ backgroundColor: '#264eca' }}
+            className='p-3 rounded-md bottom-4 right-4'
+            onPress={() => navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })}
+          >
+            <Text className='text-white text-center'>{getButtonText()}</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
