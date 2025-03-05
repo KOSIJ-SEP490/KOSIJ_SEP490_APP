@@ -64,7 +64,7 @@ export default function TripDetailScreen() {
 
             <NumberOfCustomer tripPrices={selectedTrip.tripPrice ?? []} />
           </View>
-          <TotalPrice />
+          <TotalPrice navigationLocation='CustomerInformation' />
         </View>
       ) : (
         <View className='mt-4 items-center'>

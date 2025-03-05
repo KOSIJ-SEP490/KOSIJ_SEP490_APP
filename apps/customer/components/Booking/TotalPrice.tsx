@@ -4,12 +4,19 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
 import { useTripById } from '@apps/customer/hooks/useTrip'
 import { useNavigation } from '@react-navigation/native'
-import { CustomerStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
+import { CustomerStackNavigationProp, CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
+import { useTripBooking } from '@apps/customer/hooks/useTripBooking'
+import { TripBookingRequestType } from '@apps/customer/types/Booking/tripBooking.type'
 
-const TotalPrice: React.FC = () => {
+interface TotalPriceProps {
+  navigationLocation: keyof CustomerStackParamList
+}
+
+const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
   const navigation = useNavigation<CustomerStackNavigationProp>()
   const { bookingData } = useBooking()
   const { trip } = useTripById(bookingData.tripID ?? 0)
+  const { bookTrip } = useTripBooking()
 
   const { totalPrice, adultPrice, childPrice, infantPrice } = bookingData.pricing
   const { adult, child, infant } = bookingData.numberOfCustomers
@@ -27,12 +34,54 @@ const TotalPrice: React.FC = () => {
     [trip?.availableSlot, trip?.daysRemaining, totalPrice]
   )
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (adult < 1) {
       Alert.alert('Booking Error', 'At least 1 adult is required to book this trip.')
       return
     }
-    navigation.navigate('CustomerInformation')
+
+    if (!bookingData.tripID) {
+      Alert.alert('Booking Error', 'Trip ID is missing.')
+      return
+    }
+
+    if (navigationLocation === 'Payment') {
+      const mapPassengers = (group: typeof bookingData.customerDetails.adult, ageGroup: string) =>
+        group.map(({ fullName, dateOfBirth, sex, nationality, email, phoneNumber, passport, isRepresentative }) => ({
+          ageGroup,
+          fullName,
+          dateOfBirth: {
+            ...dateOfBirth
+          },
+          sex,
+          nationality,
+          email,
+          phoneNumber,
+          passport: passport ?? '',
+          isRepresentative
+        }))
+
+      const bookingRequest: TripBookingRequestType = {
+        tripId: bookingData.tripID ?? 0,
+        note: 'Booking via app',
+        passengerDetailsRequests: [
+          ...mapPassengers(bookingData.customerDetails.adult, 'Adult'),
+          ...mapPassengers(bookingData.customerDetails.child, 'Child'),
+          ...mapPassengers(bookingData.customerDetails.infant, 'Infant')
+        ]
+      }
+
+      try {
+        const tripBookingId = await bookTrip(bookingRequest)
+        navigation.navigate('Payment', { tripBookingID: tripBookingId ?? 0 })
+      } catch (err) {
+        Alert.alert('Booking Failed', 'Something went wrong. Please try again.')
+      }
+      return
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    navigation.navigate(navigationLocation as any)
   }
 
   return (

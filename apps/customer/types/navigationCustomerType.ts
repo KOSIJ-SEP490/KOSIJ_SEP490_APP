@@ -9,6 +9,8 @@ export type CustomerStackParamList = {
   FarmDetail: { farmID: number }
   TripDetail: { tourID: number }
   CustomerInformation: undefined
+  RecheckBooking: undefined
+  Payment: { tripBookingID: number }
 }
 
 export type CustomerStackNavigationProp = StackNavigationProp<CustomerStackParamList>

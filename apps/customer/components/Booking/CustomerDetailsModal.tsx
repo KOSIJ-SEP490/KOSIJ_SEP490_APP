@@ -41,8 +41,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
       email: '',
       phoneNumber: '',
       passport: '',
-      isRepresentative: false,
-      hasVisa: false
+      isRepresentative: ageGroup === 'adult' && index === 0
     }
   )
 
@@ -86,15 +85,14 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
       const updatedDetails = { ...prev.customerDetails }
 
       if (!updatedDetails[ageGroup]) updatedDetails[ageGroup] = []
-      updatedDetails[ageGroup][index] = details
+      updatedDetails[ageGroup][index] = {
+        ...details,
+        isRepresentative: ageGroup === 'adult' && index === 0
+      }
 
       return { ...prev, customerDetails: updatedDetails }
     })
 
-    console.log('Age Group: ', ageGroup)
-    console.log('Adult: ', bookingData.customerDetails.adult)
-    console.log('Child: ', bookingData.customerDetails.child)
-    console.log('Infant: ', bookingData.customerDetails.infant)
     onClose()
   }
 
@@ -107,7 +105,9 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
             className='bg-white rounded-xl w-full h-full'
           >
             <View className='bg-blue pt-14 px-5 rounded-t-xl flex-row justify-between items-center'>
-              <Text className='text-lg text-white font-semibold mb-4 text-center flex-1 '>Customer Details</Text>
+              <Text className='text-lg text-white font-semibold mb-4 text-center flex-1 '>
+                {ageGroup.charAt(0).toUpperCase() + ageGroup.slice(1)} {index + 1}
+              </Text>
 
               <TouchableOpacity onPress={onClose} className='absolute right-10 top-14'>
                 <Text className='text-white text-2xl'>✕</Text>
