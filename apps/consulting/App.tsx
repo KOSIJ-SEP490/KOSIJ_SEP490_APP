@@ -25,7 +25,7 @@ export default function App() {
 
 const MainNavigator = () => {
   const authContext = React.useContext(AuthContext)
-  console.log('AuthContext:', authContext) // ✅ Debugging log
+  console.log('AuthContext:', authContext)
 
   if (!authContext) {
     return (
@@ -36,7 +36,7 @@ const MainNavigator = () => {
   }
 
   const { user } = authContext
-  console.log('User:', user) // ✅ Debugging log
+  console.log('User:', user)
 
   return user ? <ConsultingNavigator /> : <AuthNavigator />
 }

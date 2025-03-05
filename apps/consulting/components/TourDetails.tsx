@@ -12,6 +12,7 @@ type TourDetailsScreenProps = {
 type RootStackParamList = {
   TourDetails: { id: number }
   CollectTicket: { ticketImage: string; tripId: number }
+  CheckOutTrip: { ticketImage: string; tripId: number }
 }
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'TourDetails'>
@@ -23,13 +24,13 @@ export default function TourDetailsScreen() {
   const [tourDetails, setTourDetails] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [participantList, setParticipantList] = useState<any>(null)
-  const apiImageUrl = 'https://example.com/ticket.jpg' // Example
+  const apiImageUrl = 'https://example.com/ticket.jpg'
   useEffect(() => {
     const fetchTourDetails = async () => {
       try {
         const response = await axios.get(`https://kosij.azurewebsites.net/api/staff/trip/${id}`, {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMDMxNjE5fQ.4kEuNei2Zp2gd9n4jTrp1mGbMB3nEjhrQZuOfUVta2c`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
             Accept: 'text/plain'
           }
         })
@@ -49,7 +50,7 @@ export default function TourDetailsScreen() {
       try {
         const response = await axios.get(`https://kosij.azurewebsites.net/api/trip/${id}/passengers`, {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMDMxNjE5fQ.4kEuNei2Zp2gd9n4jTrp1mGbMB3nEjhrQZuOfUVta2c`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
             Accept: 'text/plain'
           }
         })
@@ -85,8 +86,8 @@ export default function TourDetailsScreen() {
   const getButtonText = () => {
     if (!participantList?.value) return 'Start Trip'
 
-    const allCheckedIn = participantList.value.every((p: any) => p.isCheckIn === true)
-    return allCheckedIn ? 'Create Order' : 'Start Trip'
+    const allCheckedIn = participantList.value.every((p: any) => p.isCheckIn === true || p.isCheckIn === false)
+    return allCheckedIn ? 'Trip Completion' : 'Start Trip'
   }
 
   return (
@@ -105,9 +106,35 @@ export default function TourDetailsScreen() {
         <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
           <View className='flex-row items-center justify-between flex-wrap'>
             <Text className='text-lg font-bold flex-1 pr-2'>{tourDetails?.value?.tourName}</Text>
-            <View className='px-3 py-1 rounded-full' style={{ backgroundColor: '#264ECA' }}>
+            <View
+              className='px-3 py-1 rounded-full'
+              style={{
+                backgroundColor:
+                  tourDetails?.value?.tripStatus === 'Available'
+                    ? '#ADD8E6'
+                    : tourDetails?.value?.tripStatus === 'Not Available'
+                      ? '#D3D3D3'
+                      : tourDetails?.value?.tripStatus === 'Full'
+                        ? '#A94064'
+                        : tourDetails?.value?.tripStatus === 'Registration Closed'
+                          ? '#FFA500'
+                          : tourDetails?.value?.tripStatus === 'Not Started'
+                            ? '#FFD700'
+                            : tourDetails?.value?.tripStatus === 'On Going'
+                              ? '#0000FF'
+                              : tourDetails?.value?.tripStatus === 'Completed'
+                                ? '#008000'
+                                : tourDetails?.value?.tripStatus === 'Canceled'
+                                  ? '#FF0000'
+                                  : '#D3D3D3'
+              }}
+            >
               <Text className='text-white text-xs'>{tourDetails?.value?.tripStatus}</Text>
             </View>
+          </View>
+          <View>
+            <Text className='text-gray-600 text-sm'>Trip ID: {tourDetails?.value?.id}</Text>
+            <Text className='text-gray-600 text-sm'>Type: {tourDetails?.value?.tripType}</Text>
           </View>
 
           {/* Start & End Dates */}
@@ -158,7 +185,9 @@ export default function TourDetailsScreen() {
           <Text className='font-bold'>Participants List</Text>
           {participantList?.value?.map((participant: any, index: number) => (
             <View key={index} className='p-3 rounded-lg mb-2' style={{ backgroundColor: '#f6feff' }}>
-              <Text className='font-semibold text-blue-600'>{participant.fullName}</Text>
+              <Text className='font-semibold' style={{ color: '#264ECA' }}>
+                {participant.fullName}
+              </Text>
               <Text className='text-gray-600'>{participant.phoneNumber || 'null'}</Text>
               <Text className='text-gray-600'>{participant.email || 'null'}</Text>
             </View>
@@ -177,13 +206,21 @@ export default function TourDetailsScreen() {
         </View>
         <View className='mt-10 ml-5 w-80'>
           {/* Bottom Button */}
-          <TouchableOpacity
-            style={{ backgroundColor: '#264eca' }}
-            className='p-3 rounded-md bottom-4 right-4'
-            onPress={() => navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })}
-          >
-            <Text className='text-white text-center'>{getButtonText()}</Text>
-          </TouchableOpacity>
+          {tourDetails?.value?.tripStatus !== 'Completed' && (
+            <TouchableOpacity
+              style={{ backgroundColor: '#264eca' }}
+              className='p-3 rounded-md bottom-4 right-4'
+              onPress={() => {
+                if (getButtonText() === 'Start Trip') {
+                  navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })
+                } else {
+                  navigation.navigate('CheckOutTrip', { ticketImage: apiImageUrl, tripId: id })
+                }
+              }}
+            >
+              <Text className='text-white text-center'>{getButtonText()}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </ScrollView>

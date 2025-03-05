@@ -8,11 +8,13 @@ import OrdersScreen from '@apps/consulting/screens/navbar/OrdersScreen'
 import SettingsScreen from '@apps/consulting/screens/navbar/SettingsScreen'
 import TourDetailsScreen from '@apps/consulting/components/TourDetails'
 import CollectTicket from '@apps/consulting/components/CollectTicket'
+import CheckOutTrip from '@apps/consulting/components/CheckOutTrip'
 
 type RootStackParamList = {
-  MainTabs: undefined // If it doesn't need params
-  TourDetails: undefined // If it doesn't need params
+  MainTabs: undefined
+  TourDetails: undefined
   CollectTicket: { ticketImage: string }
+  CheckOutTrip: { ticketImage: string }
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -22,6 +24,7 @@ export default function ConsultingNavigator() {
       <Stack.Screen name='MainTabs' component={MainTabNavigator} />
       <Stack.Screen name='TourDetails' component={TourDetailsScreen} />
       <Stack.Screen name='CollectTicket' component={CollectTicket} />
+      <Stack.Screen name='CheckOutTrip' component={CheckOutTrip} />
     </Stack.Navigator>
   )
 }

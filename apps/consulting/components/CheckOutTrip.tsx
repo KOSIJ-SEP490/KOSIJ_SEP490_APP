@@ -21,10 +21,10 @@ interface Passenger {
 }
 
 interface Ticket {
-  outboundTicketUrl?: string
+  inboundTicketUrl?: string
 }
 
-const CollectTicket = ({ route }: Props) => {
+const CheckOutTrip = ({ route }: Props) => {
   const navigation = useNavigation<StackScreenProps<RootStackParamList, 'CollectTicket'>['navigation']>()
   const { ticketImage, tripId } = route.params
   const [currentStep, setCurrentStep] = useState(1)
@@ -42,20 +42,20 @@ const CollectTicket = ({ route }: Props) => {
     const fetchTicket = async () => {
       try {
         const response = await axios.get<{ value: Ticket[] }>(
-          `https://kosij.azurewebsites.net/api/trip/${tripId}/airplane-tickets?ticketType=Outbound`,
+          `https://kosij.azurewebsites.net/api/trip/${tripId}/airplane-tickets?ticketType=Inbound`,
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMTA1MzIzfQ.twjI4X8nXLIYao2sfsAhzYgNZWIgl_80q4dwhvZHcNM`,
               Accept: 'application/json'
             }
           }
         )
 
         const tickets = response.data.value
-        const outboundTicket = tickets.find((ticket: any) => ticket.outboundTicketUrl)
+        const inboundTicket = tickets.find((ticket: any) => ticket.inboundTicketUrl)
 
-        if (outboundTicket) {
-          setTicketUrl(outboundTicket.outboundTicketUrl ?? null)
+        if (inboundTicket) {
+          setTicketUrl(inboundTicket.inboundTicketUrl ?? null)
         }
       } catch (error) {
         console.error('Error fetching ticket:', error)
@@ -91,7 +91,7 @@ const CollectTicket = ({ route }: Props) => {
   const handleCheckIn = async () => {
     const selectedPassengers = Object.entries(checkedPassengers)
       .filter(([_, checked]) => checked)
-      .map(([id]) => ({ id: Number(id), isCheckIn: true }))
+      .map(([id]) => ({ id: Number(id), isCheckOut: true }))
 
     if (selectedPassengers.length === 0) {
       alert('Please select at least one passenger to check in.')
@@ -100,8 +100,8 @@ const CollectTicket = ({ route }: Props) => {
 
     try {
       const response = await axios.put<{ value: string }>(
-        `https://kosij.azurewebsites.net/api/trip/${tripId}/passengers/check-in`,
-        { checkInPassengersRequest: selectedPassengers },
+        `https://kosij.azurewebsites.net/api/trip/${tripId}/passengers/check-out`,
+        { checkOutPassengersRequest: selectedPassengers },
         {
           headers: {
             Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
@@ -110,44 +110,6 @@ const CollectTicket = ({ route }: Props) => {
         }
       )
 
-      alert(response.data.value || 'Check-in successful!')
-      navigation.navigate('TourDetails', { id: tripId })
-    } catch (error) {
-      console.error('Error during check-in:', error)
-      alert('Failed to check in passengers.')
-    }
-  }
-
-  const [attendance, setAttendance] = useState<Record<number, { isCheckIn: boolean | null; isAbsent: boolean | null }>>(
-    {}
-  )
-
-  const updateAttendance = (id: any, status: string) => {
-    setAttendance((prev) => ({
-      ...prev,
-      [id]: status === 'yes' ? { isCheckIn: true, isAbsent: null } : { isCheckIn: null, isAbsent: true }
-    }))
-  }
-
-  const handleSubmit = async () => {
-    const requestBody = {
-      checkInPassengersRequest: Object.entries(attendance).map(([id, status]) => ({
-        id: Number(id),
-        ...(status || {})
-      }))
-    }
-
-    try {
-      const response = await axios.put<{ value: Passenger[] }>(
-        `https://kosij.azurewebsites.net/api/trip/${tripId}/passengers/check-in`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
       alert(response.data.value || 'Check-in successful!')
       navigation.navigate('TourDetails', { id: tripId })
     } catch (error) {
@@ -206,29 +168,11 @@ const CollectTicket = ({ route }: Props) => {
               {passengers.map((passenger, index) => (
                 <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
                   <Text>{passenger.fullName}</Text>
-                  <View className='flex-row'>
-                    <TouchableOpacity
-                      onPress={() => updateAttendance(passenger.id, 'yes')}
-                      style={{
-                        backgroundColor: attendance[passenger.id]?.isCheckIn ? '#4CAF50' : 'transparent',
-                        padding: 8,
-                        borderRadius: 16
-                      }}
-                    >
-                      <Text>Yes</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => updateAttendance(passenger.id, 'no')}
-                      style={{
-                        backgroundColor: attendance[passenger.id]?.isAbsent ? '#F44336' : 'transparent',
-                        padding: 8,
-                        borderRadius: 16,
-                        marginLeft: 10
-                      }}
-                    >
-                      <Text>No</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <Checkbox
+                    status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
+                    onPress={() => toggleCheck(passenger.id)}
+                    disabled={passenger.isCheckIn}
+                  />
                 </View>
               ))}
             </View>
@@ -244,7 +188,7 @@ const CollectTicket = ({ route }: Props) => {
 
         <TouchableOpacity
           className={`px-4 py-2 rounded-full flex-row items-center ${currentStep === 1 ? '#264eca' : 'bg-green-600'}`}
-          onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleSubmit())}
+          onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleCheckIn())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>
           {currentStep === 1 ? (
@@ -258,4 +202,4 @@ const CollectTicket = ({ route }: Props) => {
   )
 }
 
-export default CollectTicket
+export default CheckOutTrip
