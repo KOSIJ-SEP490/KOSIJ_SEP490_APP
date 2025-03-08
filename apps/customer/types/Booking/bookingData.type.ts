@@ -11,8 +11,9 @@ export interface CustomerInfo {
   nationality: string
   email: string
   phoneNumber: string
-  passport?: string
+  passport: string
   isRepresentative: boolean
+  hasVisa: boolean
 }
 
 export interface NumberOfCustomers {

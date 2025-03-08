@@ -41,14 +41,15 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
       email: '',
       phoneNumber: '',
       passport: '',
-      isRepresentative: ageGroup === 'adult' && index === 0
+      isRepresentative: ageGroup === 'adult' && index === 0,
+      hasVisa: false
     }
   )
 
   const [datePickerVisible, setDatePickerVisible] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
 
-  const handleChange = (field: keyof CustomerInfo, value: string | number) => {
+  const handleChange = (field: keyof CustomerInfo, value: string | number | boolean) => {
     setCustomerDetails((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -69,11 +70,29 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
     setDatePickerVisible(false)
   }
 
+  const handleReset = () => {
+    setCustomerDetails({
+      ageGroup,
+      fullName: '',
+      dateOfBirth: { year: 0, month: 0, day: 0, dayOfWeek: 'Sunday' },
+      sex: 'Male',
+      nationality: '',
+      email: '',
+      phoneNumber: '',
+      passport: '',
+      isRepresentative: ageGroup === 'adult' && index === 0,
+      hasVisa: false
+    })
+  }
+
   useEffect(() => {
     if (visible) {
       const customerData = bookingData.customerDetails?.[ageGroup]?.[index] || initialCustomer
       if (customerData) {
-        setCustomerDetails(customerData)
+        setCustomerDetails({
+          ...customerData,
+          sex: customerData.sex || 'Male'
+        })
       }
     }
   }, [visible, ageGroup, index, initialCustomer])
@@ -81,6 +100,17 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
   const { bookingData, setBookingData } = useBooking()
 
   const handleSave = (ageGroup: keyof CustomerDetails, index: number, details: CustomerInfo) => {
+    if (
+      !details.fullName?.trim() ||
+      !details.dateOfBirth?.year ||
+      !details.email?.trim() ||
+      !details.phoneNumber?.trim() ||
+      !details.passport?.trim()
+    ) {
+      alert('Please fill in all required fields before saving.')
+      return
+    }
+
     setBookingData((prev) => {
       const updatedDetails = { ...prev.customerDetails }
 
@@ -116,6 +146,10 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
 
             <ScrollView>
               <View className='px-5 py-5'>
+                <Text onPress={handleReset} className='text-red-500 font-semibold text-right pr-1'>
+                  Reset
+                </Text>
+
                 <Text className='text-base mb-2 pl-3 font-medium'>
                   Full Name <Text className='text-red-600'>*</Text>
                 </Text>
@@ -172,9 +206,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                   </Modal>
                 )}
 
-                <Text className='text-base mb-2 pl-3 font-medium'>
-                  Sex <Text className='text-red-600'>*</Text>
-                </Text>
+                <Text className='text-base mb-2 pl-3 font-medium'>Sex</Text>
 
                 <View className='flex-row justify-start mb-5 pl-2'>
                   <TouchableOpacity onPress={() => handleChange('sex', 'Male')} className='flex-row items-center mr-5'>
@@ -189,6 +221,27 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                       className={`w-5 h-5 border border-blue  rounded-full mr-2 ${customerDetails.sex === 'Female' ? 'bg-blue' : 'border-gray-400'}`}
                     />
                     <Text>Female</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Text className='text-base mb-2 pl-3 font-medium'>Visa Status</Text>
+
+                <View className='flex-row justify-start mb-5 pl-2'>
+                  <TouchableOpacity
+                    onPress={() => handleChange('hasVisa', true)}
+                    className='flex-row items-center mr-5'
+                  >
+                    <View
+                      className={`w-5 h-5 border border-blue rounded-full mr-2 ${customerDetails.hasVisa ? 'bg-blue' : 'border-gray-400'}`}
+                    />
+                    <Text>Has Visa</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => handleChange('hasVisa', false)} className='flex-row items-center'>
+                    <View
+                      className={`w-5 h-5 border border-blue rounded-full mr-2 ${!customerDetails.hasVisa ? 'bg-blue' : 'border-gray-400'}`}
+                    />
+                    <Text>No Visa</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -214,9 +267,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                   onChangeText={(text) => handleChange('phoneNumber', text)}
                 />
 
-                <Text className='text-base mb-2 pl-3 font-medium'>
-                  Nationality <Text className='text-red-600'>*</Text>
-                </Text>
+                <Text className='text-base mb-2 pl-3 font-medium'>Nationality</Text>
                 <TextInput
                   className='border border-gray-300 rounded-lg p-2 mb-5 py-4 w-full'
                   placeholder='Enter nationality'
@@ -225,7 +276,10 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                 />
 
                 <Text className='text-base mb-2 pl-3 font-medium'>
-                  Passport Number <Text className='text-gray-400'>(optional)</Text>
+                  Passport Number{' '}
+                  <Text className='text-gray-400'>
+                    <Text className='text-red-600'>*</Text>
+                  </Text>
                 </Text>
                 <TextInput
                   className='border border-gray-300 rounded-lg p-2 mb-5 py-4 w-full'
