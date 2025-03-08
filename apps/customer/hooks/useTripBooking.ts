@@ -4,6 +4,8 @@ import { API_BASE_URL } from '@env'
 import { TripBookingDetailType } from '../types/Booking/tripBookingDetail.type'
 import { TripBookingRequestType } from '../types/Booking/tripBooking.type'
 import AuthContext from '@shared/context/AuthContext'
+import { TripBookingCheckInType } from '../types/Booking/tripBookingCheckIn.type'
+import { TripCheckOutType } from '../types/Booking/tripCheckout.type'
 
 export function useTripBookingById(tripBookingId: number) {
   const [tripBookingDetail, setTrip] = useState<TripBookingDetailType | null>(null)
@@ -73,8 +75,6 @@ export function useTripBooking() {
         }
       })
 
-      console.log('useTripBooking response:')
-
       const bookingId = res.data.value?.tripBookingId ?? null
       setTripBookingId(bookingId)
 
@@ -89,4 +89,90 @@ export function useTripBooking() {
   }
 
   return { bookTrip, tripBookingId, isLoading, error }
+}
+
+export function useTripBookingCheckInById(tripBookingId: number) {
+  const [tripBookingCheckIn, setTrip] = useState<TripBookingCheckInType | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+
+  const userToken = authContext?.user?.token
+
+  useEffect(() => {
+    if (!tripBookingId || !userToken) {
+      setError('User is not authenticated or invalid trip ID.')
+      return
+    }
+
+    const fetchTrip = async () => {
+      try {
+        const response = await axios.get<{ message: string; value: TripBookingCheckInType }>(
+          `${API_BASE_URL}trip-booking/${tripBookingId}/check-in-payment`,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`
+            }
+          }
+        )
+        setTrip(response.data.value)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.response?.data?.detail || 'Failed to fetch the trip.')
+      }
+    }
+
+    fetchTrip()
+  }, [tripBookingId, userToken])
+
+  return { tripBookingCheckIn, error }
+}
+
+interface TripBookingResponse {
+  message: string
+  value?: {
+    tripBookingId: number
+    expiredTime: string
+  }
+}
+
+export function useTripBookingCheckoutPayment() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [checkoutData, setCheckoutData] = useState<TripCheckOutType | null>(null)
+  const authContext = useContext(AuthContext)
+
+  const userToken = authContext?.user?.token
+
+  const checkoutTrip = async (id: number) => {
+    if (!userToken) {
+      setError('User is not authenticated.')
+      return null
+    }
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await axios.post<{ message: string; value: TripCheckOutType }>(
+        `${API_BASE_URL}trip-booking/check-out-payment`,
+        { id },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        }
+      )
+
+      setCheckoutData(response.data.value)
+      return response.data.value
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to process payment.')
+      return null
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return { checkoutTrip, checkoutData, isLoading, error }
 }

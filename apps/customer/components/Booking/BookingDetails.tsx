@@ -62,7 +62,7 @@ const BookingDetails: React.FC = () => {
               <Users size={18} color='#000000' />
               <Text className='text-gray text-sm'>
                 <Text className='font-medium'>Number of Customers:</Text>{' '}
-                {numberOfCustomers.adult + numberOfCustomers.child + numberOfCustomers.infant} persons
+                {numberOfCustomers.adult + numberOfCustomers.child + numberOfCustomers.infant} person(s)
               </Text>
             </View>
 

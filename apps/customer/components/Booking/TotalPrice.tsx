@@ -45,21 +45,38 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
       return
     }
 
+    if (navigationLocation !== 'CustomerInformation') {
+      const { adult: adultCount, child: childCount, infant: infantCount } = bookingData.numberOfCustomers
+      const { adult: adultDetails, child: childDetails, infant: infantDetails } = bookingData.customerDetails
+
+      if (
+        adultDetails.length !== adultCount ||
+        childDetails.length !== childCount ||
+        infantDetails.length !== infantCount
+      ) {
+        Alert.alert('Missing Information', 'You should fill in all customer information before booking.')
+        return
+      }
+    }
+
     if (navigationLocation === 'Payment') {
       const mapPassengers = (group: typeof bookingData.customerDetails.adult, ageGroup: string) =>
-        group.map(({ fullName, dateOfBirth, sex, nationality, email, phoneNumber, passport, isRepresentative }) => ({
-          ageGroup,
-          fullName,
-          dateOfBirth: {
-            ...dateOfBirth
-          },
-          sex,
-          nationality,
-          email,
-          phoneNumber,
-          passport: passport ?? '',
-          isRepresentative
-        }))
+        group.map(
+          ({ fullName, dateOfBirth, sex, nationality, email, phoneNumber, passport, isRepresentative, hasVisa }) => ({
+            ageGroup,
+            fullName,
+            dateOfBirth: {
+              ...dateOfBirth
+            },
+            sex,
+            nationality,
+            email,
+            phoneNumber,
+            passport: passport ?? '',
+            isRepresentative,
+            hasVisa: hasVisa ?? false
+          })
+        )
 
       const bookingRequest: TripBookingRequestType = {
         tripId: bookingData.tripID ?? 0,
@@ -73,7 +90,9 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
 
       try {
         const tripBookingId = await bookTrip(bookingRequest)
-        navigation.navigate('Payment', { tripBookingID: tripBookingId ?? 0 })
+        setTimeout(() => {
+          navigation.navigate('Payment', { tripBookingID: tripBookingId ?? 0 })
+        }, 2000)
       } catch (err) {
         Alert.alert('Booking Failed', 'Something went wrong. Please try again.')
       }
