@@ -2,11 +2,11 @@ import React from 'react'
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { Star, MapPin, Clock } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
-import { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { FarmType } from '@apps/customer/types/Farm/farm.type'
+import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
 
-type NavigationProp = StackNavigationProp<CustomerStackParamList, 'FarmDetail'>
+type NavigationProp = StackNavigationProp<CustomerHomeStackParamList, 'FarmDetail'>
 
 const FarmCard: React.FC<{ farm: FarmType }> = ({ farm }) => {
   const navigation = useNavigation<NavigationProp>()

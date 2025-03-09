@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 
-export type CustomerStackParamList = {
+export type CustomerHomeStackParamList = {
   Home: undefined
   Booking: undefined
   Farms: undefined
@@ -13,4 +13,9 @@ export type CustomerStackParamList = {
   Payment: { tripBookingID: number }
 }
 
-export type CustomerStackNavigationProp = StackNavigationProp<CustomerStackParamList>
+export type CustomerTripsStackParamList = {
+  Trips: undefined
+}
+
+export type CustomerHomeStackNavigationProp = StackNavigationProp<CustomerHomeStackParamList>
+export type CustomerTripsStackNavigationProp = StackNavigationProp<CustomerTripsStackParamList>

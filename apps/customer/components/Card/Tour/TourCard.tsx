@@ -2,8 +2,8 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { Clock, MapPin, Building } from 'lucide-react-native'
 import { TourCardType } from '../../../types/Tour/tourCard.type'
 import type { StackNavigationProp } from '@react-navigation/stack'
-import type { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import { useNavigation } from '@react-navigation/native'
+import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
 
 type TourCardProps = TourCardType
 
@@ -18,7 +18,7 @@ export default function TourCard({
   nights,
   totalFarmVisit
 }: TourCardProps) {
-  const navigation = useNavigation<StackNavigationProp<CustomerStackParamList, 'ScheduledTourDetail'>>()
+  const navigation = useNavigation<StackNavigationProp<CustomerHomeStackParamList, 'ScheduledTourDetail'>>()
 
   return (
     <TouchableOpacity

@@ -4,16 +4,19 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
 import { useTripById } from '@apps/customer/hooks/useTrip'
 import { useNavigation } from '@react-navigation/native'
-import { CustomerStackNavigationProp, CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
+import {
+  CustomerHomeStackNavigationProp,
+  CustomerHomeStackParamList
+} from '@apps/customer/types/navigationCustomerType'
 import { useTripBooking } from '@apps/customer/hooks/useTripBooking'
 import { TripBookingRequestType } from '@apps/customer/types/Booking/tripBooking.type'
 
 interface TotalPriceProps {
-  navigationLocation: keyof CustomerStackParamList
+  navigationLocation: keyof CustomerHomeStackParamList
 }
 
 const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
-  const navigation = useNavigation<CustomerStackNavigationProp>()
+  const navigation = useNavigation<CustomerHomeStackNavigationProp>()
   const { bookingData } = useBooking()
   const { trip } = useTripById(bookingData.tripID ?? 0)
   const { bookTrip } = useTripBooking()

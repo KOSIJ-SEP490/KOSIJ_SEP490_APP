@@ -1,7 +1,6 @@
 import React from 'react'
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import MainLayout from '@apps/customer/layouts/MainLayout'
 import { useFarmById } from '@apps/customer/hooks/useFarm'
 import { Star } from 'lucide-react-native'
@@ -11,8 +10,9 @@ import { useKoiVarietyListByFarmId } from '@apps/customer/hooks/useKoi'
 import { useFeedbackByFarmId } from '@apps/customer/hooks/useFeedback'
 import FeedbackCard from '@apps/customer/components/Card/FeedBackCard'
 import KoiCard from '@apps/customer/components/Card/Koi/KoiCard'
+import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
 
-type FarmDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'FarmDetail'>
+type FarmDetailScreenRouteProp = RouteProp<CustomerHomeStackParamList, 'FarmDetail'>
 
 export default function FarmDetailScreen() {
   const route = useRoute<FarmDetailScreenRouteProp>()
@@ -20,8 +20,6 @@ export default function FarmDetailScreen() {
   const { farm, error } = useFarmById(farmID)
   const { koiVariety } = useKoiVarietyListByFarmId(farmID)
   const { feedbacks } = useFeedbackByFarmId(farmID)
-
-  console.log('Feedback: ', feedbacks)
 
   if (!farm) {
     return (

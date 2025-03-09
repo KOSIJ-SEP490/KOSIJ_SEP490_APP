@@ -1,20 +1,20 @@
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
 import HomeScreen from '../screens/navbar/HomeScreen'
-import { CustomerStackParamList } from '../types/navigationCustomerType'
-import BookingScreen from '../screens/booking/BookingScreen'
-import KoisScreen from '../screens/kois/KoisScreen'
-import ScheduledTourDetailScreen from '../screens/booking/ScheduledTourDetailScreen'
-import FarmsScreen from '../screens/farms/FarmsScreen'
-import FarmDetailScreen from '../screens/farms/FarmDetailScreen'
-import TripDetailScreen from '../screens/booking/TripDetailScreen'
-import CustomerInformationScreen from '../screens/booking/CustomerInformationScreen'
-import RecheckBookingScreen from '../screens/booking/RecheckBookingScreen'
-import PaymentScreen from '../screens/booking/PaymentScreen'
+import BookingScreen from '../screens/Home/booking/BookingScreen'
+import KoisScreen from '../screens/Home/kois/KoisScreen'
+import ScheduledTourDetailScreen from '../screens/Home/booking/ScheduledTourDetailScreen'
+import FarmsScreen from '../screens/Home/farms/FarmsScreen'
+import FarmDetailScreen from '../screens/Home/farms/FarmDetailScreen'
+import TripDetailScreen from '../screens/Home/booking/TripDetailScreen'
+import CustomerInformationScreen from '../screens/Home/booking/CustomerInformationScreen'
+import RecheckBookingScreen from '../screens/Home/booking/RecheckBookingScreen'
+import PaymentScreen from '../screens/Home/booking/PaymentScreen'
+import { CustomerHomeStackParamList } from '../types/navigationCustomerType'
 
-const Stack = createStackNavigator<CustomerStackParamList>()
+const Stack = createStackNavigator<CustomerHomeStackParamList>()
 
-export default function CustomerStackNavigator() {
+export default function CustomerHomeStackNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='Home' component={HomeScreen} />
