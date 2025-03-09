@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import MainLayout from '@apps/customer/layouts/MainLayout'
 import type { StackNavigationProp } from '@react-navigation/stack'
-import type { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import type { RouteProp } from '@react-navigation/native'
 import TourCard from '@apps/customer/components/Card/Tour/TourCard'
 import Divider from '@apps/customer/components/Divider'
@@ -13,16 +12,17 @@ import { useAllFarms } from '@apps/customer/hooks/useFarm'
 import { useAllFeedbacks } from '@apps/customer/hooks/useFeedback'
 import FeedbackCard from '@apps/customer/components/Card/FeedBackCard'
 import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
+import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
 
 type HomeScreenProps = {
-  navigation: StackNavigationProp<CustomerStackParamList, 'Home'>
-  route: RouteProp<CustomerStackParamList, 'Home'>
+  navigation: StackNavigationProp<CustomerHomeStackParamList, 'Home'>
+  route: RouteProp<CustomerHomeStackParamList, 'Home'>
 }
 
 type MenuItem = {
   name: string
   icon: string
-  screen: keyof CustomerStackParamList
+  screen: keyof CustomerHomeStackParamList
   iconType: 'ionicons' | 'material'
 }
 

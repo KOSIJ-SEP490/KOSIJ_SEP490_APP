@@ -1,4 +1,7 @@
-import { CustomerStackNavigationProp, CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
+import {
+  CustomerHomeStackNavigationProp,
+  CustomerHomeStackParamList
+} from '@apps/customer/types/navigationCustomerType'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { View, Text, Modal, TouchableOpacity } from 'react-native'
@@ -14,7 +17,7 @@ interface PaymentSuccessModalProps {
   totalAmount?: number
   depositAmount?: number
   remainingAmount?: number
-  navigationLocation: keyof CustomerStackParamList
+  navigationLocation: keyof CustomerHomeStackParamList
 }
 
 const PaymentSuccessModal = ({
@@ -28,7 +31,7 @@ const PaymentSuccessModal = ({
   depositAmount = 0,
   remainingAmount = 0
 }: PaymentSuccessModalProps) => {
-  const navigation = useNavigation<CustomerStackNavigationProp>()
+  const navigation = useNavigation<CustomerHomeStackNavigationProp>()
   return (
     <Modal animationType='fade' transparent={true} visible={visible} onRequestClose={onClose}>
       <View className='flex-1 justify-center items-center bg-black/50'>

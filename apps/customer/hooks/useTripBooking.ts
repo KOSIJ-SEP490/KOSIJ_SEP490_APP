@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import axios from 'axios'
 import { API_BASE_URL } from '@env'
 import { TripBookingDetailType } from '../types/Booking/tripBookingDetail.type'
-import { TripBookingRequestType } from '../types/Booking/tripBooking.type'
+import { TripBookingRequestType, TripBookingType } from '../types/Booking/tripBooking.type'
 import AuthContext from '@shared/context/AuthContext'
 import { TripBookingCheckInType } from '../types/Booking/tripBookingCheckIn.type'
 import { TripCheckOutType } from '../types/Booking/tripCheckout.type'
@@ -175,4 +175,35 @@ export function useTripBookingCheckoutPayment() {
   }
 
   return { checkoutTrip, checkoutData, isLoading, error }
+}
+
+export function useTripBookingByAll() {
+  const [tripBookings, setTrip] = useState<TripBookingType[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+
+  const userToken = authContext?.user?.token
+
+  useEffect(() => {
+    const fetchTrip = async () => {
+      try {
+        const response = await axios.get<{ message: string; value: TripBookingType[] }>(
+          `${API_BASE_URL}customer/trip-bookings`,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`
+            }
+          }
+        )
+        setTrip(response.data.value)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.response?.data?.detail || 'Failed to fetch the trip.')
+      }
+    }
+
+    fetchTrip()
+  }, [userToken])
+
+  return { tripBookings, error }
 }

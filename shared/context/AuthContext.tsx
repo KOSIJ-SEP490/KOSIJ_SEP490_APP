@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const decoded: DecodedToken = jwtDecode(token)
         const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
         const role = (decoded[roleClaim] as 'Customer' | 'ConsultingStaff' | 'DeliveryStaff') || 'Customer'
-        const expiresAt = decoded.exp * 1000
+        const expiresAt = decoded.exp * 10000
 
         const userData = { email, token, role, expiresAt }
 
