@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { useRoute, RouteProp } from '@react-navigation/native'
-import { CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import SubLayout from '@apps/customer/layouts/SubLayout'
 import { useTourById } from '@apps/customer/hooks/useTour'
 import ChooseDate from '@apps/customer/components/Booking/ChooseDate'
@@ -10,8 +9,9 @@ import TripInfoCard from '@apps/customer/components/Card/Trip/TripInfoCard'
 import NumberOfCustomer from '@apps/customer/components/Booking/NumberOfCustomer'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
 import TotalPrice from '@apps/customer/components/Booking/TotalPrice'
+import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
 
-type TripDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'TripDetail'>
+type TripDetailScreenRouteProp = RouteProp<CustomerHomeStackParamList, 'TripDetail'>
 
 export default function TripDetailScreen() {
   const route = useRoute<TripDetailScreenRouteProp>()

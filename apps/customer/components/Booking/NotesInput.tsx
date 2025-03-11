@@ -12,10 +12,10 @@ const NotesInput: React.FC = () => {
   return (
     <View className='mt-5 px-6 mb-14'>
       <Text className='text-base font-semibold'>
-        Notes <Text className='text-gray-500 text-base font-normal'>(If you have any notes, please let us know)</Text>
+        Notes <Text className='text-gray-500 text-sm font-normal'>(If you have any notes, please let us know)</Text>
       </Text>
       <TextInput
-        className='border border-gray-300 rounded-lg p-3 mt-5 min-h-[100px] text-base'
+        className='border border-gray-300 rounded-lg p-3 mt-5 min-h-[100px] text-sm'
         multiline
         numberOfLines={5}
         placeholder='Enter your notes here...'

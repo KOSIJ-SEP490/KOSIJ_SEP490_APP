@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { View, Text, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native'
 import { MaterialIcons } from '@expo/vector-icons'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
 import { useTripById } from '@apps/customer/hooks/useTrip'
@@ -17,7 +17,7 @@ interface TotalPriceProps {
 
 const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
   const navigation = useNavigation<CustomerHomeStackNavigationProp>()
-  const { bookingData } = useBooking()
+  const { bookingData, resetBookingData } = useBooking()
   const { trip } = useTripById(bookingData.tripID ?? 0)
   const { bookTrip } = useTripBooking()
 
@@ -25,16 +25,13 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
   const { adult, child, infant } = bookingData.numberOfCustomers
 
   const [isDetailVisible, setIsDetailVisible] = useState(false)
+  const [isBooking, setIsBooking] = useState(false)
 
   const handleToggleDetails = () => setIsDetailVisible((prev) => !prev)
 
   const isBookingDisabled = useMemo(
-    () =>
-      trip?.availableSlot === '00/30' ||
-      trip?.availableSlot === '0/30' ||
-      totalPrice === 0 ||
-      (trip?.daysRemaining ?? 0) < 0,
-    [trip?.availableSlot, trip?.daysRemaining, totalPrice]
+    () => trip?.availableSlot.startsWith('0/') || totalPrice === 0 || (trip?.daysRemaining ?? 0) < 0 || isBooking,
+    [trip?.availableSlot, trip?.daysRemaining, totalPrice, isBooking]
   )
 
   const handleBooking = async () => {
@@ -63,6 +60,8 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
     }
 
     if (navigationLocation === 'Payment') {
+      setIsBooking(true)
+
       const mapPassengers = (group: typeof bookingData.customerDetails.adult, ageGroup: string) =>
         group.map(
           ({ fullName, dateOfBirth, sex, nationality, email, phoneNumber, passport, isRepresentative, hasVisa }) => ({
@@ -94,9 +93,12 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
       try {
         const tripBookingId = await bookTrip(bookingRequest)
         setTimeout(() => {
+          resetBookingData()
+          setIsBooking(false)
           navigation.navigate('Payment', { tripBookingID: tripBookingId ?? 0 })
-        }, 2000)
+        }, 1000)
       } catch (err) {
+        setIsBooking(false)
         Alert.alert('Booking Failed', 'Something went wrong. Please try again.')
       }
       return
@@ -150,9 +152,13 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
         className={`rounded-lg py-3 mt-4 ${isBookingDisabled ? 'bg-gray-400' : 'bg-white'}`}
         accessibilityState={{ disabled: isBookingDisabled }}
       >
-        <Text className={`text-center font-semibold text-base ${isBookingDisabled ? 'text-white' : 'text-blue'}`}>
-          Book Now
-        </Text>
+        {isBooking ? (
+          <ActivityIndicator size='small' color='#0000ff' />
+        ) : (
+          <Text className={`text-center font-semibold text-base ${isBookingDisabled ? 'text-white' : 'text-blue'}`}>
+            {navigationLocation === 'Payment' && isBooking ? 'Booking...' : 'Book Now'}
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   )

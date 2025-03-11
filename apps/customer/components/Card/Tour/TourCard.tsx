@@ -4,6 +4,7 @@ import { TourCardType } from '../../../types/Tour/tourCard.type'
 import type { StackNavigationProp } from '@react-navigation/stack'
 import { useNavigation } from '@react-navigation/native'
 import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
+import { useBooking } from '@apps/customer/contexts/BookingContext'
 
 type TourCardProps = TourCardType
 
@@ -19,11 +20,15 @@ export default function TourCard({
   totalFarmVisit
 }: TourCardProps) {
   const navigation = useNavigation<StackNavigationProp<CustomerHomeStackParamList, 'ScheduledTourDetail'>>()
+  const { resetBookingData } = useBooking()
 
   return (
     <TouchableOpacity
       className='w-80 overflow-hidden rounded-lg bg-white border border-gray-200 shadow-lg shadow-gray-700'
-      onPress={() => navigation.navigate('ScheduledTourDetail', { tourID: id })}
+      onPress={() => {
+        resetBookingData()
+        navigation.navigate('ScheduledTourDetail', { tourID: id })
+      }}
     >
       <Image source={{ uri: imageUrl }} className='w-full h-40' resizeMode='cover' />
 

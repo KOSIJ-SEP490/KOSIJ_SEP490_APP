@@ -2,7 +2,6 @@ import React from 'react'
 import { View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import { useTourById } from '@apps/customer/hooks/useTour'
-import { CustomerStackNavigationProp, CustomerStackParamList } from '@apps/customer/types/navigationCustomerType'
 import MainLayout from '@apps/customer/layouts/MainLayout'
 import TourDetailCard from '@apps/customer/components/Card/Tour/TourDetailCard'
 import { TourPrice } from '@apps/customer/types/Tour/tour.type'
@@ -12,12 +11,16 @@ import TourPolicyCard from '@apps/customer/components/Card/Tour/TourPolicyCard'
 import { useFarmsByTour } from '@apps/customer/hooks/useFarm'
 import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
+import {
+  CustomerHomeStackNavigationProp,
+  CustomerHomeStackParamList
+} from '@apps/customer/types/navigationCustomerType'
 
-type ScheduledTourDetailScreenRouteProp = RouteProp<CustomerStackParamList, 'ScheduledTourDetail'>
+type ScheduledTourDetailScreenRouteProp = RouteProp<CustomerHomeStackParamList, 'ScheduledTourDetail'>
 
 export default function ScheduledTourDetailScreen() {
   const route = useRoute<ScheduledTourDetailScreenRouteProp>()
-  const navigation = useNavigation<CustomerStackNavigationProp>()
+  const navigation = useNavigation<CustomerHomeStackNavigationProp>()
   const { tourID } = route.params
   const { tour, error } = useTourById(tourID)
   const { setBookingData } = useBooking()
