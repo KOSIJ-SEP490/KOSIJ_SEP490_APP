@@ -11,6 +11,8 @@ export type CustomerHomeStackParamList = {
   CustomerInformation: undefined
   RecheckBooking: undefined
   Payment: { tripBookingID: number }
+  KoiVarietySelection: undefined
+  TravelInformation: undefined
 }
 
 export type CustomerTripsStackParamList = {

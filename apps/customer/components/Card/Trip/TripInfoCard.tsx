@@ -8,7 +8,7 @@ interface TripInfoCardProps {
 }
 
 const TripInfoCard: React.FC<TripInfoCardProps> = ({ trip }) => {
-  const isSlotFull = trip.availableSlot === '0/30' || trip?.availableSlot === '0/30' || trip.daysRemaining <= 0
+  const isSlotFull = trip.availableSlot?.startsWith('0/') || trip.daysRemaining <= 0
   const displayedDaysRemaining = trip.daysRemaining <= 0 ? 0 : trip.daysRemaining
 
   return (
