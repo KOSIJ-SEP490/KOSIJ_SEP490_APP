@@ -1,8 +1,10 @@
 import NotesInput from '@apps/customer/components/Booking/NotesInput'
+import SubmitBtn from '@apps/customer/components/Booking/SubmitBtn'
 import TravelInfoCard from '@apps/customer/components/Booking/TravelInforCard'
 import Divider from '@apps/customer/components/Divider'
 import SubLayout from '@apps/customer/layouts/SubLayout'
-import { TouchableOpacity, View, Text } from 'react-native'
+import React from 'react'
+import { View } from 'react-native'
 
 export default function TravelInformationScreen() {
   return (
@@ -10,11 +12,9 @@ export default function TravelInformationScreen() {
       <View className='flex-1 py-4'>
         <TravelInfoCard />
         <Divider />
-        <NotesInput />
-        <View className='mx-5'>
-          <TouchableOpacity className='bg-blue py-3 mb-7 rounded-lg items-center mt-4 w-full shadow-md'>
-            <Text className='text-white text-lg font-semibold'>Submit Request</Text>
-          </TouchableOpacity>
+        <NotesInput source='bookingRequest' />
+        <View className='mx-5 mt-4'>
+          <SubmitBtn title='Submit Request' />
         </View>
       </View>
     </SubLayout>

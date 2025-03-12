@@ -19,16 +19,11 @@ export default function CreateTripCard() {
 
           <View className='flex-row'>
             <Text className='text-base'>2. </Text>
-            <Text className='text-base'>Select your favorite Koi Farmings to visit</Text>
-          </View>
-
-          <View className='flex-row'>
-            <Text className='text-base'>3. </Text>
             <Text className='text-base'>Fill your travel Information</Text>
           </View>
 
           <View className='flex-row'>
-            <Text className='text-base'>4. </Text>
+            <Text className='text-base'>3. </Text>
             <Text className='text-base flex-1'>
               You will have to wait for our Sales Staff and Manager to check and approve your Customized Tour before get
               ready
