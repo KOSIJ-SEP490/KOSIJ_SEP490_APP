@@ -1,4 +1,5 @@
 import { useBooking } from '@apps/customer/contexts/BookingContext'
+import { useAccount } from '@apps/customer/hooks/useAccount'
 import type React from 'react'
 import { useState } from 'react'
 import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native'
@@ -133,13 +134,15 @@ const DatePicker = ({
 const TravelInfoCard: React.FC = () => {
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [startDate, setStartDate] = useState<Date | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [budget, setBudget] = useState('')
   const [formattedBudget, setFormattedBudget] = useState('')
   const [nights, setNights] = useState('')
   const [customers, setCustomers] = useState(0)
   const [departurePoint, setDeparturePoint] = useState('')
   const [showDepartureOptions, setShowDepartureOptions] = useState(false)
-  const { bookingRequest, setBookingRequest } = useBooking()
+  const { setBookingRequest } = useBooking()
+  const { account } = useAccount()
 
   const departureOptions = ['Ha Noi (Noi Bai Airport)', 'Ho Chi Minh (Tan Son Nhat Airport)']
 
@@ -166,24 +169,64 @@ const TravelInfoCard: React.FC = () => {
   }
 
   const handleBudgetChange = (text: string) => {
-    const formatted = formatNumber(text)
+    const numericValue = text.replace(/[^0-9]/g, '')
+    const formatted = formatNumber(numericValue)
+
     setFormattedBudget(formatted)
-    setBudget(text.replace(/[^0-9]/g, ''))
+    setBudget(numericValue)
+
+    setBookingRequest((prev) => ({
+      ...prev,
+      affordableBudget: Number(numericValue)
+    }))
   }
 
   const handleCustomerChange = (increment: boolean) => {
     const newValue = increment ? customers + 1 : Math.max(1, customers - 1)
     setCustomers(newValue)
+
+    setBookingRequest((prev) => ({
+      ...prev,
+      numberOfPassengers: newValue
+    }))
   }
 
   const handleSelectDate = (date: Date) => {
     setStartDate(date)
     setShowDatePicker(false)
+
+    setBookingRequest((prev) => ({
+      ...prev,
+      departureDate: date.toISOString()
+    }))
+  }
+
+  const handleNightsChange = (text: string) => {
+    const numericValue = text.replace(/[^0-9]/g, '')
+    console.log(numericValue)
+    setNights(numericValue)
+
+    setBookingRequest((prev) => ({
+      ...prev,
+      nights: numericValue ? Number(numericValue) : 0
+    }))
   }
 
   const handleSelectDeparturePoint = (option: string) => {
     setDeparturePoint(option)
     setShowDepartureOptions(false)
+
+    setBookingRequest((prev) => ({
+      ...prev,
+      departurePoint: option
+    }))
+
+    setBookingRequest((prev) => ({
+      ...prev,
+      nameContact: account?.fullName ?? prev.nameContact,
+      phoneContact: account?.phoneNumber ?? prev.phoneContact,
+      emailContact: account?.email ?? prev.emailContact
+    }))
   }
 
   return (
@@ -218,7 +261,7 @@ const TravelInfoCard: React.FC = () => {
             value={nights}
             placeholder='0'
             keyboardType='numeric'
-            onChangeText={(text) => setNights(text.replace(/[^0-9]/g, ''))}
+            onChangeText={handleNightsChange}
           />
         </View>
       </View>

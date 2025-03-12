@@ -18,7 +18,7 @@ export default function CustomerInformationScreen() {
       <View className='flex-1 mt-5'>
         <CustomerInfo />
         <Divider />
-        <NotesInput />
+        <NotesInput source='bookingData' />
 
         <View className={`mt-5 ${totalCustomers <= 2 ? 'flex-1 justify-end' : ''}`}>
           <TotalPrice navigationLocation='RecheckBooking' />

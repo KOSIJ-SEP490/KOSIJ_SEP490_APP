@@ -2,12 +2,18 @@ import { useBooking } from '@apps/customer/contexts/BookingContext'
 import React from 'react'
 import { View, Text, TextInput } from 'react-native'
 
-const NotesInput: React.FC = () => {
-  const { bookingData, setBookingData } = useBooking()
+interface NotesInputProps {
+  source: 'bookingData' | 'bookingRequest'
+}
 
-  const handleChange = (text: string) => {
-    setBookingData((prev) => ({ ...prev, notes: text }))
-  }
+const NotesInput: React.FC<NotesInputProps> = ({ source }) => {
+  const { bookingData, setBookingData, bookingRequest, setBookingRequest } = useBooking()
+
+  const value = source === 'bookingData' ? bookingData.notes : bookingRequest.note
+  const setValue =
+    source === 'bookingData'
+      ? (text: string) => setBookingData((prev) => ({ ...prev, notes: text }))
+      : (text: string) => setBookingRequest((prev) => ({ ...prev, note: text }))
 
   return (
     <View className='mt-5 px-6 mb-14'>
@@ -19,8 +25,8 @@ const NotesInput: React.FC = () => {
         multiline
         numberOfLines={5}
         placeholder='Enter your notes here...'
-        value={bookingData.notes}
-        onChangeText={handleChange}
+        value={value}
+        onChangeText={setValue}
       />
     </View>
   )
