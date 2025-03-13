@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { ReactNode } from 'react'
 import { View, ActivityIndicator } from 'react-native'
 import AuthNavigator from '../../shared/navigation/AuthNavigator'
 import { NavigationContainer } from '@react-navigation/native'
@@ -15,15 +15,21 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <NavigationContainer>
-          <ConsultingNavigator />
-          <Toast />
+          <MainNavigator>
+            <ConsultingNavigator />
+            <Toast />
+          </MainNavigator>
         </NavigationContainer>
       </AuthProvider>
     </QueryClientProvider>
   )
 }
 
-const MainNavigator = () => {
+interface MainNavigatorProps {
+  children: ReactNode
+}
+
+const MainNavigator: React.FC<MainNavigatorProps> = ({ children }) => {
   const authContext = React.useContext(AuthContext)
   console.log('AuthContext:', authContext)
 
