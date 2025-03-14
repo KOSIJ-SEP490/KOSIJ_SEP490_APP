@@ -10,6 +10,7 @@ import TourDetailsScreen from '@apps/consulting/components/TourDetails'
 import CollectTicket from '@apps/consulting/components/CollectTicket'
 import CheckOutTrip from '@apps/consulting/components/CheckOutTrip'
 import OrderDetailsScreen from '@apps/consulting/components/OrderDetails'
+import CreateOrder from '@apps/consulting/components/CreateOrder'
 
 type RootStackParamList = {
   MainTabs: undefined
@@ -28,6 +29,7 @@ export default function ConsultingNavigator() {
       <Stack.Screen name='CollectTicket' component={CollectTicket} />
       <Stack.Screen name='CheckOutTrip' component={CheckOutTrip} />
       <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
+      <Stack.Screen name='CreateOrder' component={CreateOrder} />
     </Stack.Navigator>
   )
 }

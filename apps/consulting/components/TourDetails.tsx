@@ -15,6 +15,7 @@ type RootStackParamList = {
   TourDetails: { id: number }
   CollectTicket: { ticketImage: string; tripId: number }
   CheckOutTrip: { ticketImage: string; tripId: number }
+  CreateOrder: { id: number }
 }
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'TourDetails'>
@@ -214,22 +215,6 @@ export default function TourDetailsScreen() {
           ))}
         </View>
         <View className='mt-10 ml-5 w-80'>
-          {/* Bottom Button */}
-          {/* {tourDetails?.value?.tripStatus !== 'Completed' && (
-            <TouchableOpacity
-              style={{ backgroundColor: '#264eca' }}
-              className='p-3 rounded-md bottom-4 right-4'
-              onPress={() => {
-                if (getButtonText() === 'Start Trip') {
-                  navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })
-                } else {
-                  navigation.navigate('CheckOutTrip', { ticketImage: apiImageUrl, tripId: id })
-                }
-              }}
-            >
-              <Text className='text-white text-center'>{getButtonText()}</Text>
-            </TouchableOpacity>
-          )} */}
           <View>
             {getButtonText() === 'Trip Completion' ? (
               <View className='flex-row gap-2'>
@@ -251,7 +236,7 @@ export default function TourDetailsScreen() {
                 {/* Create Order */}
                 <TouchableOpacity
                   className='flex-2 p-3 rounded-lg items-center bottom-4 right-4'
-                  onPress={() => console.log('Create Order Pressed')}
+                  onPress={() => navigation.navigate('CreateOrder', { id: id })}
                   style={{ borderColor: '#264eca', borderWidth: 1 }}
                 >
                   <Text className='font-semibold' style={{ color: '#264eca' }}>
