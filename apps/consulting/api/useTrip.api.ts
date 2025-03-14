@@ -1,5 +1,8 @@
+import { useContext } from 'react'
+import AuthContext from '@shared/context/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { API_BASE_URL } from '@env'
 
 export type Trip = {
   id: number
@@ -12,23 +15,25 @@ export type Trip = {
   tripStatus: string
 }
 
-const fetchTrips = async (): Promise<Trip[]> => {
-  const { data } = await axios.get<{ message: string; value: Trip[] }>(
-    'https://kosij.azurewebsites.net/api/staff/trips',
-    {
-      headers: {
-        Accept: 'text/plain',
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA'
-      }
+const fetchTrips = async (token: string): Promise<Trip[]> => {
+  const { data } = await axios.get<{ message: string; value: Trip[] }>(`${API_BASE_URL}staff/trips`, {
+    headers: {
+      Accept: 'text/plain',
+      Authorization: `Bearer ${token}`
     }
-  )
+  })
   return data.value
 }
 
 export const useTrips = () => {
+  const authContext = useContext(AuthContext)
+
+  if (!authContext || !authContext.user) {
+    throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
+  }
+
   return useQuery<Trip[]>({
     queryKey: ['trips'],
-    queryFn: fetchTrips
+    queryFn: () => fetchTrips(authContext.user!.token)
   })
 }

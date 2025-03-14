@@ -2,10 +2,12 @@ import { StackScreenProps } from '@react-navigation/stack'
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
 import { ChevronLeft, ArrowRight, UploadCloud, CheckCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Steps from './Steps.container'
 import axios from 'axios'
 import { Checkbox } from 'react-native-paper'
+import AuthContext from '@shared/context/AuthContext'
+import { API_BASE_URL } from '@env'
 
 type RootStackParamList = {
   CollectTicket: { ticketImage: string; tripId: number }
@@ -37,15 +39,21 @@ const CheckOutTrip = ({ route }: Props) => {
   }
 
   const [ticketUrl, setTicketUrl] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
 
+  if (!authContext || !authContext.user) {
+    throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
+  }
+
+  const { user } = authContext
   useEffect(() => {
     const fetchTicket = async () => {
       try {
         const response = await axios.get<{ value: Ticket[] }>(
-          `https://kosij.azurewebsites.net/api/trip/${tripId}/airplane-tickets?ticketType=Inbound`,
+          `${API_BASE_URL}trip/${tripId}/airplane-tickets?ticketType=Inbound`,
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMTA1MzIzfQ.twjI4X8nXLIYao2sfsAhzYgNZWIgl_80q4dwhvZHcNM`,
+              Authorization: `Bearer ${user.token}`,
               Accept: 'application/json'
             }
           }
@@ -68,15 +76,12 @@ const CheckOutTrip = ({ route }: Props) => {
   useEffect(() => {
     const fetchPassengers = async () => {
       try {
-        const response = await axios.get<{ value: Passenger[] }>(
-          `https://kosij.azurewebsites.net/api/trip/${tripId}/passengers`,
-          {
-            headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
-              Accept: 'application/json'
-            }
+        const response = await axios.get<{ value: Passenger[] }>(`${API_BASE_URL}trip/${tripId}/passengers`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            Accept: 'application/json'
           }
-        )
+        })
 
         setPassengers(response.data.value)
       } catch (error) {
@@ -100,11 +105,11 @@ const CheckOutTrip = ({ route }: Props) => {
 
     try {
       const response = await axios.put<{ value: string }>(
-        `https://kosij.azurewebsites.net/api/trip/${tripId}/passengers/check-out`,
+        `${API_BASE_URL}trip/${tripId}/passengers/check-out`,
         { checkOutPassengersRequest: selectedPassengers },
         {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
+            Authorization: `Bearer ${user.token}`,
             'Content-Type': 'application/json'
           }
         }

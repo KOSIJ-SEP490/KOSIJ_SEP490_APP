@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { ChevronLeft } from 'lucide-react-native'
 import axios from 'axios'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
+import AuthContext from '@shared/context/AuthContext'
+import { API_BASE_URL } from '@env'
 
 type TourDetailsScreenProps = {
   id: number
@@ -25,12 +27,19 @@ export default function TourDetailsScreen() {
   const [loading, setLoading] = useState(true)
   const [participantList, setParticipantList] = useState<any>(null)
   const apiImageUrl = 'https://example.com/ticket.jpg'
+  const authContext = useContext(AuthContext)
+
+  if (!authContext || !authContext.user) {
+    throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
+  }
+
+  const { user } = authContext
   useEffect(() => {
     const fetchTourDetails = async () => {
       try {
-        const response = await axios.get(`https://kosij.azurewebsites.net/api/staff/trip/${id}`, {
+        const response = await axios.get(`${API_BASE_URL}staff/trip/${id}`, {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
+            Authorization: `Bearer ${user.token}`,
             Accept: 'text/plain'
           }
         })
@@ -48,9 +57,9 @@ export default function TourDetailsScreen() {
   useEffect(() => {
     const fetchTourParticipantsList = async () => {
       try {
-        const response = await axios.get(`https://kosij.azurewebsites.net/api/trip/${id}/passengers`, {
+        const response = await axios.get(`${API_BASE_URL}trip/${id}/passengers`, {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQ5Nzg2OTkxfQ.3og4fBtcZS-F3uIsxz5EAZww6WkvM5aZ9dzwjnQ8prA`,
+            Authorization: `Bearer ${user.token}`,
             Accept: 'text/plain'
           }
         })
@@ -206,7 +215,7 @@ export default function TourDetailsScreen() {
         </View>
         <View className='mt-10 ml-5 w-80'>
           {/* Bottom Button */}
-          {tourDetails?.value?.tripStatus !== 'Completed' && (
+          {/* {tourDetails?.value?.tripStatus !== 'Completed' && (
             <TouchableOpacity
               style={{ backgroundColor: '#264eca' }}
               className='p-3 rounded-md bottom-4 right-4'
@@ -220,41 +229,53 @@ export default function TourDetailsScreen() {
             >
               <Text className='text-white text-center'>{getButtonText()}</Text>
             </TouchableOpacity>
-          )}
+          )} */}
+          <View>
+            {getButtonText() === 'Trip Completion' ? (
+              <View className='flex-row gap-2'>
+                {/* Trip Completion */}
+                <TouchableOpacity
+                  style={{ backgroundColor: '#264eca' }}
+                  className='flex-1 p-3 rounded-lg items-center bottom-4 right-4'
+                  onPress={() => {
+                    if (getButtonText() === 'Start Trip') {
+                      navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })
+                    } else {
+                      navigation.navigate('CheckOutTrip', { ticketImage: apiImageUrl, tripId: id })
+                    }
+                  }}
+                >
+                  <Text className='text-white font-semibold'>Trip Completion</Text>
+                </TouchableOpacity>
+
+                {/* Create Order */}
+                <TouchableOpacity
+                  className='flex-2 p-3 rounded-lg items-center bottom-4 right-4'
+                  onPress={() => console.log('Create Order Pressed')}
+                  style={{ borderColor: '#264eca', borderWidth: 1 }}
+                >
+                  <Text className='font-semibold' style={{ color: '#264eca' }}>
+                    Create Order
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                className='bg-blue-500 p-3 rounded-lg items-center mt-2 bottom-4 right-4'
+                onPress={() => {
+                  if (getButtonText() === 'Start Trip') {
+                    navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })
+                  } else {
+                    navigation.navigate('CheckOutTrip', { ticketImage: apiImageUrl, tripId: id })
+                  }
+                }}
+              >
+                <Text className='text-white font-semibold'>{getButtonText()}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
     </ScrollView>
   )
 }
-
-// const styles = StyleSheet.create({
-//   card: {
-//     backgroundColor: '#fff',
-//     borderRadius: 10,
-//     padding: 16,
-//     marginTop: 10,
-//     marginBottom: 10,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//     elevation: 5 // Android shadow
-//   },
-//   image: {
-//     width: '100%',
-//     height: 150,
-//     borderRadius: 10
-//   },
-//   cardContent: {
-//     paddingVertical: 10
-//   },
-//   title: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     marginBottom: 5
-//   },
-//   description: {
-//     fontSize: 14,
-//     color: 'gray'
-//   }
-// })

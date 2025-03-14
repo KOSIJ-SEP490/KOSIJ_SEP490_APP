@@ -66,7 +66,7 @@
 //     </View>
 //   )
 // }
-import { fetchOrders } from '@apps/consulting/api/useOrder.api'
+import { useOrders } from '@apps/consulting/api/useOrder.api'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
@@ -74,7 +74,7 @@ import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator } 
 
 type RootStackParamList = {
   Orders: undefined
-  OrderDetails: undefined
+  OrderDetails: { orderId: number }
 }
 
 type OrdersScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Orders'>
@@ -83,7 +83,7 @@ export default function OrdersScreen() {
   const navigation = useNavigation<OrdersScreenNavigationProp>()
   const [orders, setOrders] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-
+  const { fetchOrders } = useOrders()
   useEffect(() => {
     const getOrders = async () => {
       try {
@@ -126,7 +126,7 @@ export default function OrdersScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
-            onPress={() => navigation.navigate('OrderDetails')}
+            onPress={() => navigation.navigate('OrderDetails', { orderId: item.orderId })}
           >
             {/* Icon */}
             <View className='mr-3'>
