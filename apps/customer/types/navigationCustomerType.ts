@@ -13,6 +13,7 @@ export type CustomerHomeStackParamList = {
   Payment: { tripBookingID: number }
   KoiVarietySelection: undefined
   TravelInformation: undefined
+  OrderDetails: undefined
 }
 
 export type CustomerTripsStackParamList = {

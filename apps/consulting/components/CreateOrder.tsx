@@ -1,27 +1,64 @@
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { StackScreenProps } from '@react-navigation/stack'
 import { ArrowRight, CheckCircle, ChevronLeft } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
+import { Key, useContext, useEffect, useState } from 'react'
 import { TouchableOpacity, View, Text, ScrollView, Image, TextInput } from 'react-native'
 import Steps from './Steps.container'
 import * as ImagePicker from 'expo-image-picker'
 import { Picker } from '@react-native-picker/picker'
 import { District, fetchCities, fetchDistricts, fetchWards, Location, Ward } from '../api/useAddress.api'
+import AuthContext from '@shared/context/AuthContext'
+import { API_BASE_URL } from '@env'
+import axios from 'axios'
 
+type CreateOrderScreenProps = {
+  id: number
+}
 type RootStackParamList = {
   TourDetails: { id: number }
 }
 
 const CreateOrder = () => {
+  const route = useRoute()
+  const { id } = route.params as CreateOrderScreenProps
+  const [tourDetails, setTourDetails] = useState<any>(null)
   const navigation = useNavigation<StackScreenProps<RootStackParamList>['navigation']>()
   const [currentStep, setCurrentStep] = useState(1)
+  const authContext = useContext(AuthContext)
+  const [loading, setLoading] = useState(true)
+  const [tripBookingName, setTripBookingName] = useState<any>(null)
+
+  if (!authContext || !authContext.user) {
+    throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
+  }
+
+  const { user } = authContext
+  useEffect(() => {
+    const fetchTourDetails = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}farms/trip/${id}`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            Accept: 'text/plain'
+          }
+        })
+        setTourDetails(response.data)
+      } catch (error) {
+        console.error('Error fetching tour details:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTourDetails()
+  }, [id])
   const [forms, setForms] = useState([
     {
       id: 1,
       koiName: '',
       koiVariety: '',
       koiType: 'Retail',
-      koiImage: null,
+      koiImage: [] as string[],
       koiQuantity: 0,
       koiWeight: '',
       koiLength: '',
@@ -51,15 +88,15 @@ const CreateOrder = () => {
         koiName: '',
         koiVariety: '',
         koiType: 'Retail',
-        koiImage: null,
+        koiImage: [],
         koiQuantity: 0,
         koiWeight: '',
         koiLength: '',
         koiPrice: '',
         koiDeposit: '',
         koiNote: '',
-        koiFarm: 'Koi Farm',
-        bookingAccout: 'Leslie Alexander',
+        koiFarm: '',
+        bookingAccout: '',
         fullName: '',
         phoneNumber: '',
         country: 'Vietnam',
@@ -89,7 +126,8 @@ const CreateOrder = () => {
 
     if (!result.canceled) {
       const newForms = [...forms]
-      newForms[index].koiImage = result.assets[0].uri as unknown as null
+      const selectedImages = result.assets.map((asset) => asset.uri)
+      newForms[index].koiImage = [...newForms[index].koiImage, ...selectedImages]
       setForms(newForms)
     }
   }
@@ -133,6 +171,25 @@ const CreateOrder = () => {
     }
   }
 
+  useEffect(() => {
+    const fetchTripBookingDetails = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}trip/${id}/trip-bookings`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            Accept: 'text/plain'
+          }
+        })
+        setTripBookingName(response.data)
+      } catch (error) {
+        console.log('Error fetch Trip Booking Name', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTripBookingDetails()
+  }, [id])
+
   const handleDistrictChange = async (value: string, index: number) => {
     const selectedDistrict: District | undefined = districts.find((district) => district.code === value)
     const updatedForms = [...forms]
@@ -163,6 +220,8 @@ const CreateOrder = () => {
     }
     setForms(updatedForms)
   }
+  const itineraryArray = Object.values(tourDetails?.value?.tourResponse?.tourDetails?.itineraryDetails || {})
+
   return (
     <View className='flex-1 bg-white px-4 pt-4'>
       {/* Header */}
@@ -197,8 +256,10 @@ const CreateOrder = () => {
                       setForms(newForms)
                     }}
                   >
-                    <Picker.Item label='Koi Farm Asagi - Tokyo' value='Koi Farm Asagi - Tokyo' />
-                    <Picker.Item label='Koi Farm Asagi - Osaka' value='Koi Farm Asagi - Osaka' />
+                    <Picker.Item label='Select Koi Farm' value='' />
+                    {tourDetails?.value?.map((farm: { farmName: string; farmId: number }) => (
+                      <Picker.Item key={farm.farmId} label={farm.farmName} value={farm.farmId} />
+                    ))}
                   </Picker>
                 </View>
                 <View className='mb-2'>
@@ -413,14 +474,12 @@ const CreateOrder = () => {
                   numberOfLines={3}
                 />
               </View>
+              <View key={form.id}>
+                <Text>
+                  Koi Image <Text style={{ color: 'red' }}>*</Text>
+                </Text>
 
-              <Text>
-                Koi Image <Text style={{ color: 'red' }}>*</Text>
-              </Text>
-              <TouchableOpacity onPress={() => pickImage(index)} style={{ marginBottom: 10, alignItems: 'center' }}>
-                {form.koiImage ? (
-                  <Image source={{ uri: form.koiImage }} style={{ width: 100, height: 100, borderRadius: 5 }} />
-                ) : (
+                <TouchableOpacity onPress={() => pickImage(index)} style={{ marginBottom: 10, alignItems: 'center' }}>
                   <View
                     style={{
                       width: 100,
@@ -433,17 +492,34 @@ const CreateOrder = () => {
                   >
                     <Text>+ Upload</Text>
                   </View>
-                )}
-              </TouchableOpacity>
-
-              {forms.length > 1 && (
-                <TouchableOpacity
-                  onPress={() => removeForm(form.id)}
-                  style={{ backgroundColor: 'red', padding: 10, borderRadius: 5, alignItems: 'center' }}
-                >
-                  <Text style={{ color: 'white' }}>Remove</Text>
                 </TouchableOpacity>
-              )}
+
+                {/* Display uploaded images */}
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {form.koiImage.map((uri, imgIndex) => (
+                    <Image
+                      key={imgIndex}
+                      source={{ uri }}
+                      style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5, marginBottom: 10 }}
+                    />
+                  ))}
+                </View>
+
+                {index !== 0 && (
+                  <TouchableOpacity
+                    onPress={() => removeForm(form.id)}
+                    style={{
+                      backgroundColor: 'red',
+                      padding: 10,
+                      borderRadius: 5,
+                      alignItems: 'center',
+                      marginTop: 10
+                    }}
+                  >
+                    <Text style={{ color: 'white' }}>Remove</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
           ))}
 
@@ -473,8 +549,16 @@ const CreateOrder = () => {
                     setForms(newForms)
                   }}
                 >
-                  <Picker.Item label='Leslie Alexander' value='Leslie Alexander' />
-                  <Picker.Item label='Nguyen Van A' value='Nguyen Van A' />
+                  <Picker.Item label='Select Trip Booking Account' value='' />
+                  {tripBookingName?.value?.map(
+                    (account: { tripBookingId: number; customerName: string | undefined }) => (
+                      <Picker.Item
+                        key={account.tripBookingId}
+                        label={account.customerName}
+                        value={account.tripBookingId}
+                      />
+                    )
+                  )}
                 </Picker>
               </View>
               <View>

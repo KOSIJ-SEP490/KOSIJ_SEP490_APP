@@ -18,6 +18,7 @@ type RootStackParamList = {
   CollectTicket: { ticketImage: string }
   CheckOutTrip: { ticketImage: string }
   OrderDetails: undefined
+  CreateOrder: undefined
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
