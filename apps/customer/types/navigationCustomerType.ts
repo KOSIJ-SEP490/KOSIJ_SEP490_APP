@@ -13,12 +13,18 @@ export type CustomerHomeStackParamList = {
   Payment: { tripBookingID: number }
   KoiVarietySelection: undefined
   TravelInformation: undefined
-  OrderDetails: undefined
 }
 
 export type CustomerTripsStackParamList = {
   Trips: undefined
 }
 
+export type CustomerOrderStackParamList = {
+  Orders: undefined
+  OrderDetails: { orderId: number }
+  CancelledScreen: { orderId: number }
+}
+
 export type CustomerHomeStackNavigationProp = StackNavigationProp<CustomerHomeStackParamList>
 export type CustomerTripsStackNavigationProp = StackNavigationProp<CustomerTripsStackParamList>
+export type CustomerOrderStackNavigationProp = StackNavigationProp<CustomerOrderStackParamList>

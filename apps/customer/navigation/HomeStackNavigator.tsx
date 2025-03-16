@@ -13,7 +13,6 @@ import PaymentScreen from '../screens/Home/booking/PaymentScreen'
 import { CustomerHomeStackParamList } from '../types/navigationCustomerType'
 import KoiVarietySelectionScreen from '../screens/Home/booking/KoiVarietySelectionScreen'
 import TravelInformationScreen from '../screens/Home/booking/TravelInformationScreen'
-import OrderDetailsScreen from '../screens/Home/orders/OrderDetails'
 
 const Stack = createStackNavigator<CustomerHomeStackParamList>()
 
@@ -32,7 +31,6 @@ export default function CustomerHomeStackNavigator() {
       <Stack.Screen name='Payment' component={PaymentScreen} />
       <Stack.Screen name='KoiVarietySelection' component={KoiVarietySelectionScreen} />
       <Stack.Screen name='TravelInformation' component={TravelInformationScreen} />
-      <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
     </Stack.Navigator>
   )
 }
