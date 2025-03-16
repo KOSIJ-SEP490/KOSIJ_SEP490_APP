@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { ChevronDown } from 'react-native-feather'
 import PaymentSuccessModal from './PaymentSuccessModal'
+import { useBooking } from '@apps/customer/contexts/BookingContext'
 
 interface PaymentDetailsCardProps {
   tripBookingID: number
@@ -11,6 +12,7 @@ interface PaymentDetailsCardProps {
 
 const PaymentDetailsCard = ({ tripBookingID }: PaymentDetailsCardProps) => {
   const { tripBookingCheckIn, error } = useTripBookingCheckInById(tripBookingID)
+  const { resetBookingData } = useBooking()
   const { wallet } = useWallet()
   const [timeLeft, setTimeLeft] = useState(0)
   const [isGrandTotalExpanded, setIsGrandTotalExpanded] = useState(false)
@@ -21,6 +23,7 @@ const PaymentDetailsCard = ({ tripBookingID }: PaymentDetailsCardProps) => {
   const handlePayment = async () => {
     const response = await checkoutTrip(tripBookingID ?? 0)
     if (response) {
+      resetBookingData()
       setIsModalVisible(true)
     }
   }
@@ -167,11 +170,11 @@ const PaymentDetailsCard = ({ tripBookingID }: PaymentDetailsCardProps) => {
 
       <View className='flex-row justify-between mt-4'>
         <TouchableOpacity className='bg-red-600 px-6 py-3 rounded-md w-32'>
-          <Text className='text-white text-lg font-medium text-center'>Cancel</Text>
+          <Text className='text-white text-sm font-medium text-center'>Cancel</Text>
         </TouchableOpacity>
 
         <TouchableOpacity className='bg-blue px-6 py-3 rounded-md w-32' onPress={handlePayment} disabled={isLoading}>
-          <Text className='text-white text-base font-medium text-center'>{isLoading ? 'Processing...' : 'Pay'}</Text>
+          <Text className='text-white text-sm font-medium text-center'>{isLoading ? 'Processing...' : 'Pay'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -186,7 +189,7 @@ const PaymentDetailsCard = ({ tripBookingID }: PaymentDetailsCardProps) => {
           totalAmount={checkoutData.totalAmount}
           depositAmount={checkoutData.depositAmount}
           remainingAmount={checkoutData.remainingAmount}
-          navigationLocation='Home'
+          navigationLocation='Trips'
         />
       )}
     </View>

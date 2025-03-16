@@ -1,6 +1,6 @@
 import {
   CustomerHomeStackNavigationProp,
-  CustomerHomeStackParamList
+  CustomerTripsStackParamList
 } from '@apps/customer/types/navigationCustomerType'
 import { useNavigation } from '@react-navigation/native'
 import React from 'react'
@@ -17,7 +17,7 @@ interface PaymentSuccessModalProps {
   totalAmount?: number
   depositAmount?: number
   remainingAmount?: number
-  navigationLocation: keyof CustomerHomeStackParamList
+  navigationLocation: keyof CustomerTripsStackParamList
 }
 
 const PaymentSuccessModal = ({

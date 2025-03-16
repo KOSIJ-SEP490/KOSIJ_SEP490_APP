@@ -14,68 +14,72 @@ const TripBookingCard = ({
   tripType,
   departureDate,
   expiredTime,
-  tripBookingStatus
-}: TripBookingType) => {
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'paid':
-        return 'bg-green'
-      case 'pending':
-        return 'bg-yellow'
-      case 'cancelled':
-        return 'bg-red'
+  tripBookingStatus,
+  onPress
+}: TripBookingType & { onPress: () => void }) => {
+  const getPaymentText = () => {
+    switch (tripBookingStatus) {
+      case 'Pending':
+        return 'Pay Deposited Amount'
+      case 'Deposited':
+        return 'Waiting for Staff to Review'
+      case 'Processing':
+        return `Pay Remaining Amount (${expiredTime})`
+      case 'Paid':
+        return 'Wait for Started Date'
       default:
-        return 'bg-blue'
+        return 'View Details'
     }
   }
 
   return (
-    <StyledView className='bg-white rounded-lg border border-gray-200 shadow-md overflow-hidden w-full'>
+    <StyledTouchableOpacity
+      className='bg-white rounded-lg border border-gray-300 overflow-hidden w-full mb-4'
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
       <StyledView className='relative'>
-        <StyledImage source={{ uri: tourImgUrl }} className='w-full h-56 rounded-lgl' />
-        <StyledView className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
-        <StyledView className='absolute top-4 left-4 bg-white/90 px-3 py-1 rounded-full'>
-          <StyledText className='text-xs font-bold text-gray-800'>{tripType}</StyledText>
-        </StyledView>
+        <StyledImage source={{ uri: tourImgUrl }} className='w-full h-40' resizeMode='cover' />
       </StyledView>
 
-      <StyledView className='p-4'>
-        <StyledText className='text-xl font-bold text-gray-800 mb-3'>{tourName}</StyledText>
+      <StyledView className='p-5'>
+        <StyledText className='text-sm font-bold text-gray-900 mb-4'>{tourName}</StyledText>
 
-        <StyledView className='mb-4'>
-          <StyledView className={`self-start rounded-full px-3 py-1 ${getStatusColor(tripBookingStatus)}`}>
-            <StyledText className='text-xs font-semibold'>{tripBookingStatus}</StyledText>
-          </StyledView>
-        </StyledView>
-
-        <StyledView className='space-y-2 mb-4'>
-          <StyledView className='flex flex-row items-center'>
-            <StyledView className='w-8 h-8 bg-gray-100 rounded-full items-center justify-center'>
-              <FontAwesome5 name='calendar-alt' size={14} color='#4B5563' />
-            </StyledView>
-            <StyledText className='ml-3 text-gray-700'>
-              Departure: <StyledText className='font-semibold'>{departureDate}</StyledText>
-            </StyledText>
-          </StyledView>
-
-          <StyledView className='flex flex-row items-center'>
-            <StyledView className='w-8 h-8 bg-gray-100 rounded-full items-center justify-center'>
-              <FontAwesome5 name='clock' size={14} color='#4B5563' />
-            </StyledView>
-            <StyledText className='ml-3 text-gray-700'>
-              Time remaining: <StyledText className='font-semibold text-red-600'>{expiredTime}</StyledText>
-            </StyledText>
-          </StyledView>
-        </StyledView>
-
-        <StyledTouchableOpacity className='mt-2 bg-blue p-4 rounded-lg flex items-center justify-center'>
+        <StyledView className='space-y-4'>
           <StyledView className='flex-row items-center'>
-            <FontAwesome5 name='credit-card' size={16} color='white' />
-            <StyledText className='ml-2 text-white font-bold'>Complete Payment</StyledText>
+            <StyledView className='w-4 h-4 items-center justify-center'>
+              <FontAwesome5 name='bus' size={16} color='#000000' />
+            </StyledView>
+            <StyledText className='ml-3 text-xs font-medium'>
+              Type Trip: <StyledText className='font-normal'>{tripType}</StyledText>
+            </StyledText>
           </StyledView>
-        </StyledTouchableOpacity>
+
+          <StyledView className='flex-row items-center'>
+            <StyledView className='w-4 h-4 items-center justify-center'>
+              <FontAwesome5 name='wallet' size={16} color='#000000' />
+            </StyledView>
+            <StyledText className='ml-3 text-xs font-medium'>
+              Payment Status: <StyledText className='font-normal'>{tripBookingStatus}</StyledText>
+            </StyledText>
+          </StyledView>
+
+          <StyledView className='flex-row items-center'>
+            <StyledView className='w-4 h-4 items-center justify-center'>
+              <FontAwesome5 name='clock' size={16} color='#000000' />
+            </StyledView>
+            <StyledText className='ml-3 text-xs font-medium'>
+              Day Started: <StyledText className='font-normal'>{departureDate}</StyledText>
+            </StyledText>
+          </StyledView>
+        </StyledView>
+
+        <StyledView className='mt-6 flex-row items-center justify-end'>
+          <StyledText className='text-blue font-medium text-sm mr-5'>{getPaymentText()}</StyledText>
+          <FontAwesome5 name='arrow-right' size={16} color='#264ECA' />
+        </StyledView>
       </StyledView>
-    </StyledView>
+    </StyledTouchableOpacity>
   )
 }
 

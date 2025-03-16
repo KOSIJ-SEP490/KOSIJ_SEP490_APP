@@ -16,7 +16,9 @@ export type CustomerHomeStackParamList = {
 }
 
 export type CustomerTripsStackParamList = {
-  Trips: undefined
+  Trips: { initialTab?: string }
+  TripBookingDetails: { tripBookingID: number }
+  TripRequestDetails: { tripRequestID: number }
 }
 
 export type CustomerOrderStackParamList = {

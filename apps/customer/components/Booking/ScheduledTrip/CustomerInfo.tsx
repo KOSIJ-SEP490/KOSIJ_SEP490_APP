@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity } from 'react-native'
 import { Pencil } from 'lucide-react-native'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
 import { useTripById } from '@apps/customer/hooks/useTrip'
-import CustomerDetailsModal from '@apps/customer/components/Booking/CustomerDetailsModal'
+import CustomerDetailsModal from '@apps/customer/components/Booking/ScheduledTrip/CustomerDetailsModal'
 import { CustomerInfo as CustomerInfoType, CustomerDetails } from '@apps/customer/types/Booking/bookingData.type'
 
 const ageGroupLabels: Record<string, string> = {
