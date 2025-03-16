@@ -1,5 +1,4 @@
 import { useBooking } from '@apps/customer/contexts/BookingContext'
-import { useAccount } from '@apps/customer/hooks/useAccount'
 import type React from 'react'
 import { useState } from 'react'
 import { View, Text, TouchableOpacity, TextInput, Modal, ScrollView } from 'react-native'
@@ -140,9 +139,11 @@ const TravelInfoCard: React.FC = () => {
   const [nights, setNights] = useState('')
   const [customers, setCustomers] = useState(0)
   const [departurePoint, setDeparturePoint] = useState('')
+  const [nameContact, setNameContact] = useState('')
+  const [emailContact, setEmailContact] = useState('')
+  const [phoneContact, setPhoneContact] = useState('')
   const [showDepartureOptions, setShowDepartureOptions] = useState(false)
   const { setBookingRequest } = useBooking()
-  const { account } = useAccount()
 
   const departureOptions = ['Ha Noi (Noi Bai Airport)', 'Ho Chi Minh (Tan Son Nhat Airport)']
 
@@ -181,6 +182,31 @@ const TravelInfoCard: React.FC = () => {
     }))
   }
 
+  const handleNameChange = (text: string) => {
+    setNameContact(text)
+    setBookingRequest((prev) => ({
+      ...prev,
+      nameContact: text
+    }))
+  }
+
+  const handleEmailChange = (text: string) => {
+    setEmailContact(text)
+    setBookingRequest((prev) => ({
+      ...prev,
+      emailContact: text
+    }))
+  }
+
+  const handlePhoneChange = (text: string) => {
+    const numericValue = text.replace(/[^0-9]/g, '')
+    setPhoneContact(numericValue)
+    setBookingRequest((prev) => ({
+      ...prev,
+      phoneContact: numericValue
+    }))
+  }
+
   const handleCustomerChange = (increment: boolean) => {
     const newValue = increment ? customers + 1 : Math.max(1, customers - 1)
     setCustomers(newValue)
@@ -203,7 +229,6 @@ const TravelInfoCard: React.FC = () => {
 
   const handleNightsChange = (text: string) => {
     const numericValue = text.replace(/[^0-9]/g, '')
-    console.log(numericValue)
     setNights(numericValue)
 
     setBookingRequest((prev) => ({
@@ -220,17 +245,41 @@ const TravelInfoCard: React.FC = () => {
       ...prev,
       departurePoint: option
     }))
-
-    setBookingRequest((prev) => ({
-      ...prev,
-      nameContact: account?.fullName ?? prev.nameContact,
-      phoneContact: account?.phoneNumber ?? prev.phoneContact,
-      emailContact: account?.email ?? prev.emailContact
-    }))
   }
 
   return (
     <View className='mt-8 px-5'>
+      <View className='mb-4'>
+        <Text className='text-sm font-bold mb-2'>Name Contact</Text>
+        <TextInput
+          className='border border-gray-200 rounded-lg p-4 bg-white text-sm'
+          value={nameContact}
+          placeholder='Enter your name'
+          onChangeText={handleNameChange}
+        />
+      </View>
+
+      <View className='mb-4'>
+        <Text className='text-sm font-bold mb-2'>Email Contact</Text>
+        <TextInput
+          className='border border-gray-200 rounded-lg p-4 bg-white text-sm'
+          value={emailContact}
+          placeholder='Enter your email'
+          keyboardType='email-address'
+          onChangeText={handleEmailChange}
+        />
+      </View>
+
+      <View className='mb-4'>
+        <Text className='text-sm font-bold mb-2'>Phone Contact</Text>
+        <TextInput
+          className='border border-gray-200 rounded-lg p-4 bg-white text-sm'
+          value={phoneContact}
+          placeholder='Enter your phone number'
+          keyboardType='numeric'
+          onChangeText={handlePhoneChange}
+        />
+      </View>
       <View className='mb-4'>
         <Text className='text-sm font-bold mb-2'>Start Date</Text>
         <TouchableOpacity

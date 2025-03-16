@@ -3,13 +3,13 @@ import { View, Text } from 'react-native'
 import { useRoute, RouteProp } from '@react-navigation/native'
 import SubLayout from '@apps/customer/layouts/SubLayout'
 import { useTourById } from '@apps/customer/hooks/useTour'
-import ChooseDate from '@apps/customer/components/Booking/ChooseDate'
 import { useTripById } from '@apps/customer/hooks/useTrip'
 import TripInfoCard from '@apps/customer/components/Card/Trip/TripInfoCard'
-import NumberOfCustomer from '@apps/customer/components/Booking/NumberOfCustomer'
+import NumberOfCustomer from '@apps/customer/components/Booking/ScheduledTrip/NumberOfCustomer'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
 import TotalPrice from '@apps/customer/components/Booking/TotalPrice'
 import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
+import ChooseDate from '@apps/customer/components/Booking/ScheduledTrip/ChooseDate'
 
 type TripDetailScreenRouteProp = RouteProp<CustomerHomeStackParamList, 'TripDetail'>
 

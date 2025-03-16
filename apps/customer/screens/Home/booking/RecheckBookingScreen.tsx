@@ -1,4 +1,4 @@
-import BookingDetails from '@apps/customer/components/Booking/BookingDetails'
+import BookingDetails from '@apps/customer/components/Booking/ScheduledTrip/BookingDetails'
 import PaymentMethod from '@apps/customer/components/Booking/PaymentMethod'
 import TotalPrice from '@apps/customer/components/Booking/TotalPrice'
 import SubLayout from '@apps/customer/layouts/SubLayout'
