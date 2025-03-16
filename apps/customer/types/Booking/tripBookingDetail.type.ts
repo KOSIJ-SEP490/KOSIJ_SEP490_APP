@@ -1,6 +1,7 @@
 export interface TripBookingDetailType {
   expiredTime: string
   tourName: string
+  imageUrl: string
   bookingTime: string
   customerInfo: CustomerInfo
   tripType: string
@@ -19,6 +20,7 @@ export interface TripBookingDetailType {
   cancellationPolicy: Policy[]
   paymentPolicy: Policy[]
   childrenPricePolicy: Policy[]
+  promotionPolicy: Policy[]
   outboundTicketUrl?: string | null
   inboundTicketUrl?: string | null
   paidAmount?: number | null

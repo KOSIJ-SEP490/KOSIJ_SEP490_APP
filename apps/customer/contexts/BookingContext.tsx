@@ -8,6 +8,7 @@ interface BookingContextType {
   resetBookingData: () => void
   bookingRequest: BookingRequestType
   setBookingRequest: React.Dispatch<React.SetStateAction<BookingRequestType>>
+  resetBookingRequest: () => void
   addKoiVarietyRequest: (id: number) => void
   removeKoiVarietyRequest: (id: number) => void
 }
@@ -28,7 +29,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setBookingData(initialBookingData)
   }
 
-  const [bookingRequest, setBookingRequest] = useState<BookingRequestType>({
+  const initialBookingRequest: BookingRequestType = {
     numberOfPassengers: 0,
     nights: 0,
     departureDate: new Date().toISOString(),
@@ -39,7 +40,13 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
     phoneContact: '',
     note: '',
     koiVarietyRequests: []
-  })
+  }
+
+  const [bookingRequest, setBookingRequest] = useState<BookingRequestType>(initialBookingRequest)
+
+  const resetBookingRequest = () => {
+    setBookingRequest(initialBookingRequest)
+  }
 
   const addKoiVarietyRequest = (id: number) => {
     setBookingRequest((prev) => ({
@@ -65,6 +72,7 @@ export const BookingProvider: React.FC<{ children: React.ReactNode }> = ({ child
         resetBookingData,
         bookingRequest,
         setBookingRequest,
+        resetBookingRequest,
         addKoiVarietyRequest,
         removeKoiVarietyRequest
       }}

@@ -17,7 +17,7 @@ interface TotalPriceProps {
 
 const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
   const navigation = useNavigation<CustomerHomeStackNavigationProp>()
-  const { bookingData, resetBookingData } = useBooking()
+  const { bookingData } = useBooking()
   const { trip } = useTripById(bookingData.tripID ?? 0)
   const { bookTrip } = useTripBooking()
 
@@ -93,7 +93,6 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
       try {
         const tripBookingId = await bookTrip(bookingRequest)
         setTimeout(() => {
-          resetBookingData()
           setIsBooking(false)
           navigation.navigate('Payment', { tripBookingID: tripBookingId ?? 0 })
         }, 1000)

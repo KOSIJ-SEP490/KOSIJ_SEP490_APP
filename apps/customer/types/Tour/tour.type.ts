@@ -54,3 +54,7 @@ export interface Farm {
   id: number
   name: string
 }
+
+export interface FarmIds {
+  id: number
+}
