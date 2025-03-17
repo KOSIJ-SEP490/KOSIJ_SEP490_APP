@@ -120,6 +120,7 @@ export default function ScheduledTourDetailScreen() {
           <TourPolicyCard title='Payment' policies={tour.paymentPolicy} />
           <TourPolicyCard title='Cancellation' policies={tour.cancellationPolicy} />
           <TourPolicyCard title='Children Prices' policies={tour.tourPrices} />
+          <TourPolicyCard title='Promotions' policies={tour.promotionPolicy} />
         </View>
       </View>
 

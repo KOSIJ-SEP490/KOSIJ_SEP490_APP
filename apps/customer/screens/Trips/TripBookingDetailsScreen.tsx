@@ -1,6 +1,6 @@
 import { CustomerInfoPrice } from '@apps/customer/components/Booking/CustomerInfoPrice'
 import { PaymentReminder } from '@apps/customer/components/Booking/PaymentReminder'
-import { ConsultingStaffInfo } from '@apps/customer/components/Card/ConsultingStaff/ConsultingStaffInfo'
+import { StaffInfo } from '@apps/customer/components/Card/ConsultingStaff/ConsultingStaffInfo'
 import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
 import ItineraryCard from '@apps/customer/components/Card/Tour/ItineraryCard'
 import TourPolicyCard from '@apps/customer/components/Card/Tour/TourPolicyCard'
@@ -50,7 +50,8 @@ export default function TripBookingDetailsScreen() {
 
       <Divider />
 
-      <ConsultingStaffInfo
+      <StaffInfo
+        staffType='Consulting Staff'
         fullName={tripBookingDetail?.consultStaffInformation.staffName ?? ''}
         phoneNumber={tripBookingDetail?.consultStaffInformation.phoneNumber ?? ''}
         email={tripBookingDetail?.consultStaffInformation.email ?? ''}
