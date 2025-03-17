@@ -46,6 +46,7 @@ export default function TripBookingDetailsScreen() {
           })) ?? []
         }
         cancellationReason={tripBookingDetail?.cancellationReason ?? ''}
+        tripBookingID={tripBookingID}
       />
 
       <Divider />

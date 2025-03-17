@@ -1,0 +1,162 @@
+import { useTripBookingCheckInById2, useTripBookingCheckoutPayment } from '@apps/customer/hooks/useTripBooking'
+import { useWallet } from '@apps/customer/hooks/useWallet'
+import React, { useState, useEffect } from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { ChevronDown } from 'react-native-feather'
+import { useBooking } from '@apps/customer/contexts/BookingContext'
+import PaymentSuccessModal2 from './PaymentSuccessModal2'
+
+interface PaymentDetailsCard2Props {
+  tripBookingID: number
+}
+
+const PaymentDetailsCard2 = ({ tripBookingID }: PaymentDetailsCard2Props) => {
+  const { tripBookingCheckIn, error } = useTripBookingCheckInById2(tripBookingID)
+  console.log(tripBookingCheckIn)
+  const { resetBookingData } = useBooking()
+  const { wallet } = useWallet()
+  const [timeLeft, setTimeLeft] = useState(0)
+  const [isGrandTotalExpanded, setIsGrandTotalExpanded] = useState(false)
+  const [isDepositExpanded, setIsDepositExpanded] = useState(false)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const { checkoutTrip, checkoutData, isLoading } = useTripBookingCheckoutPayment()
+  const remainingAmount = tripBookingCheckIn?.remainingAmount
+  const depositedAmount = tripBookingCheckIn?.totalDepositAmount
+
+  const handlePayment = async () => {
+    const response = await checkoutTrip(tripBookingID ?? 0)
+    if (response) {
+      resetBookingData()
+      setIsModalVisible(true)
+    }
+  }
+
+  useEffect(() => {
+    if (tripBookingCheckIn?.expiredTime) {
+      const expiryTime = Math.max(
+        0,
+        Math.floor((new Date(tripBookingCheckIn.expiredTime).getTime() - Date.now()) / 1000)
+      )
+      setTimeLeft(expiryTime)
+    }
+  }, [tripBookingCheckIn])
+
+  useEffect(() => {
+    if (timeLeft <= 0) return
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => Math.max(0, prevTime - 1))
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [timeLeft])
+
+  const formatTime = (seconds: number) => {
+    if (seconds <= 0) return '00 : 00 : 00'
+
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+
+    return `${hours.toString().padStart(2, '0')} : ${minutes.toString().padStart(2, '0')} : ${secs.toString().padStart(2, '0')}`
+  }
+
+  if (error) {
+    return <Text className='text-red-500'>{error}</Text>
+  }
+
+  if (!tripBookingCheckIn) {
+    return <Text className='text-gray-500'>Loading...</Text>
+  }
+
+  return (
+    <View>
+      <View className='flex-row justify-center mb-2 mt-6'>
+        <Text className='text-base font-medium text-black'>Pay within </Text>
+        <Text className='text-base font-medium text-red-500'>{formatTime(timeLeft)}</Text>
+      </View>
+
+      <View className='my-4 px-4 pt-6 pb-4 bg-white rounded-lg border border-gray-200'>
+        <View className='flex-row justify-between mb-4'>
+          <Text className='text-sm'>Booking ID</Text>
+          <Text className='text-sm'>{tripBookingCheckIn?.tripBookingId ?? 'N/A'}</Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => setIsGrandTotalExpanded(!isGrandTotalExpanded)}
+          className='flex-row justify-between items-center mb-4'
+        >
+          <View className='flex-row items-center'>
+            <Text className='text-sm mr-4'>Remaining Amount</Text>
+          </View>
+          <Text className='text-sm text-red-600'>
+            {tripBookingCheckIn?.remainingAmount.toLocaleString() ?? 'N/A'} VND
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setIsDepositExpanded(!isDepositExpanded)}
+          className='flex-row justify-between items-center mb-4'
+        >
+          <View className='flex-row items-center'>
+            <Text className='text-sm mr-2'>Total Booking Amount</Text>
+            <ChevronDown
+              width={20}
+              height={20}
+              stroke='#000000'
+              className={`${isDepositExpanded ? 'rotate-180' : 'rotate-0'}`}
+            />
+          </View>
+          <Text className='text-sm'>{tripBookingCheckIn?.totalBookingAmount.toLocaleString() ?? 'N/A'} VND</Text>
+        </TouchableOpacity>
+
+        {isDepositExpanded && (
+          <View className='bg-blue-light p-4 rounded-lg'>
+            <View className='flex-row justify-between items-center mb-4'>
+              <Text className='text-xs'>Deposit Amount</Text>
+              <Text className='text-xs'>{tripBookingCheckIn?.totalDepositAmount.toLocaleString() ?? 'N/A'} VND</Text>
+            </View>
+            <View className='flex-row justify-between items-center'>
+              <Text className='text-xs'>Remaining Amount</Text>
+              <Text className='text-xs'>{tripBookingCheckIn?.remainingAmount.toLocaleString() ?? 'N/A'} VND</Text>
+            </View>
+          </View>
+        )}
+      </View>
+
+      <View className='my-4 px-4 py-6 bg-white rounded-lg border border-gray-200 flex-row justify-between items-center mb-4'>
+        <Text className='text-blue font-medium'>KOSIJ Wallet</Text>
+        <Text className='text-blue font-medium'>
+          {wallet?.balance.toLocaleString() ?? 'N/A'} {wallet?.currency}
+        </Text>
+      </View>
+
+      <View className='flex-row justify-between mt-4'>
+        <TouchableOpacity className='bg-red-600 px-6 py-3 rounded-md w-32'>
+          <Text className='text-white text-sm font-medium text-center'>Cancel</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity className='bg-blue px-6 py-3 rounded-md w-32' onPress={handlePayment} disabled={isLoading}>
+          <Text className='text-white text-sm font-medium text-center'>{isLoading ? 'Processing...' : 'Pay'}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {checkoutData && (
+        <PaymentSuccessModal2
+          visible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          bookingId={checkoutData.tripBookingId}
+          paymentTime={checkoutData.paymentTime}
+          paymentMethod={checkoutData.paymentMethod}
+          senderName={checkoutData.senderName}
+          totalAmount={checkoutData.totalAmount}
+          depositAmount={depositedAmount}
+          remainingAmount={remainingAmount}
+          navigationLocation='Trips'
+        />
+      )}
+    </View>
+  )
+}
+
+export default PaymentDetailsCard2

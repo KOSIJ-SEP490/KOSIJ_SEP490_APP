@@ -10,7 +10,7 @@ export type CustomerHomeStackParamList = {
   TripDetail: { tourID: number }
   CustomerInformation: undefined
   RecheckBooking: undefined
-  Payment: { tripBookingID: number }
+  Payment: { tripBookingID: number; type: string }
   KoiVarietySelection: undefined
   TravelInformation: undefined
 }
@@ -20,6 +20,7 @@ export type CustomerTripsStackParamList = {
   TripBookingDetails: { tripBookingID: number }
   TripRequestDetails: { tripRequestID: number }
   QuotationDetails: { tripRequestID: number }
+  Payment: { tripBookingID: number; type: string }
 }
 
 export type CustomerOrderStackParamList = {

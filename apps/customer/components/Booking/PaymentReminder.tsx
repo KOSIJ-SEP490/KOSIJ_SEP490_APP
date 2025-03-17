@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { styled } from 'nativewind'
+import { useNavigation } from '@react-navigation/native'
+import { CustomerTripsStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
 
 const StyledView = styled(View)
 const StyledText = styled(Text)
@@ -16,16 +18,19 @@ interface PaymentReminderProps {
   expiredTime: string
   paymentPolicy: PaymentPolicy[]
   cancellationReason?: string
+  tripBookingID: number
 }
 
 export const PaymentReminder: React.FC<PaymentReminderProps> = ({
   status,
   expiredTime,
   paymentPolicy,
-  cancellationReason
+  cancellationReason,
+  tripBookingID
 }) => {
   const [timeRemaining, setTimeRemaining] = useState<string>('')
   const [isExpired, setIsExpired] = useState<boolean>(false)
+  const navigation = useNavigation<CustomerTripsStackNavigationProp>()
 
   useEffect(() => {
     if (status === 'Cancelled') return
@@ -109,6 +114,7 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
         <StyledTouchableOpacity
           className={`rounded-lg py-4 px-6 ${isButtonDisabled ? 'bg-gray-400' : 'bg-blue'}`}
           disabled={isButtonDisabled}
+          onPress={() => navigation.navigate('Payment', { tripBookingID: tripBookingID, type: 'Payment2' })}
         >
           <StyledText className='text-white text-center text-sm font-medium'>Go to Payment</StyledText>
         </StyledTouchableOpacity>
