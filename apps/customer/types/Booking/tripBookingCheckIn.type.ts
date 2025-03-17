@@ -19,3 +19,11 @@ export interface TripBookingCheckInType {
   tripBookingAmountAfterDiscount: number
   tripBookingDetails: TripBookingDetails
 }
+
+export interface TripBookingCheckInType2 {
+  tripBookingId: number
+  expiredTime: string
+  totalBookingAmount: number
+  totalDepositAmount: number
+  remainingAmount: number
+}
