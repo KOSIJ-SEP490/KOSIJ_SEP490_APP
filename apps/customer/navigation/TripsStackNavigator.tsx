@@ -4,6 +4,7 @@ import { CustomerTripsStackParamList } from '../types/navigationCustomerType'
 import TripsScreen from '../screens/navbar/TripsScreen'
 import TripBookingDetailsScreen from '../screens/Trips/TripBookingDetailsScreen'
 import TripRequestDetailsScreen from '../screens/Trips/TripRequestDetailsScreen'
+import QuotationDetailsScreen from '../screens/Trips/QuotationDetailsScreen'
 
 const Stack = createStackNavigator<CustomerTripsStackParamList>()
 
@@ -13,6 +14,7 @@ export default function CustomerStackNavigator() {
       <Stack.Screen name='Trips' component={TripsScreen} />
       <Stack.Screen name='TripBookingDetails' component={TripBookingDetailsScreen} />
       <Stack.Screen name='TripRequestDetails' component={TripRequestDetailsScreen} />
+      <Stack.Screen name='QuotationDetails' component={QuotationDetailsScreen} />
     </Stack.Navigator>
   )
 }
