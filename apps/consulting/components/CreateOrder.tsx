@@ -2,7 +2,7 @@ import { useNavigation, useRoute } from '@react-navigation/native'
 import { StackScreenProps } from '@react-navigation/stack'
 import { ArrowRight, CheckCircle, ChevronLeft } from 'lucide-react-native'
 import { Key, useContext, useEffect, useState } from 'react'
-import { TouchableOpacity, View, Text, ScrollView, Image, TextInput } from 'react-native'
+import { TouchableOpacity, View, Text, ScrollView, Image, TextInput, Alert } from 'react-native'
 import Steps from './Steps.container'
 import * as ImagePicker from 'expo-image-picker'
 import { Picker } from '@react-native-picker/picker'
@@ -10,6 +10,8 @@ import { District, fetchCities, fetchDistricts, fetchWards, Location, Ward } fro
 import AuthContext from '@shared/context/AuthContext'
 import { API_BASE_URL } from '@env'
 import axios from 'axios'
+import { uploadImageToFirebase } from '@shared/context/firebaseHelper'
+import { useOrders } from '../api/useOrder.api'
 
 type CreateOrderScreenProps = {
   id: number
@@ -27,7 +29,7 @@ const CreateOrder = () => {
   const authContext = useContext(AuthContext)
   const [loading, setLoading] = useState(true)
   const [tripBookingName, setTripBookingName] = useState<any>(null)
-
+  const { createOrder } = useOrders()
   if (!authContext || !authContext.user) {
     throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
   }
@@ -64,7 +66,7 @@ const CreateOrder = () => {
       koiLength: '',
       koiPrice: '',
       koiDeposit: '',
-      koiNote: '',
+      note: '',
       koiFarm: '',
       bookingAccout: '',
       fullName: '',
@@ -94,7 +96,7 @@ const CreateOrder = () => {
         koiLength: '',
         koiPrice: '',
         koiDeposit: '',
-        koiNote: '',
+        note: '',
         koiFarm: '',
         bookingAccout: '',
         fullName: '',
@@ -115,22 +117,22 @@ const CreateOrder = () => {
     setForms(forms.filter((form) => form.id !== id))
   }
 
-  const pickImage = async (index: number) => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsMultipleSelection: true,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1
-    })
+  // const pickImage = async (index: number) => {
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+  //     allowsMultipleSelection: true,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1
+  //   })
 
-    if (!result.canceled) {
-      const newForms = [...forms]
-      const selectedImages = result.assets.map((asset) => asset.uri)
-      newForms[index].koiImage = [...newForms[index].koiImage, ...selectedImages]
-      setForms(newForms)
-    }
-  }
+  //   if (!result.canceled) {
+  //     const newForms = [...forms]
+  //     const selectedImages = result.assets.map((asset) => asset.uri)
+  //     newForms[index].koiImage = [...newForms[index].koiImage, ...selectedImages]
+  //     setForms(newForms)
+  //   }
+  // }
 
   const [cities, setCities] = useState<Location[]>([])
   const [districts, setDistricts] = useState<District[]>([])
@@ -220,8 +222,71 @@ const CreateOrder = () => {
     }
     setForms(updatedForms)
   }
-  const itineraryArray = Object.values(tourDetails?.value?.tourResponse?.tourDetails?.itineraryDetails || {})
 
+  const handleSubmitOrder = async () => {
+    if (!authContext || !authContext.user) return
+    const token = authContext.user.token
+
+    try {
+      setLoading(true)
+
+      // Upload images to Firebase and get URLs
+      const uploadedForms = await Promise.all(
+        forms.map(async (form) => {
+          // const uploadedImages = await Promise.all(
+          //   form.koiImage.map(async (imageUri, imgIndex) => {
+          //     const imageUrl = await uploadImageToFirebase(imageUri)
+          //     return { imageUrl }
+          //   })
+          // ).then((images) => images.filter(Boolean))
+          return {
+            variety: form.koiVariety,
+            koiType: form.koiType,
+            quantity: form.koiQuantity,
+            length: Number(form.koiLength),
+            weight: Number(form.koiWeight),
+            koiPrice: Number(form.koiPrice),
+            note: form.note,
+            // orderDetailImages: /*uploadedImages*/ form.koiImage
+            orderDetailImages: form.koiImage.map((imageUrl) => ({ imageUrl })) // Convert to array of objects
+          }
+        })
+      )
+
+      const orderDetails = uploadedForms.filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.variety === item.variety && t.koiPrice === item.koiPrice)
+      )
+
+      const orderData = {
+        fullName: forms[0].fullName,
+        phoneNumber: forms[0].phoneNumber,
+        province: forms[0].city,
+        district: forms[0].district,
+        ward: forms[0].ward,
+        deliveryAddress: forms[0].address,
+        paidAmount: Number(forms[0].koiDeposit) || 0,
+        note: forms[0].note,
+        farmId: Number(forms[0].koiFarm) || null,
+        tripBookingId: Number(forms[0].bookingAccout) || 0,
+        orderDetails: orderDetails // ✅ Filtered to remove duplicates
+      }
+
+      console.log('Final Order Data:', JSON.stringify(orderData, null, 2))
+
+      // Call API to create order
+      const response = await createOrder(orderData)
+      console.log('Order created successfully:', response)
+
+      Alert.alert('Success', 'Order has been created successfully!')
+      navigation.goBack()
+    } catch (error) {
+      console.error('Failed to create order:', error)
+      Alert.alert('Error', 'Failed to create order. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
   return (
     <View className='flex-1 bg-white px-4 pt-4'>
       {/* Header */}
@@ -248,17 +313,19 @@ const CreateOrder = () => {
                     Koi Farm <Text style={{ color: 'red' }}>*</Text>
                   </Text>
                   <Picker
-                    style={{ borderColor: '#ccc', borderWidth: 1 }}
-                    selectedValue={form.koiFarm}
+                    selectedValue={forms[0]?.koiFarm || ''}
                     onValueChange={(itemValue) => {
-                      const newForms = [...forms]
-                      newForms[index].koiFarm = itemValue
-                      setForms(newForms)
+                      console.log('Selected farmId:', itemValue) // ✅ Debugging log
+                      setForms((prevForms) => {
+                        const updatedForms = [...prevForms]
+                        updatedForms[0].koiFarm = String(itemValue) // ✅ Convert to string
+                        return updatedForms
+                      })
                     }}
                   >
                     <Picker.Item label='Select Koi Farm' value='' />
-                    {tourDetails?.value?.map((farm: { farmName: string; farmId: number }) => (
-                      <Picker.Item key={farm.farmId} label={farm.farmName} value={farm.farmId} />
+                    {tourDetails?.value?.map((farm: { id: number; farmName: string }) => (
+                      <Picker.Item key={`farm-${farm.id}`} label={farm.farmName} value={String(farm.id)} />
                     ))}
                   </Picker>
                 </View>
@@ -285,10 +352,10 @@ const CreateOrder = () => {
                 <TextInput
                   style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
                   placeholder='Enter koi name'
-                  value={form.koiName}
+                  value={form.note}
                   onChangeText={(text) => {
                     const newForms = [...forms]
-                    newForms[index].koiName = text
+                    newForms[index].note = text
                     setForms(newForms)
                   }}
                 />
@@ -463,10 +530,10 @@ const CreateOrder = () => {
                     textAlignVertical: 'top'
                   }}
                   placeholder='Enter'
-                  value={form.koiNote}
+                  value={form.note}
                   onChangeText={(text) => {
                     const newForms = [...forms]
-                    newForms[index].koiNote = text
+                    newForms[index].note = text
                     setForms(newForms)
                   }}
                   multiline
@@ -479,7 +546,7 @@ const CreateOrder = () => {
                   Koi Image <Text style={{ color: 'red' }}>*</Text>
                 </Text>
 
-                <TouchableOpacity onPress={() => pickImage(index)} style={{ marginBottom: 10, alignItems: 'center' }}>
+                {/* <TouchableOpacity onPress={() => pickImage(index)} style={{ marginBottom: 10, alignItems: 'center' }}>
                   <View
                     style={{
                       width: 100,
@@ -492,15 +559,15 @@ const CreateOrder = () => {
                   >
                     <Text>+ Upload</Text>
                   </View>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
                 {/* Display uploaded images */}
-                <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {form.koiImage.map((uri, imgIndex) => (
+                {/* <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {form.koiImage.map((uri) => (
                     <Image
-                      key={imgIndex}
+                      key={`image-${uri}`}
                       source={{ uri }}
-                      style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5, marginBottom: 10 }}
+                      style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }}
                     />
                   ))}
                 </View>
@@ -518,7 +585,18 @@ const CreateOrder = () => {
                   >
                     <Text style={{ color: 'white' }}>Remove</Text>
                   </TouchableOpacity>
-                )}
+                )} */}
+                <TextInput
+                  style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
+                  placeholder='Enter'
+                  value={form.koiImage.join(',')}
+                  onChangeText={(text) => {
+                    const newForms = [...forms]
+                    newForms[index].koiImage = text.split(',').map((url) => url.trim())
+                    setForms(newForms)
+                  }}
+                />
+                {/* </View> */}
               </View>
             </View>
           ))}
@@ -553,7 +631,7 @@ const CreateOrder = () => {
                   {tripBookingName?.value?.map(
                     (account: { tripBookingId: number; customerName: string | undefined }) => (
                       <Picker.Item
-                        key={account.tripBookingId}
+                        key={`trip-${account.tripBookingId}`}
                         label={account.customerName}
                         value={account.tripBookingId}
                       />
@@ -599,8 +677,8 @@ const CreateOrder = () => {
                 <Picker selectedValue={form.cityId} onValueChange={(value) => handleCityChange(value, index)}>
                   <Picker.Item label='Select city' value='' />
                   {cities.map((city) => (
-                    <Picker.Item key={city.code} label={city.name} value={city.code} />
-                  ))}{' '}
+                    <Picker.Item key={`city-${city.code}`} label={city.name} value={city.code} />
+                  ))}
                 </Picker>
               </View>
               <View>
@@ -610,8 +688,8 @@ const CreateOrder = () => {
                 <Picker selectedValue={form.districtId} onValueChange={(value) => handleDistrictChange(value, index)}>
                   <Picker.Item label='Select District' value='' />
                   {districts.map((district) => (
-                    <Picker.Item key={district.code} label={district.name} value={district.code} />
-                  ))}{' '}
+                    <Picker.Item key={`district-${district.code}`} label={district.name} value={district.code} />
+                  ))}
                 </Picker>
               </View>
               <View>
@@ -621,7 +699,7 @@ const CreateOrder = () => {
                 <Picker selectedValue={form.wardId} onValueChange={(value) => handleWardChange(value, index)}>
                   <Picker.Item label='Select Ward' value='' />
                   {wards.map((ward) => (
-                    <Picker.Item key={ward.code} label={ward.name} value={ward.code} />
+                    <Picker.Item key={`ward-${ward.code}`} label={ward.name} value={ward.code} />
                   ))}
                 </Picker>
               </View>
@@ -652,7 +730,7 @@ const CreateOrder = () => {
 
         <TouchableOpacity
           className={`px-4 py-2 rounded-full flex-row items-center ${currentStep === 1 ? '#264eca' : 'bg-green-600'}`}
-          onPress={() => (currentStep === 1 ? setCurrentStep(2) : console.log('hihihi'))}
+          onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleSubmitOrder())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>
           {currentStep === 1 ? (

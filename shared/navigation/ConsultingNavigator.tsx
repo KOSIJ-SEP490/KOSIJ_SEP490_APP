@@ -11,6 +11,7 @@ import CollectTicket from '@apps/consulting/components/CollectTicket'
 import CheckOutTrip from '@apps/consulting/components/CheckOutTrip'
 import OrderDetailsScreen from '@apps/consulting/components/OrderDetails'
 import CreateOrder from '@apps/consulting/components/CreateOrder'
+import UpdateOrder from '@apps/consulting/components/UpdateOrder'
 
 type RootStackParamList = {
   MainTabs: undefined
@@ -19,6 +20,7 @@ type RootStackParamList = {
   CheckOutTrip: { ticketImage: string }
   OrderDetails: undefined
   CreateOrder: undefined
+  UpdateOrder: undefined
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -31,6 +33,7 @@ export default function ConsultingNavigator() {
       <Stack.Screen name='CheckOutTrip' component={CheckOutTrip} />
       <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
       <Stack.Screen name='CreateOrder' component={CreateOrder} />
+      <Stack.Screen name='UpdateOrder' component={UpdateOrder} />
     </Stack.Navigator>
   )
 }

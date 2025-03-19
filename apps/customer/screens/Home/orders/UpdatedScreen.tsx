@@ -16,18 +16,18 @@ import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/n
 import { useOrders } from '@apps/customer/hooks/useOrder'
 
 type RootStackParamList = {
-  CancelledScreen: { orderId: number }
+  UpdatedScreen: { orderId: number }
   OrderDetails: { orderId: number }
   Orders: undefined
 }
-type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'CancelledScreen'>
-type CancelledScreenRouteProp = RouteProp<RootStackParamList, 'CancelledScreen'>
+type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'UpdatedScreen'>
+type UpdatedScreenRouteProp = RouteProp<RootStackParamList, 'UpdatedScreen'>
 
-export default function CancelledScreen() {
+export default function UpdatedScreen() {
   const navigation = useNavigation<NavigationProps>()
-  const { fetchOrderDetails, updateOrder } = useOrders()
+  const { fetchOrderDetailed, updateOrder } = useOrders()
 
-  const route = useRoute<CancelledScreenRouteProp>()
+  const route = useRoute<UpdatedScreenRouteProp>()
   const { orderId } = route.params
 
   const [order, setOrder] = useState<any>(null)
@@ -36,14 +36,21 @@ export default function CancelledScreen() {
   const [modalVisible, setModalVisible] = useState(false)
   const [fullNameUpdate, setFullNameUpdate] = useState('')
   const [phoneNumberUpdate, setPhoneNumberUpdate] = useState('')
-  const [deliveryAddressUpdate, setDeliveryAddress] = useState('')
+  const [deliveryAddressUpdate, setDeliveryAddressUpdate] = useState('')
   const [noteUpdate, setNoteUpdate] = useState('')
 
   useEffect(() => {
     const getOrderDetails = async () => {
       try {
-        const data = await fetchOrderDetails(orderId)
-        setOrder(data)
+        const data = await fetchOrderDetailed(orderId)
+
+        if (data) {
+          setOrder(data)
+          setFullNameUpdate(data.fullName || '')
+          setPhoneNumberUpdate(data.phoneNumber || '')
+          setDeliveryAddressUpdate(data.deliveryAddress || '')
+          setNoteUpdate(data.note || '')
+        }
       } catch (error) {
         console.error('Failed to load order details')
       } finally {
@@ -53,7 +60,7 @@ export default function CancelledScreen() {
     getOrderDetails()
   }, [orderId])
 
-  const handleCancelOrder = async () => {
+  const handleUpdateOrder = async () => {
     try {
       await updateOrder(
         orderId,
@@ -63,9 +70,9 @@ export default function CancelledScreen() {
         deliveryAddressUpdate,
         noteUpdate
       )
-      Alert.alert('Success', 'Order has been canceled.', [{ text: 'OK', onPress: () => navigation.navigate('Orders') }])
+      Alert.alert('Success', 'Order has been updated.', [{ text: 'OK', onPress: () => navigation.navigate('Orders') }])
     } catch (error) {
-      Alert.alert('Error', 'Failed to cancel the order.')
+      Alert.alert('Error', 'Failed to update the order.')
     }
   }
 
@@ -85,59 +92,65 @@ export default function CancelledScreen() {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <ChevronLeft color={'#292D32'} size={24} />
           </TouchableOpacity>
-          <Text className='text-lg font-semibold text-center flex-1'>Cancel Order</Text>
+          <Text className='text-lg font-semibold text-center flex-1'>Update Order</Text>
           <View style={{ width: 24 }} />
         </View>
-        <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
-          {/* Fish List */}
-          <View className='mt-3 border-b border-zinc-300'>
-            {order.orderDetails.map((fish: any) => (
-              <View className='flex-row items-center mb-3' key={fish.id}>
-                <Image source={{ uri: fish.orderDetailImages?.[0]?.imageUrl }} className='w-16 h-12 rounded-lg' />
-                <View className='ml-3 flex-1'>
-                  <Text className='font-bold'>{fish.variety}</Text>
-                </View>
-                <Text className='font-bold'>x{fish.quantity}</Text>
-                <Text className='ml-2'>{fish.koiPrice} VND</Text>
-              </View>
-            ))}
-          </View>
-
-          {/* Total Price */}
-          <Text className='font-bold mt-3 text-right'>Total price: {order.totalAmount}</Text>
-        </View>
-
-        {/* Cancellation Warning */}
-        <View
-          className='mt-3 border rounded-lg justify-center'
-          style={{ borderColor: '#ccc', backgroundColor: '#FFF9B7' }}
-        >
-          <Text className='p-2'>Your Deposit Amount will be lost after canceling this Order</Text>
-        </View>
-
-        {/* Cancellation Reason Input */}
         <View className='mt-3'>
-          <Text className='font-bold text-base'>
-            Canceled Reason <Text style={{ color: 'red' }}>*</Text>
-          </Text>
+          <Text className='font-bold text-base'>FullName</Text>
           <TextInput
             style={{
               borderWidth: 1,
               borderColor: '#ccc',
               padding: 8,
               borderRadius: 5,
-              marginBottom: 10,
-              minHeight: 100,
-              textAlignVertical: 'top'
+              marginBottom: 10
             }}
-            multiline
-            maxLength={30}
-            numberOfLines={3}
-            value={cancellationReason}
-            onChangeText={setCancellationReason}
+            value={fullNameUpdate}
+            onChangeText={setFullNameUpdate}
           />
         </View>
-
+        <View className='mt-3'>
+          <Text className='font-bold text-base'>Phone Number</Text>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ccc',
+              padding: 8,
+              borderRadius: 5,
+              marginBottom: 10
+            }}
+            value={phoneNumberUpdate}
+            onChangeText={setPhoneNumberUpdate}
+          />
+        </View>
+        <View className='mt-3'>
+          <Text className='font-bold text-base'>Delivery Address</Text>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ccc',
+              padding: 8,
+              borderRadius: 5,
+              marginBottom: 10
+            }}
+            value={deliveryAddressUpdate}
+            onChangeText={setDeliveryAddressUpdate}
+          />
+        </View>
+        <View className='mt-3'>
+          <Text className='font-bold text-base'>Note</Text>
+          <TextInput
+            style={{
+              borderWidth: 1,
+              borderColor: '#ccc',
+              padding: 8,
+              borderRadius: 5,
+              marginBottom: 10
+            }}
+            value={noteUpdate}
+            onChangeText={setNoteUpdate}
+          />
+        </View>
         {/* Cancel Order Button */}
         <View className='mt-3'>
           <TouchableOpacity
@@ -145,7 +158,7 @@ export default function CancelledScreen() {
             style={{ backgroundColor: '#CA2629' }}
             onPress={() => setModalVisible(true)}
           >
-            <Text className='text-white text-center font-bold'>Cancel Order</Text>
+            <Text className='text-white text-center font-bold'>Update Order</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -155,7 +168,7 @@ export default function CancelledScreen() {
         <View className='flex-1 justify-center items-center bg-black/50'>
           <View className='bg-white p-5 rounded-lg w-4/5'>
             <Text className='text-lg font-bold text-center'>Are you sure?</Text>
-            <Text className='text-center text-gray-600 mt-2'>Do you really want to cancel this order?</Text>
+            <Text className='text-center text-gray-600 mt-2'>Do you really want to update this order?</Text>
             <View className='flex-row justify-between mt-4'>
               <TouchableOpacity
                 className='flex-1 mr-2 p-3 bg-gray-300 rounded-lg'
@@ -167,7 +180,7 @@ export default function CancelledScreen() {
                 className='flex-1 ml-2 p-3 bg-red-600 rounded-lg'
                 onPress={() => {
                   setModalVisible(false)
-                  handleCancelOrder()
+                  handleUpdateOrder()
                 }}
               >
                 <Text className='text-white text-center'>Yes</Text>

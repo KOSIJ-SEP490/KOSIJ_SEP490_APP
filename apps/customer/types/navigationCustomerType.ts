@@ -25,6 +25,7 @@ export type CustomerOrderStackParamList = {
   Orders: undefined
   OrderDetails: { orderId: number }
   CancelledScreen: { orderId: number }
+  UpdatedScreen: { orderId: number }
 }
 
 export type CustomerHomeStackNavigationProp = StackNavigationProp<CustomerHomeStackParamList>

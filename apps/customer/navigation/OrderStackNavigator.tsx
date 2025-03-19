@@ -3,6 +3,7 @@ import { CustomerOrderStackParamList } from '../types/navigationCustomerType'
 import OrderDetailsScreen from '../screens/Home/orders/OrderDetails'
 import OrdersScreen from '../screens/navbar/OrdersScreen'
 import CancelledScreen from '../screens/Home/orders/CancelledScreen'
+import UpdatedScreen from '../screens/Home/orders/UpdatedScreen'
 
 const Stack = createStackNavigator<CustomerOrderStackParamList>()
 
@@ -12,6 +13,7 @@ export default function CustomerOrderStackNavigator() {
       <Stack.Screen name='Orders' component={OrdersScreen} />
       <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
       <Stack.Screen name='CancelledScreen' component={CancelledScreen} />
+      <Stack.Screen name='UpdatedScreen' component={UpdatedScreen} />
     </Stack.Navigator>
   )
 }

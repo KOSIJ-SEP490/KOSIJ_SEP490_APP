@@ -75,7 +75,23 @@ export default function OrdersScreen() {
 
             {/* Status Badge */}
             <View
-              className={`px-3 py-1 rounded-full ${item.orderStatus === 'Pending' ? 'bg-yellow-300' : 'bg-green-600'}`}
+              className={`px-3 py-1 rounded-full `}
+              style={{
+                backgroundColor:
+                  item.orderStatus === 'Deposited'
+                    ? '#ADD8E6'
+                    : item.orderStatus === 'Refunded'
+                      ? '#A94064'
+                      : item.orderStatus === 'Pending'
+                        ? '#FFA500'
+                        : item.orderStatus === 'Delivering'
+                          ? '#FFD700'
+                          : item.orderStatus === 'Packed'
+                            ? '#0000FF'
+                            : item.orderStatus === 'Delivered'
+                              ? '#008000'
+                              : '#D3D3D3'
+              }}
             >
               <Text className='text-white text-xs'>{item.orderStatus}</Text>
             </View>

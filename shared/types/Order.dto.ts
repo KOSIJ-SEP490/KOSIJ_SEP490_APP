@@ -17,4 +17,18 @@ export type Orders = {
   deliveryStaffName: string
   cancellationReason: string
   confirmedUrl: string
+  orderDetails?: OrderDetail[]
+}
+
+export interface OrderDetail {
+  id: number
+  variety: string
+  koiType: string
+  quantity: number
+  length: number
+  weight: number
+  koiPrice: number
+  deposit?: number
+  note: string
+  orderDetailImages: { id: number; imageUrl: string }[]
 }

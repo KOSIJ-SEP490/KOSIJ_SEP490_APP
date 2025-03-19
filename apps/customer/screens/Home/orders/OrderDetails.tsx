@@ -30,6 +30,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 type RootStackParamList = {
   OrderDetails: { orderId: number }
   CancelledScreen: { orderId: number }
+  UpdatedScreen: { orderId: number }
 }
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'OrderDetails'>
 type OrderDetailsScreenRouteProp = RouteProp<RootStackParamList, 'OrderDetails'>
@@ -131,6 +132,10 @@ export default function OrderDetailsScreen() {
     )
   }
 
+  const formatNumber = (num: { toString: () => string }) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+
   return (
     <ScrollView>
       <View className='flex-1 mt-3 bg-white p-4'>
@@ -153,11 +158,7 @@ export default function OrderDetailsScreen() {
           </Text>
         </View>
         <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
-          <View className='border-b border-zinc-300'>
-            <Text className='font-bold'>Shipping information</Text>
-            <Text className='mb-3'>✈️ Vietnam Airlines</Text>
-          </View>
-          <View className='mt-2'>
+          <View>
             <Text className='font-bold '>Delivery address</Text>
             <Text>{order.fullName}</Text>
             <Text className='text-gray-600'>{order.phoneNumber}</Text>
@@ -181,46 +182,37 @@ export default function OrderDetailsScreen() {
                   <Text className='font-bold'>{fish.variety}</Text>
                 </View>
                 <Text className='font-bold'>x{fish.quantity}</Text>
-                <Text className='ml-2'>{fish.koiPrice} VND</Text>
+                <Text className='ml-2'>{formatNumber(fish.koiPrice)} VND</Text>
               </View>
             ))}
           </View>
 
           {/* Total Price */}
-          <Text className='font-bold mt-3 text-right'>Total price: {order.totalAmount}</Text>
-
-          {/* Delivery Section */}
-          <View className='mt-4 border-b border-zinc-300'>
-            <Text className='font-bold text-base'>🚚 Delivery calculating</Text>
-
-            <View className='flex-row items-center mt-3'>
-              <Image source={{ uri: 'https://yourimageurl.com/box.png' }} className='w-12 h-12' />
-              <View className='ml-3 flex-1'>
-                <Text className='font-bold'>Large box 55 - 65 cm</Text>
-                <Text className='text-gray-500 text-sm'>Included: Taisho Sanke, Gin Kohaku</Text>
-              </View>
-              <Text className='font-bold'>x1</Text>
-              <Text className='ml-2'>1,000,000 VND</Text>
+          <View>
+            <View className='flex-row justify-between'>
+              <Text className='font-bold mt-3 text-right'>Total Koi price:</Text>
+              <Text className='mt-3 font-semibold'> {formatNumber(order.totalFishAmount)} VND</Text>
             </View>
-
-            <View className='flex-row items-center mt-2'>
-              <Image source={{ uri: 'https://yourimageurl.com/box.png' }} className='w-12 h-12' />
-              <View className='ml-3 flex-1'>
-                <Text className='font-bold'>Medium box 50 - 55 cm</Text>
-                <Text className='text-gray-500 text-sm'>Variety: Ginrin, Minami</Text>
+            <View className='flex-row justify-between'>
+              <Text className='font-bold mt-3 text-right'>Total delivery:</Text>
+              <Text className='mt-3 font-semibold'>{formatNumber(order.totalDeliveringAmount)} VND</Text>
+            </View>
+            <View className='rounded-lg shadow-md mt-3' style={{ backgroundColor: '#DFE5FB' }}>
+              <View className='flex-row justify-between'>
+                <Text className='font-bold text-right'>Deposit Amout (Paid):</Text>
+                <Text className='font-semibold'>- {formatNumber(order.paidAmount)} VND</Text>
               </View>
-              <Text className='font-bold'>x1</Text>
-              <Text className='ml-2'>500,000 VND</Text>
+              <View className='flex-row justify-between'>
+                <Text className='font-bold mt-3 text-right'>Remaining: </Text>
+                <Text className='mt-3 font-semibold'>{formatNumber(order.remaining)} VND</Text>
+              </View>
             </View>
           </View>
-
-          {/* Delivery Total */}
-          <Text className='font-bold mt-3 text-right'>Total price: 1,500,000 VND</Text>
 
           {/* Final Total */}
           <View className='flex-row justify-between border-t mt-3 pt-3'>
             <Text className='font-bold text-lg'>Total price: </Text>
-            <Text className='font-bold text-lg'>5,500,000 VND</Text>
+            <Text className='font-bold text-lg'>{formatNumber(order.totalOrderAmount)} VND</Text>
           </View>
         </View>
         <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
@@ -247,9 +239,19 @@ export default function OrderDetailsScreen() {
             <Text className='text-gray-800 w-3/4 text-right'>{order.note || 'null'}</Text>
           </View>
         </View>
-        <View className='mt-3'>
+        <View className='pt-5 flex-row gap-2 w-full'>
           <TouchableOpacity
-            className='w-full h-10 justify-center rounded-lg shadow-md'
+            className='flex-1 items-center rounded-lg  p-3 '
+            style={{ borderColor: '#CA2629', borderWidth: 1 }}
+            onPress={() => navigation.navigate('UpdatedScreen', { orderId: orderId })}
+          >
+            <Text className='text-center' style={{ color: '#CA2629' }}>
+              Update Order
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className='flex-2  items-center rounded-lg shadow-md p-3 '
             style={{ backgroundColor: '#CA2629' }}
             onPress={() => navigation.navigate('CancelledScreen', { orderId: orderId })}
           >
