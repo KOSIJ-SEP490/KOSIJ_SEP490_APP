@@ -4,7 +4,7 @@ import { API_BASE_URL } from '@env'
 import { TripBookingDetailType } from '../types/Booking/tripBookingDetail.type'
 import { TripBookingRequestType, TripBookingType } from '../types/Booking/tripBooking.type'
 import AuthContext from '@shared/context/AuthContext'
-import { TripBookingCheckInType } from '../types/Booking/tripBookingCheckIn.type'
+import { TripBookingCheckInType, TripBookingCheckInType2 } from '../types/Booking/tripBookingCheckIn.type'
 import { TripCheckOutType } from '../types/Booking/tripCheckout.type'
 
 export function useTripBookingById(tripBookingId: number) {
@@ -127,6 +127,41 @@ export function useTripBookingCheckInById(tripBookingId: number) {
   return { tripBookingCheckIn, error }
 }
 
+export function useTripBookingCheckInById2(tripBookingId: number) {
+  const [tripBookingCheckIn, setTrip] = useState<TripBookingCheckInType2 | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+
+  const userToken = authContext?.user?.token
+
+  useEffect(() => {
+    if (!tripBookingId || !userToken) {
+      setError('User is not authenticated or invalid trip ID.')
+      return
+    }
+
+    const fetchTrip = async () => {
+      try {
+        const response = await axios.get<{ message: string; value: TripBookingCheckInType2 }>(
+          `${API_BASE_URL}trip-booking/${tripBookingId}/check-in-payment`,
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`
+            }
+          }
+        )
+        setTrip(response.data.value)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.response?.data?.detail || 'Failed to fetch the trip.')
+      }
+    }
+
+    fetchTrip()
+  }, [tripBookingId, userToken])
+
+  return { tripBookingCheckIn, error }
+}
 interface TripBookingResponse {
   message: string
   value?: {

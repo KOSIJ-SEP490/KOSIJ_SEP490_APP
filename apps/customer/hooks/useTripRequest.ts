@@ -118,3 +118,57 @@ export function useTripRequestById(tripRequestId: number) {
 
   return { tripRequestDetails, error }
 }
+
+interface TripRequestResponse {
+  message: string
+  value: string
+}
+
+export function useUpdateTripRequest() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<boolean | null>(null)
+  const [responseMessage, setResponseMessage] = useState<string | null>(null)
+
+  const authContext = useContext(AuthContext)
+  const userToken = authContext?.user?.token
+
+  const updateTripRequest = async (tripRequestId: number, requestStatus: string) => {
+    if (!tripRequestId || !userToken) {
+      setError('User is not authenticated or invalid trip ID.')
+      return null
+    }
+
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+    setResponseMessage(null)
+
+    try {
+      const response = await axios.put<TripRequestResponse>(
+        `${API_BASE_URL}customer/trip-request/${tripRequestId}`,
+        { requestStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      setSuccess(true)
+      setResponseMessage(response.data.value)
+      return response.data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.detail || 'Failed to update the trip request.'
+      setError(errorMessage)
+      setSuccess(false)
+      return { error: errorMessage }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { updateTripRequest, loading, error, success, responseMessage }
+}

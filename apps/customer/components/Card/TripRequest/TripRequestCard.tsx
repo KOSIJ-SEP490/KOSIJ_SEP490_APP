@@ -8,8 +8,16 @@ const StyledText = styled(Text)
 const StyledTouchableOpacity = styled(TouchableOpacity)
 
 const TripRequestCard = ({ requestTime, requestStatus, onPress }: TripRequestType & { onPress: () => void }) => {
-  const buttonText = requestStatus === 'Approval' ? 'Confirm your Trip Request' : 'Waiting for Manager to approve'
-  const buttonColor = requestStatus === 'Approval' ? 'text-green-600' : 'text-blue'
+  let buttonText = 'Waiting for Manager to approve'
+  const buttonColor = 'text-blue'
+
+  if (requestStatus === 'Approved') {
+    buttonText = 'Confirm your Trip Request'
+  } else if (requestStatus === 'Confirmed' || requestStatus === 'Cancelled') {
+    buttonText = 'View Details'
+  } else if (requestStatus === 'ManagerRejected' || requestStatus === 'ModificationRequested') {
+    buttonText = 'Waiting for Sales Staff to finalize again'
+  }
 
   return (
     <StyledTouchableOpacity

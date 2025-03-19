@@ -6,7 +6,8 @@ import { User, Phone, Mail } from 'lucide-react-native'
 const StyledView = styled(View)
 const StyledText = styled(Text)
 
-interface ConsultingStaffInfoProps {
+interface StaffInfoProps {
+  staffType: string
   fullName: string
   phoneNumber: string
   email: string
@@ -20,7 +21,6 @@ interface InfoRowProps {
   valueStyle?: string
 }
 
-// InfoRow component with customizable text sizes
 const InfoRow: React.FC<InfoRowProps> = ({ icon, label, value, labelStyle = 'text-sm', valueStyle = 'text-sm' }) => (
   <StyledView className='flex-row items-center mb-4'>
     {icon}
@@ -29,10 +29,10 @@ const InfoRow: React.FC<InfoRowProps> = ({ icon, label, value, labelStyle = 'tex
   </StyledView>
 )
 
-export const ConsultingStaffInfo: React.FC<ConsultingStaffInfoProps> = ({ fullName, phoneNumber, email }) => {
+export const StaffInfo: React.FC<StaffInfoProps> = ({ staffType, fullName, phoneNumber, email }) => {
   return (
     <StyledView className='p-5 w-full max-w-lg'>
-      <StyledText className='text-base font-semibold mb-6 text-blue'>Consulting Staff Information</StyledText>
+      <StyledText className='text-base font-semibold mb-6 text-blue'>{staffType} Information</StyledText>
 
       <StyledView className='bg-white rounded-lg border border-gray-300 p-6'>
         <InfoRow icon={<User size={20} color='#000' />} label='Full Name' value={fullName} />

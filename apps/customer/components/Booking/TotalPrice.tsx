@@ -94,7 +94,7 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
         const tripBookingId = await bookTrip(bookingRequest)
         setTimeout(() => {
           setIsBooking(false)
-          navigation.navigate('Payment', { tripBookingID: tripBookingId ?? 0 })
+          navigation.navigate('Payment', { tripBookingID: tripBookingId ?? 0, type: 'Payment1' })
         }, 1000)
       } catch (err) {
         setIsBooking(false)
