@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { ChevronLeft } from 'lucide-react-native'
 import axios from 'axios'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
+import AuthContext from '@shared/context/AuthContext'
+import { API_BASE_URL } from '@env'
 
 type TourDetailsScreenProps = {
   id: number
@@ -12,6 +14,8 @@ type TourDetailsScreenProps = {
 type RootStackParamList = {
   TourDetails: { id: number }
   CollectTicket: { ticketImage: string; tripId: number }
+  CheckOutTrip: { ticketImage: string; tripId: number }
+  CreateOrder: { id: number }
 }
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'TourDetails'>
@@ -23,13 +27,20 @@ export default function TourDetailsScreen() {
   const [tourDetails, setTourDetails] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [participantList, setParticipantList] = useState<any>(null)
-  const apiImageUrl = 'https://example.com/ticket.jpg' // Example
+  const apiImageUrl = 'https://example.com/ticket.jpg'
+  const authContext = useContext(AuthContext)
+
+  if (!authContext || !authContext.user) {
+    throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
+  }
+
+  const { user } = authContext
   useEffect(() => {
     const fetchTourDetails = async () => {
       try {
-        const response = await axios.get(`https://kosij.azurewebsites.net/api/staff/trip/${id}`, {
+        const response = await axios.get(`${API_BASE_URL}staff/trip/${id}`, {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMDMxNjE5fQ.4kEuNei2Zp2gd9n4jTrp1mGbMB3nEjhrQZuOfUVta2c`,
+            Authorization: `Bearer ${user.token}`,
             Accept: 'text/plain'
           }
         })
@@ -47,9 +58,9 @@ export default function TourDetailsScreen() {
   useEffect(() => {
     const fetchTourParticipantsList = async () => {
       try {
-        const response = await axios.get(`https://kosij.azurewebsites.net/api/trip/${id}/passengers`, {
+        const response = await axios.get(`${API_BASE_URL}trip/${id}/passengers`, {
           headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJDT04tMDAxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ29uc3VsdGluZ1N0YWZmIiwiZXhwIjoxNzQxMDMxNjE5fQ.4kEuNei2Zp2gd9n4jTrp1mGbMB3nEjhrQZuOfUVta2c`,
+            Authorization: `Bearer ${user.token}`,
             Accept: 'text/plain'
           }
         })
@@ -85,8 +96,8 @@ export default function TourDetailsScreen() {
   const getButtonText = () => {
     if (!participantList?.value) return 'Start Trip'
 
-    const allCheckedIn = participantList.value.every((p: any) => p.isCheckIn === true)
-    return allCheckedIn ? 'Create Order' : 'Start Trip'
+    const allCheckedIn = participantList.value.every((p: any) => p.isCheckIn === true || p.isCheckIn === false)
+    return allCheckedIn ? 'Trip Completion' : 'Start Trip'
   }
 
   return (
@@ -105,9 +116,35 @@ export default function TourDetailsScreen() {
         <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
           <View className='flex-row items-center justify-between flex-wrap'>
             <Text className='text-lg font-bold flex-1 pr-2'>{tourDetails?.value?.tourName}</Text>
-            <View className='px-3 py-1 rounded-full' style={{ backgroundColor: '#264ECA' }}>
+            <View
+              className='px-3 py-1 rounded-full'
+              style={{
+                backgroundColor:
+                  tourDetails?.value?.tripStatus === 'Available'
+                    ? '#ADD8E6'
+                    : tourDetails?.value?.tripStatus === 'Not Available'
+                      ? '#D3D3D3'
+                      : tourDetails?.value?.tripStatus === 'Full'
+                        ? '#A94064'
+                        : tourDetails?.value?.tripStatus === 'Registration Closed'
+                          ? '#FFA500'
+                          : tourDetails?.value?.tripStatus === 'Not Started'
+                            ? '#FFD700'
+                            : tourDetails?.value?.tripStatus === 'On Going'
+                              ? '#0000FF'
+                              : tourDetails?.value?.tripStatus === 'Completed'
+                                ? '#008000'
+                                : tourDetails?.value?.tripStatus === 'Canceled'
+                                  ? '#FF0000'
+                                  : '#D3D3D3'
+              }}
+            >
               <Text className='text-white text-xs'>{tourDetails?.value?.tripStatus}</Text>
             </View>
+          </View>
+          <View>
+            <Text className='text-gray-600 text-sm'>Trip ID: {tourDetails?.value?.id}</Text>
+            <Text className='text-gray-600 text-sm'>Type: {tourDetails?.value?.tripType}</Text>
           </View>
 
           {/* Start & End Dates */}
@@ -158,7 +195,9 @@ export default function TourDetailsScreen() {
           <Text className='font-bold'>Participants List</Text>
           {participantList?.value?.map((participant: any, index: number) => (
             <View key={index} className='p-3 rounded-lg mb-2' style={{ backgroundColor: '#f6feff' }}>
-              <Text className='font-semibold text-blue-600'>{participant.fullName}</Text>
+              <Text className='font-semibold' style={{ color: '#264ECA' }}>
+                {participant.fullName}
+              </Text>
               <Text className='text-gray-600'>{participant.phoneNumber || 'null'}</Text>
               <Text className='text-gray-600'>{participant.email || 'null'}</Text>
             </View>
@@ -176,48 +215,52 @@ export default function TourDetailsScreen() {
           ))}
         </View>
         <View className='mt-10 ml-5 w-80'>
-          {/* Bottom Button */}
-          <TouchableOpacity
-            style={{ backgroundColor: '#264eca' }}
-            className='p-3 rounded-md bottom-4 right-4'
-            onPress={() => navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })}
-          >
-            <Text className='text-white text-center'>{getButtonText()}</Text>
-          </TouchableOpacity>
+          <View>
+            {getButtonText() === 'Trip Completion' ? (
+              <View className='flex-row gap-2'>
+                {/* Trip Completion */}
+                <TouchableOpacity
+                  style={{ backgroundColor: '#264eca' }}
+                  className='flex-1 p-3 rounded-lg items-center bottom-4 right-4'
+                  onPress={() => {
+                    if (getButtonText() === 'Start Trip') {
+                      navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })
+                    } else {
+                      navigation.navigate('CheckOutTrip', { ticketImage: apiImageUrl, tripId: id })
+                    }
+                  }}
+                >
+                  <Text className='text-white font-semibold'>Trip Completion</Text>
+                </TouchableOpacity>
+
+                {/* Create Order */}
+                <TouchableOpacity
+                  className='flex-2 p-3 rounded-lg items-center bottom-4 right-4'
+                  onPress={() => navigation.navigate('CreateOrder', { id: id })}
+                  style={{ borderColor: '#264eca', borderWidth: 1 }}
+                >
+                  <Text className='font-semibold' style={{ color: '#264eca' }}>
+                    Create Order
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                className='bg-blue-500 p-3 rounded-lg items-center mt-2 bottom-4 right-4'
+                onPress={() => {
+                  if (getButtonText() === 'Start Trip') {
+                    navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })
+                  } else {
+                    navigation.navigate('CheckOutTrip', { ticketImage: apiImageUrl, tripId: id })
+                  }
+                }}
+              >
+                <Text className='text-white font-semibold'>{getButtonText()}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
     </ScrollView>
   )
 }
-
-// const styles = StyleSheet.create({
-//   card: {
-//     backgroundColor: '#fff',
-//     borderRadius: 10,
-//     padding: 16,
-//     marginTop: 10,
-//     marginBottom: 10,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
-//     elevation: 5 // Android shadow
-//   },
-//   image: {
-//     width: '100%',
-//     height: 150,
-//     borderRadius: 10
-//   },
-//   cardContent: {
-//     paddingVertical: 10
-//   },
-//   title: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     marginBottom: 5
-//   },
-//   description: {
-//     fontSize: 14,
-//     color: 'gray'
-//   }
-// })

@@ -23,21 +23,15 @@ interface Passenger {
 }
 
 interface Ticket {
-  outboundTicketUrl?: string
+  inboundTicketUrl?: string
 }
 
-const CollectTicket = ({ route }: Props) => {
+const CheckOutTrip = ({ route }: Props) => {
   const navigation = useNavigation<StackScreenProps<RootStackParamList, 'CollectTicket'>['navigation']>()
   const { ticketImage, tripId } = route.params
   const [currentStep, setCurrentStep] = useState(1)
   const [passengers, setPassengers] = useState<Passenger[]>([])
-  const authContext = useContext(AuthContext)
 
-  if (!authContext || !authContext.user) {
-    throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
-  }
-
-  const { user } = authContext
   const [checkedPassengers, setCheckedPassengers] = useState<{ [key: number]: boolean }>({})
 
   const toggleCheck = (id: number) => {
@@ -45,12 +39,18 @@ const CollectTicket = ({ route }: Props) => {
   }
 
   const [ticketUrl, setTicketUrl] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
 
+  if (!authContext || !authContext.user) {
+    throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
+  }
+
+  const { user } = authContext
   useEffect(() => {
     const fetchTicket = async () => {
       try {
         const response = await axios.get<{ value: Ticket[] }>(
-          `${API_BASE_URL}trip/${tripId}/airplane-tickets?ticketType=Outbound`,
+          `${API_BASE_URL}trip/${tripId}/airplane-tickets?ticketType=Inbound`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`,
@@ -60,10 +60,10 @@ const CollectTicket = ({ route }: Props) => {
         )
 
         const tickets = response.data.value
-        const outboundTicket = tickets.find((ticket: any) => ticket.outboundTicketUrl)
+        const inboundTicket = tickets.find((ticket: any) => ticket.inboundTicketUrl)
 
-        if (outboundTicket) {
-          setTicketUrl(outboundTicket.outboundTicketUrl ?? null)
+        if (inboundTicket) {
+          setTicketUrl(inboundTicket.inboundTicketUrl ?? null)
         }
       } catch (error) {
         console.error('Error fetching ticket:', error)
@@ -96,7 +96,7 @@ const CollectTicket = ({ route }: Props) => {
   const handleCheckIn = async () => {
     const selectedPassengers = Object.entries(checkedPassengers)
       .filter(([_, checked]) => checked)
-      .map(([id]) => ({ id: Number(id), isCheckIn: true }))
+      .map(([id]) => ({ id: Number(id), isCheckOut: true }))
 
     if (selectedPassengers.length === 0) {
       alert('Please select at least one passenger to check in.')
@@ -105,8 +105,8 @@ const CollectTicket = ({ route }: Props) => {
 
     try {
       const response = await axios.put<{ value: string }>(
-        `${API_BASE_URL}trip/${tripId}/passengers/check-in`,
-        { checkInPassengersRequest: selectedPassengers },
+        `${API_BASE_URL}trip/${tripId}/passengers/check-out`,
+        { checkOutPassengersRequest: selectedPassengers },
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
@@ -115,44 +115,6 @@ const CollectTicket = ({ route }: Props) => {
         }
       )
 
-      alert(response.data.value || 'Check-in successful!')
-      navigation.navigate('TourDetails', { id: tripId })
-    } catch (error) {
-      console.error('Error during check-in:', error)
-      alert('Failed to check in passengers.')
-    }
-  }
-
-  const [attendance, setAttendance] = useState<Record<number, { isCheckIn: boolean | null; isAbsent: boolean | null }>>(
-    {}
-  )
-
-  const updateAttendance = (id: any, status: string) => {
-    setAttendance((prev) => ({
-      ...prev,
-      [id]: status === 'yes' ? { isCheckIn: true, isAbsent: null } : { isCheckIn: null, isAbsent: true }
-    }))
-  }
-
-  const handleSubmit = async () => {
-    const requestBody = {
-      checkInPassengersRequest: Object.entries(attendance).map(([id, status]) => ({
-        id: Number(id),
-        ...(status || {})
-      }))
-    }
-
-    try {
-      const response = await axios.put<{ value: Passenger[] }>(
-        `${API_BASE_URL}trip/${tripId}/passengers/check-in`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
       alert(response.data.value || 'Check-in successful!')
       navigation.navigate('TourDetails', { id: tripId })
     } catch (error) {
@@ -211,29 +173,11 @@ const CollectTicket = ({ route }: Props) => {
               {passengers.map((passenger, index) => (
                 <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
                   <Text>{passenger.fullName}</Text>
-                  <View className='flex-row'>
-                    <TouchableOpacity
-                      onPress={() => updateAttendance(passenger.id, 'yes')}
-                      style={{
-                        backgroundColor: attendance[passenger.id]?.isCheckIn ? '#4CAF50' : 'transparent',
-                        padding: 8,
-                        borderRadius: 16
-                      }}
-                    >
-                      <Text>Yes</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => updateAttendance(passenger.id, 'no')}
-                      style={{
-                        backgroundColor: attendance[passenger.id]?.isAbsent ? '#F44336' : 'transparent',
-                        padding: 8,
-                        borderRadius: 16,
-                        marginLeft: 10
-                      }}
-                    >
-                      <Text>No</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <Checkbox
+                    status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
+                    onPress={() => toggleCheck(passenger.id)}
+                    disabled={passenger.isCheckIn}
+                  />
                 </View>
               ))}
             </View>
@@ -249,7 +193,7 @@ const CollectTicket = ({ route }: Props) => {
 
         <TouchableOpacity
           className={`px-4 py-2 rounded-full flex-row items-center ${currentStep === 1 ? '#264eca' : 'bg-green-600'}`}
-          onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleSubmit())}
+          onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleCheckIn())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>
           {currentStep === 1 ? (
@@ -263,4 +207,4 @@ const CollectTicket = ({ route }: Props) => {
   )
 }
 
-export default CollectTicket
+export default CheckOutTrip

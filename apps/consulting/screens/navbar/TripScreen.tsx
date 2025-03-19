@@ -55,14 +55,35 @@ export default function TripScreen() {
               <Text className='font-semibold'>{item.tourName}</Text>
               <Text className='text-gray-500'>Trip ID: {item.id}</Text>
               <Text className='text-gray-500'>Type: {item.tripType}</Text>
-              <Text className='text-blue-500'>
-                {new Date(item.departureDate).toLocaleDateString()} - {new Date(item.returnDate).toLocaleDateString()}
-              </Text>
+              <View className='flex-row'>
+                <Text className='text-blue-500'>{item.departureDate} -</Text>
+                <Text className='text-blue-500'> {item.returnDate}</Text>
+              </View>
             </View>
 
             {/* Status Badge */}
             <View
-              className={`px-3 py-1 rounded-full ${item.tripStatus === 'Available' ? 'bg-yellow-300' : 'bg-green-600'}`}
+              className='px-3 py-1 rounded-full'
+              style={{
+                backgroundColor:
+                  item.tripStatus === 'Available'
+                    ? '#ADD8E6'
+                    : item.tripStatus === 'Not Available'
+                      ? '#D3D3D3'
+                      : item.tripStatus === 'Full'
+                        ? '#A94064'
+                        : item.tripStatus === 'Registration Closed'
+                          ? '#FFA500'
+                          : item.tripStatus === 'Not Started'
+                            ? '#FFD700'
+                            : item.tripStatus === 'On Going'
+                              ? '#0000FF'
+                              : item.tripStatus === 'Completed'
+                                ? '#008000'
+                                : item.tripStatus === 'Canceled'
+                                  ? '#FF0000'
+                                  : '#D3D3D3'
+              }}
             >
               <Text className='text-white text-xs'>{item.tripStatus}</Text>
             </View>
