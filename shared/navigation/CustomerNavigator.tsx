@@ -3,8 +3,8 @@ import AppNavigator from './AppNavigator'
 import HomeStackNavigator from '@apps/customer/navigation/HomeStackNavigator'
 import OrdersScreen from '@apps/customer/screens/navbar/OrdersScreen'
 import NotificationsScreen from '@apps/customer/screens/navbar/NotificationsScreen'
-import SettingsScreen from '@apps/customer/screens/navbar/SettingsScreen'
 import TripsStackNavigator from '@apps/customer/navigation/TripsStackNavigator'
+import SettingsStackNavigator from '@apps/customer/navigation/SettingsStackNavigator'
 
 export default function CustomerNavigator() {
   return (
@@ -18,7 +18,7 @@ export default function CustomerNavigator() {
           component: NotificationsScreen,
           icon: 'notifications'
         },
-        { name: 'Settings', component: SettingsScreen, icon: 'settings' }
+        { name: 'Settings', component: SettingsStackNavigator, icon: 'settings' }
       ]}
     />
   )

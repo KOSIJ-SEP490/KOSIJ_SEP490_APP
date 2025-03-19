@@ -29,5 +29,6 @@ export function useWallet() {
     fetchWallet()
   }, [fetchWallet])
 
-  return { wallet, error }
+  // Return the wallet data along with a refetch function
+  return { wallet, error, refetch: fetchWallet }
 }

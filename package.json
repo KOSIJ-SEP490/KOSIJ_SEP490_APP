@@ -6,8 +6,8 @@
     "start:customer": "cross-env EXPO_APP=customer npx expo start --clear",
     "start:delivery": "cross-env EXPO_APP=delivery npx expo start --clear",
     "start:consulting": "cross-env EXPO_APP=consulting npx expo start --clear",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
@@ -26,7 +26,7 @@
     "date-fns": "^4.1.0",
     "expo": "~52.0.35",
     "expo-status-bar": "~2.0.1",
-    "firebase": "^11.3.1",
+    "firebase": "^11.4.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.475.0",
     "lucide-react-native": "^0.475.0",
@@ -47,10 +47,12 @@
     "react-native-svg": "^15.11.2",
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
-    "tailwind-merge": "^3.0.2"
+    "tailwind-merge": "^3.0.2",
+    "expo-image-picker": "~16.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@react-native/metro-config": "^0.78.1",
     "@types/axios": "^0.9.36",
     "@types/date-fns": "^2.5.3",
     "@types/lodash": "^4.17.16",

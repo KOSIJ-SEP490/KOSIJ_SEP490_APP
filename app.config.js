@@ -8,6 +8,22 @@ export default ({ config }) => {
     entryPoint: `./apps/${app}/index.ts`,
     extra: {
       appRole: app
+    },
+    android: {
+      package:
+        app === 'delivery'
+          ? 'com.hoangjune.deliveryapp'
+          : app === 'consulting'
+            ? 'com.hoangjune.consultingapp'
+            : 'com.hoangjune.customerapp'
+    },
+    ios: {
+      bundleIdentifier:
+        app === 'delivery'
+          ? 'com.hoangjune.deliveryapp'
+          : app === 'consulting'
+            ? 'com.hoangjune.consultingapp'
+            : 'com.hoangjune.customerapp'
     }
   }
 }

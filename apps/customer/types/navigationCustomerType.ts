@@ -1,4 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack'
+import { AccountType } from './Account/account.type'
 
 export type CustomerHomeStackParamList = {
   Home: undefined
@@ -23,5 +24,11 @@ export type CustomerTripsStackParamList = {
   Payment: { tripBookingID: number; type: string }
 }
 
+export type CustomerSettingsStackParamList = {
+  Settings: undefined
+  Account: { account?: AccountType }
+}
+
 export type CustomerHomeStackNavigationProp = StackNavigationProp<CustomerHomeStackParamList>
 export type CustomerTripsStackNavigationProp = StackNavigationProp<CustomerTripsStackParamList>
+export type CustomerSettingsStackNavigationProp = StackNavigationProp<CustomerSettingsStackParamList>
