@@ -139,10 +139,9 @@ export default function OrderDetailsScreen() {
           </View>
           {/* Delivery Section */}
           <View className='mt-4 border-b border-zinc-300'>
+            <Text className='font-bold text-base'>🚚 Delivery calculating</Text>
             {order.boxAllocations.map((delivery: any) => (
               <View key={delivery.id}>
-                <Text className='font-bold text-base'>🚚 Delivery calculating</Text>
-
                 <View className='flex-row items-center mt-3'>
                   <Image source={{ uri: 'https://yourimageurl.com/box.png' }} className='w-12 h-12' />
                   <View className='ml-3 flex-1'>
@@ -196,26 +195,25 @@ export default function OrderDetailsScreen() {
         </View>
         <View className='mt-3'>
           <TouchableOpacity
-            className='w-full h-10 justify-center rounded-lg'
-            style={{ borderColor: '#264eca', borderWidth: 1 }}
+            className='w-full py-3 justify-center items-center rounded-xl shadow-sm'
+            style={{
+              backgroundColor: '#ffffff',
+              borderColor: '#264eca',
+              borderWidth: 1.5,
+              shadowColor: '#264eca',
+              shadowOpacity: 0.3,
+              shadowRadius: 4,
+              shadowOffset: { width: 0, height: 2 },
+              elevation: 3
+            }}
             onPress={() => navigation.navigate('UpdateOrder', { orderId: orderId })}
           >
-            <Text className='font-semibold text-center' style={{ color: '#264eca' }}>
+            <Text className='font-semibold text-center text-base' style={{ color: '#264eca' }}>
               Update Order
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-      {/* <Modal visible={visible} transparent={true} onRequestClose={() => setVisible(false)}>
-        <View className='flex-1 bg-black bg-opacity-75 justify-center items-center'>
-          {selectedImages.map((img, index) => (
-            <Image key={index} source={{ uri: img.imageUrl }} className='w-80 h-80 mb-4' />
-          ))}
-          <TouchableOpacity onPress={() => setVisible(false)}>
-            <Text className='text-white text-lg'>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal> */}
     </ScrollView>
   )
 }

@@ -11,6 +11,7 @@ import AuthContext from '@shared/context/AuthContext'
 import { API_BASE_URL } from '@env'
 import axios from 'axios'
 import { useOrders } from '../api/useOrder.api'
+import KoiUploadImage from '@shared/screens/components/KoiUploadImage'
 
 type CreateOrderScreenProps = {
   id: number
@@ -70,7 +71,6 @@ const CreateOrder = () => {
       bookingAccout: '',
       fullName: '',
       phoneNumber: '',
-      country: '',
       city: '',
       cityId: '',
       district: '',
@@ -100,14 +100,13 @@ const CreateOrder = () => {
         bookingAccout: '',
         fullName: '',
         phoneNumber: '',
-        country: 'Vietnam',
         city: '',
         cityId: '',
         district: '',
         districtId: '',
         ward: '',
         wardId: '',
-        address: 'Lot E2a-7, D1 Street, High-Tech Park'
+        address: ''
       }
     ])
   }
@@ -115,23 +114,6 @@ const CreateOrder = () => {
   const removeForm = (id: number) => {
     setForms(forms.filter((form) => form.id !== id))
   }
-
-  // const pickImage = async (index: number) => {
-  //   const result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsMultipleSelection: true,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1
-  //   })
-
-  //   if (!result.canceled) {
-  //     const newForms = [...forms]
-  //     const selectedImages = result.assets.map((asset) => asset.uri)
-  //     newForms[index].koiImage = [...newForms[index].koiImage, ...selectedImages]
-  //     setForms(newForms)
-  //   }
-  // }
 
   const [cities, setCities] = useState<Location[]>([])
   const [districts, setDistricts] = useState<District[]>([])
@@ -344,22 +326,8 @@ const CreateOrder = () => {
                   />
                 </View>
               </View>
-              <View className='mt-3'>
-                <Text>
-                  Koi Name <Text style={{ color: 'red' }}>*</Text>
-                </Text>
-                <TextInput
-                  style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
-                  placeholder='Enter koi name'
-                  value={form.note}
-                  onChangeText={(text) => {
-                    const newForms = [...forms]
-                    newForms[index].note = text
-                    setForms(newForms)
-                  }}
-                />
-              </View>
-              <View className='flex-row justify-between'>
+
+              <View className='flex-row justify-between mt-3'>
                 <View className='w-36'>
                   <Text className='mb-2'>
                     Koi Quantity <Text style={{ color: 'red' }}>*</Text>
@@ -541,77 +509,45 @@ const CreateOrder = () => {
                 />
               </View>
               <View key={form.id}>
-                <Text>
+                <Text className='mb-2'>
                   Koi Image <Text style={{ color: 'red' }}>*</Text>
                 </Text>
-
-                {/* <TouchableOpacity onPress={() => pickImage(index)} style={{ marginBottom: 10, alignItems: 'center' }}>
-                  <View
-                    style={{
-                      width: 100,
-                      height: 100,
-                      backgroundColor: '#eee',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: 5
-                    }}
-                  >
-                    <Text>+ Upload</Text>
-                  </View>
-                </TouchableOpacity> */}
-
-                {/* Display uploaded images */}
-                {/* <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {form.koiImage.map((uri) => (
-                    <Image
-                      key={`image-${uri}`}
-                      source={{ uri }}
-                      style={{ width: 100, height: 100, marginRight: 10, borderRadius: 5 }}
-                    />
-                  ))}
-                </View>
-
-                {index !== 0 && (
-                  <TouchableOpacity
-                    onPress={() => removeForm(form.id)}
-                    style={{
-                      backgroundColor: 'red',
-                      padding: 10,
-                      borderRadius: 5,
-                      alignItems: 'center',
-                      marginTop: 10
-                    }}
-                  >
-                    <Text style={{ color: 'white' }}>Remove</Text>
-                  </TouchableOpacity>
-                )} */}
-                <TextInput
-                  style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
-                  placeholder='Enter'
-                  value={form.koiImage.join(',')}
-                  onChangeText={(text) => {
-                    const newForms = [...forms]
-                    newForms[index].koiImage = text.split(',').map((url) => url.trim())
-                    setForms(newForms)
+                <KoiUploadImage
+                  value={form.koiImage}
+                  onChange={(newImageUrls: string[]) => {
+                    const updatedForms = [...forms]
+                    updatedForms[index].koiImage = newImageUrls
+                    setForms(updatedForms)
                   }}
+                  maxCount={4}
                 />
-                {/* </View> */}
               </View>
             </View>
           ))}
 
           <TouchableOpacity
             onPress={addForm}
-            style={{ backgroundColor: '#264eca', padding: 15, borderRadius: 5, alignItems: 'center' }}
+            style={{
+              padding: 15,
+              borderRadius: 10,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 2,
+              borderColor: '#264eca',
+              borderStyle: 'dashed',
+              flexDirection: 'row',
+              backgroundColor: '#ffffff'
+            }}
           >
-            <Text style={{ color: 'white', fontSize: 16 }}>Create more ☺</Text>
+            <Text style={{ color: '#264eca', fontSize: 16, fontWeight: '600' }}>Create more</Text>
+            <Text style={{ color: '#264eca', fontSize: 18 }}>+</Text>
           </TouchableOpacity>
         </ScrollView>
       ) : (
         <ScrollView className='mt-2' style={{ maxHeight: 400 }}>
-          {forms.map((form, index) => (
+          {forms.length > 0 && (
             <View
-              key={form.id}
+              key={forms[0].id}
               style={{ borderWidth: 1, borderColor: '#ccc', padding: 15, marginBottom: 20, borderRadius: 10 }}
             >
               <View>
@@ -619,11 +555,11 @@ const CreateOrder = () => {
                   Booking Account <Text style={{ color: 'red' }}>*</Text>
                 </Text>
                 <Picker
-                  selectedValue={form.bookingAccout}
+                  selectedValue={forms[0].bookingAccout}
                   onValueChange={(itemValue) => {
-                    const newForms = [...forms]
-                    newForms[index].bookingAccout = itemValue
-                    setForms(newForms)
+                    const updatedForms = [...forms]
+                    updatedForms[0].bookingAccout = itemValue
+                    setForms(updatedForms)
                   }}
                 >
                   <Picker.Item label='Select Trip Booking Account' value='' />
@@ -645,11 +581,11 @@ const CreateOrder = () => {
                 <TextInput
                   style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
                   placeholder='Enter'
-                  value={form.fullName}
+                  value={forms[0].fullName}
                   onChangeText={(text) => {
-                    const newForms = [...forms]
-                    newForms[index].fullName = text
-                    setForms(newForms)
+                    const updatedForms = [...forms]
+                    updatedForms[0].fullName = text
+                    setForms(updatedForms)
                   }}
                 />
               </View>
@@ -661,11 +597,11 @@ const CreateOrder = () => {
                 <TextInput
                   style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
                   placeholder='Enter'
-                  value={form.phoneNumber}
+                  value={forms[0].phoneNumber}
                   onChangeText={(text) => {
-                    const newForms = [...forms]
-                    newForms[index].phoneNumber = text
-                    setForms(newForms)
+                    const updatedForms = [...forms]
+                    updatedForms[0].phoneNumber = text
+                    setForms(updatedForms)
                   }}
                 />
               </View>
@@ -673,7 +609,7 @@ const CreateOrder = () => {
                 <Text>
                   Province/City <Text style={{ color: 'red' }}>*</Text>
                 </Text>
-                <Picker selectedValue={form.cityId} onValueChange={(value) => handleCityChange(value, index)}>
+                <Picker selectedValue={forms[0].cityId} onValueChange={(value) => handleCityChange(value, 0)}>
                   <Picker.Item label='Select city' value='' />
                   {cities.map((city) => (
                     <Picker.Item key={`city-${city.code}`} label={city.name} value={city.code} />
@@ -684,7 +620,7 @@ const CreateOrder = () => {
                 <Text>
                   District <Text style={{ color: 'red' }}>*</Text>
                 </Text>
-                <Picker selectedValue={form.districtId} onValueChange={(value) => handleDistrictChange(value, index)}>
+                <Picker selectedValue={forms[0].districtId} onValueChange={(value) => handleDistrictChange(value, 0)}>
                   <Picker.Item label='Select District' value='' />
                   {districts.map((district) => (
                     <Picker.Item key={`district-${district.code}`} label={district.name} value={district.code} />
@@ -695,7 +631,7 @@ const CreateOrder = () => {
                 <Text>
                   Ward <Text style={{ color: 'red' }}>*</Text>
                 </Text>
-                <Picker selectedValue={form.wardId} onValueChange={(value) => handleWardChange(value, index)}>
+                <Picker selectedValue={forms[0].wardId} onValueChange={(value) => handleWardChange(value, 0)}>
                   <Picker.Item label='Select Ward' value='' />
                   {wards.map((ward) => (
                     <Picker.Item key={`ward-${ward.code}`} label={ward.name} value={ward.code} />
@@ -709,16 +645,16 @@ const CreateOrder = () => {
                 <TextInput
                   style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
                   placeholder='Enter'
-                  value={form.address}
+                  value={forms[0].address}
                   onChangeText={(text) => {
-                    const newForms = [...forms]
-                    newForms[index].address = text
-                    setForms(newForms)
+                    const updatedForms = [...forms]
+                    updatedForms[0].address = text
+                    setForms(updatedForms)
                   }}
                 />
               </View>
             </View>
-          ))}
+          )}
         </ScrollView>
       )}
 
