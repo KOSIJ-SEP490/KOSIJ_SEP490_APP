@@ -86,49 +86,14 @@ export function useOrders() {
     }
   }
 
-  const updateOrder = async (
-    orderId: number,
-    cancellationReason: string,
-    fullName: string,
-    phoneNumber: string,
-    deliveryAddress: string,
-    paidAmount: number,
-    note: string,
-    orderDetails: Array<{
-      id: number
-      variety: string
-      koiType: string
-      quantity: number
-      length: number
-      weight: number
-      koiPrice: number
-      note: string
-      orderDetailImages: Array<{
-        id: number
-        imageUrl: string
-      }>
-    }>
-  ) => {
+  const updateOrder = async (orderId: number, updatedOrder: any) => {
     try {
-      const response = await axios.put(
-        `${API_BASE_URL}order/${orderId}/consultant`,
-        {
-          cancellationReason,
-          fullName,
-          phoneNumber,
-          deliveryAddress,
-          paidAmount,
-          note,
-          orderDetails
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'text/plain',
-            Authorization: `Bearer ${user.token}`
-          }
+      const response = await axios.put(`${API_BASE_URL}order/${orderId}/consultant`, updatedOrder, {
+        headers: {
+          Accept: 'text/plain',
+          Authorization: `Bearer ${user.token}`
         }
-      )
+      })
       return response.data
     } catch (error) {
       console.error('Error canceling order:', error)

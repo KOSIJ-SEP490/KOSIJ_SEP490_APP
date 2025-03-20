@@ -16,6 +16,11 @@ import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/n
 import { useOrders } from '../api/useOrder.api'
 import Steps from './Steps.container'
 import { Picker } from '@react-native-picker/picker'
+import { launchImageLibrary } from 'react-native-image-picker'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { storage } from 'firebaseConfig'
+import KoiImageUploader from '@shared/screens/components/KoiUploadImage'
+import KoiUploadImage from '@shared/screens/components/KoiUploadImage'
 
 type RootStackParamList = {
   UpdateOrder: { orderId: number }
@@ -43,13 +48,12 @@ export default function UpdateOrder() {
   const [noteUpdate, setNoteUpdate] = useState('')
   const [varietyUpdate, setVarietyUpdate] = useState('')
   const [koiTypeUpdate, setKoiTypeUpdate] = useState('')
-  const [quantityUpdate, setQuantityUpdate] = useState('')
-  const [lengthUpdate, setLengthUpdate] = useState('')
-  const [weightUpdate, setWeightUpdate] = useState('')
-  const [koiPriceUpdate, setKoiPriceUpdate] = useState('')
-  const [depositUpdate, setDepositUpdate] = useState('')
+  const [quantityUpdate, setQuantityUpdate] = useState<number>(1)
+  const [lengthUpdate, setLengthUpdate] = useState<number>(0)
+  const [weightUpdate, setWeightUpdate] = useState<number>(0)
+  const [koiPriceUpdate, setKoiPriceUpdate] = useState<number>(0)
   const [noteDetailUpdate, setNoteDetailUpdate] = useState('')
-  const [imageUrlUpdate, setImageUrlUpdate] = useState('')
+  const [imageUrls, setImageUrls] = useState<string[]>([])
 
   useEffect(() => {
     const getOrderDetails = async () => {
@@ -62,18 +66,14 @@ export default function UpdateOrder() {
           setPhoneNumberUpdate(data.phoneNumber || '')
           setDeliveryAddressUpdate(data.deliveryAddress || '')
           setNoteUpdate(data.note || '')
-          if (data.orderDetails && data.orderDetails.length > 0) {
-            const detail = data.orderDetails[0]
-            setVarietyUpdate(detail.variety || '')
-            setKoiTypeUpdate(detail.koiType || '')
-            setQuantityUpdate(String(detail.quantity) || '')
-            setLengthUpdate(String(detail.length) || '')
-            setWeightUpdate(String(detail.weight) || '')
-            setKoiPriceUpdate(String(detail.koiPrice) || '')
-            setDepositUpdate(detail.deposit ? String(detail.deposit) : '')
-            setNoteDetailUpdate(detail.note || '')
-            setImageUrlUpdate(detail.orderDetailImages?.[0]?.imageUrl || '')
-          }
+          setVarietyUpdate(data.orderDetails?.[0]?.variety || '')
+          setKoiTypeUpdate(data.orderDetails?.[0]?.koiType || '')
+          setQuantityUpdate(data.orderDetails?.[0]?.quantity || 0)
+          setLengthUpdate(data.orderDetails?.[0]?.length || 0)
+          setWeightUpdate(data.orderDetails?.[0]?.weight || 0)
+          setKoiPriceUpdate(data.orderDetails?.[0]?.koiPrice || 0)
+          setNoteDetailUpdate(data.orderDetails?.[0]?.note || '')
+          setImageUrls(data.orderDetails?.[0]?.orderDetailImages?.map((img: any) => img.imageUrl) || [])
         }
       } catch (error) {
         console.error('Failed to load order details')
@@ -86,39 +86,45 @@ export default function UpdateOrder() {
 
   const handleUpdateOrder = async () => {
     try {
-      const orderDetails = [
-        {
-          id: 0,
-          variety: 'example',
-          koiType: 'example',
-          quantity: 10,
-          length: 30,
-          weight: 1.5,
-          koiPrice: 100,
-          note: 'Some note',
-          orderDetailImages: [
-            { id: 1, imageUrl: 'https://example.com/image1.jpg' },
-            { id: 2, imageUrl: 'https://example.com/image2.jpg' }
-          ]
-        }
-      ]
+      const updatedOrder = {
+        fullName: fullNameUpdate,
+        phoneNumber: phoneNumberUpdate,
+        deliveryAddress: deliveryAddressUpdate,
+        paidAmount: koiPriceUpdate,
+        note: noteUpdate,
+        orderDetails: [
+          {
+            id: order?.orderDetails?.[0]?.id,
+            variety: varietyUpdate,
+            koiType: koiTypeUpdate,
+            quantity: quantityUpdate,
+            length: lengthUpdate,
+            weight: weightUpdate,
+            koiPrice: koiPriceUpdate,
+            note: noteDetailUpdate,
+            orderDetailImages: imageUrls.map((url, index) => ({
+              id: order?.orderDetails?.orderDetailImages?.[0]?.id,
+              imageUrl: url
+            }))
+          }
+        ]
+      }
 
-      const paidAmount = 100
+      console.log('Updated Order:', updatedOrder)
+      console.log('Image URLs:', imageUrls)
 
-      await updateOrder(
-        orderId,
-        cancellationReason,
-        fullNameUpdate,
-        phoneNumberUpdate,
-        deliveryAddressUpdate,
-        paidAmount,
-        noteUpdate,
-        orderDetails
-      )
-
+      await updateOrder(orderId, updatedOrder)
+      navigation.navigate('OrderDetails', { orderId: orderId })
       Alert.alert('Success', 'Order has been updated.', [{ text: 'OK', onPress: () => navigation.navigate('Orders') }])
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update the order.')
+    } catch (error: any) {
+      console.error('Error updating order:', error)
+      if (error.response) {
+        console.error('Error Response:', error.response.data)
+        Alert.alert('Error', `Failed to update the order. Details: ${error.response.data.message}`)
+      } else {
+        console.error('Error:', error)
+        Alert.alert('Error', 'Failed to update the order due to an unknown issue.')
+      }
     }
   }
 
@@ -131,7 +137,7 @@ export default function UpdateOrder() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <View className='flex-1 mt-3 bg-white p-4'>
         {/* Header */}
         <View className='flex-row items-center px-4 py-2'>
@@ -249,11 +255,7 @@ export default function UpdateOrder() {
                       width: 40,
                       height: 45
                     }}
-                    onPress={() => {
-                      // const newForms = [...forms]
-                      // newForms[index].koiQuantity = Number(newForms[index].koiQuantity) + 1
-                      // setForms(newForms)
-                    }}
+                    onPress={() => setQuantityUpdate((prevQuantity) => prevQuantity + 1)}
                   >
                     <Text style={{ fontSize: 18 }}>+</Text>
                   </TouchableOpacity>
@@ -267,8 +269,8 @@ export default function UpdateOrder() {
                       height: 42
                     }}
                     keyboardType='numeric'
-                    value={quantityUpdate}
-                    onChangeText={setQuantityUpdate}
+                    value={quantityUpdate.toString()}
+                    onChangeText={(text) => setQuantityUpdate(Number(text) || 0)}
                   />
 
                   {/* Decrement Button */}
@@ -282,11 +284,7 @@ export default function UpdateOrder() {
                       width: 40,
                       height: 45
                     }}
-                    onPress={() => {
-                      // const newForms = [...forms]
-                      // newForms[index].koiQuantity = Math.max(1, Number(newForms[index].koiQuantity) - 1)
-                      // setForms(newForms)
-                    }}
+                    onPress={() => setQuantityUpdate((prevQuantity) => Math.max(1, prevQuantity - 1))}
                   >
                     <Text style={{ fontSize: 18 }}>-</Text>
                   </TouchableOpacity>
@@ -304,9 +302,9 @@ export default function UpdateOrder() {
                     borderRadius: 5,
                     marginBottom: 10
                   }}
-                  value={lengthUpdate}
+                  value={lengthUpdate.toString()}
                   keyboardType='numeric'
-                  onChangeText={setLengthUpdate}
+                  onChangeText={(text) => setLengthUpdate(Number(text) || 0)}
                 />
               </View>
               <View className='w-40'>
@@ -319,9 +317,9 @@ export default function UpdateOrder() {
                     borderRadius: 5,
                     marginBottom: 10
                   }}
-                  value={weightUpdate}
+                  value={weightUpdate.toString()}
                   keyboardType='numeric'
-                  onChangeText={setWeightUpdate}
+                  onChangeText={(text) => setWeightUpdate(Number(text) || 0)}
                 />
               </View>
             </View>
@@ -336,8 +334,8 @@ export default function UpdateOrder() {
                   marginBottom: 10
                 }}
                 keyboardType='numeric'
-                value={koiPriceUpdate}
-                onChangeText={setKoiPriceUpdate}
+                value={koiPriceUpdate.toString()}
+                onChangeText={(text) => setKoiPriceUpdate(Number(text) || 0)}
               />
             </View>
             <View className='mt-3'>
@@ -354,23 +352,14 @@ export default function UpdateOrder() {
                 onChangeText={setNoteDetailUpdate}
               />
             </View>
-            <View className='mt-3'>
-              <Text className='font-bold text-base'>Input Image URL</Text>
-              <TextInput
-                style={{
-                  borderWidth: 1,
-                  borderColor: '#ccc',
-                  padding: 8,
-                  borderRadius: 5,
-                  marginBottom: 10
-                }}
-                onChangeText={setImageUrlUpdate}
-              />
+            <View style={{ marginBottom: 80 }}>
+              <Text className='font-bold mb-2'>Koi Image</Text>
+              <KoiUploadImage value={imageUrls} onChange={setImageUrls} maxCount={4} />
             </View>
           </View>
         )}
 
-        <View className='absolute bottom-4 left-4 right-4 flex-row justify-between'>
+        <View className='absolute bottom-4 left-4 right-4 flex-row justify-between' style={{ flex: 1 }}>
           <TouchableOpacity className='px-4 py-2 border border-blue-600 rounded-full' onPress={() => setCurrentStep(1)}>
             <Text className='text-blue-600'>← Prev</Text>
           </TouchableOpacity>

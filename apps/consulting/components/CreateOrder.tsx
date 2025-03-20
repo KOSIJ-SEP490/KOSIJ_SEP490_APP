@@ -10,7 +10,6 @@ import { District, fetchCities, fetchDistricts, fetchWards, Location, Ward } fro
 import AuthContext from '@shared/context/AuthContext'
 import { API_BASE_URL } from '@env'
 import axios from 'axios'
-import { uploadImageToFirebase } from '@shared/context/firebaseHelper'
 import { useOrders } from '../api/useOrder.api'
 
 type CreateOrderScreenProps = {

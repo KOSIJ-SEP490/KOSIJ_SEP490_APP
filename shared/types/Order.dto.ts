@@ -30,5 +30,10 @@ export interface OrderDetail {
   koiPrice: number
   deposit?: number
   note: string
-  orderDetailImages: { id: number; imageUrl: string }[]
+  orderDetailImages: OrderDetailImages[]
+}
+
+export interface OrderDetailImages {
+  id: number
+  imageUrl: string
 }
