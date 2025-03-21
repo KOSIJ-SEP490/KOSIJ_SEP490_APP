@@ -26,11 +26,14 @@ import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/n
 import { format } from 'date-fns'
 import { useOrders } from '@apps/customer/hooks/useOrder'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import { Divider, IconButton, Menu, Provider } from 'react-native-paper'
 
 type RootStackParamList = {
   OrderDetails: { orderId: number }
   CancelledScreen: { orderId: number }
   UpdatedScreen: { orderId: number }
+  PaymentScreen: { orderId: number }
+  PaymentDetails: { orderId: number }
 }
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'OrderDetails'>
 type OrderDetailsScreenRouteProp = RouteProp<RootStackParamList, 'OrderDetails'>
@@ -88,6 +91,8 @@ export default function OrderDetailsScreen() {
   const route = useRoute<OrderDetailsScreenRouteProp>()
   const { orderId } = route.params
 
+  const [visibleButton, setVisibleButton] = useState(false)
+
   const [order, setOrder] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [visible, setVisible] = useState(false)
@@ -137,131 +142,163 @@ export default function OrderDetailsScreen() {
   }
 
   return (
-    <ScrollView>
-      <View className='flex-1 mt-3 bg-white p-4'>
-        {/* Header */}
-        <View className='flex-row items-center px-4 py-2'>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <ChevronLeft color={'#292D32'} size={24} />
-          </TouchableOpacity>
-          <Text className='text-lg font-semibold text-center flex-1'>Order Details</Text>
-          <View style={{ width: 24 }} />
-        </View>
-        {order && <OrderProgressBar status={statusMap[order.orderStatus]} />}
-        <View className='p-4 rounded-lg mt-4' style={{ backgroundColor: '#264eca' }}>
-          <Text className='text-white font-bold'>
-            🕒 Guaranteed delivery time: {format(new Date(order.expectedDeliveryDate), 'dd-MM-yyyy')}
-          </Text>
-
-          <Text className='text-white text-sm'>
-            The farm is preparing the fish and will deliver them to the shipping unit as soon as possible.
-          </Text>
-        </View>
-        <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
-          <View>
-            <Text className='font-bold '>Delivery address</Text>
-            <Text>{order.fullName}</Text>
-            <Text className='text-gray-600'>{order.phoneNumber}</Text>
-            <Text>{order.deliveryAddress}</Text>
+    <Provider>
+      <ScrollView>
+        <View className='flex-1 mt-3 bg-white p-4'>
+          {/* Header */}
+          <View className='flex-row items-center px-4 py-2'>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <ChevronLeft color={'#292D32'} size={24} />
+            </TouchableOpacity>
+            <Text className='text-lg font-semibold text-center flex-1'>Order Details</Text>
+            <View style={{ width: 24 }} />
           </View>
-        </View>
-        <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
-          <View>
-            <Text className='font-bold text-base'>🏡 {order.farmName} &gt;</Text>
-          </View>
-          {/* Fish List */}
-          <View className='mt-3 border-b border-zinc-300'>
-            {order.orderDetails.map((fish: any) => (
-              <View className='flex-row items-center mb-3' key={fish.id}>
-                {/* Clickable Image */}
-                <TouchableOpacity /*onPress={() => openImageViewer(fish.orderDetailImages)} */>
-                  <Image source={{ uri: fish.orderDetailImages?.[0]?.imageUrl }} className='w-16 h-12 rounded-lg' />
-                </TouchableOpacity>
+          {order && <OrderProgressBar status={statusMap[order.orderStatus]} />}
+          <View className='p-4 rounded-lg mt-4' style={{ backgroundColor: '#264eca' }}>
+            <Text className='text-white font-bold'>
+              🕒 Guaranteed delivery time: {format(new Date(order.expectedDeliveryDate), 'dd-MM-yyyy')}
+            </Text>
 
-                <View className='ml-3 flex-1'>
-                  <Text className='font-bold'>{fish.variety}</Text>
+            <Text className='text-white text-sm'>
+              The farm is preparing the fish and will deliver them to the shipping unit as soon as possible.
+            </Text>
+          </View>
+          <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
+            <View>
+              <Text className='font-bold '>Delivery address</Text>
+              <Text>{order.fullName}</Text>
+              <Text className='text-gray-600'>{order.phoneNumber}</Text>
+              <Text>{order.deliveryAddress}</Text>
+            </View>
+          </View>
+          <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
+            <View>
+              <Text className='font-bold text-base'>🏡 {order.farmName} &gt;</Text>
+            </View>
+            {/* Fish List */}
+            <View className='mt-3 border-b border-zinc-300'>
+              {order.orderDetails.map((fish: any) => (
+                <View className='flex-row items-center mb-3' key={fish.id}>
+                  {/* Clickable Image */}
+                  <TouchableOpacity /*onPress={() => openImageViewer(fish.orderDetailImages)} */>
+                    <Image source={{ uri: fish.orderDetailImages?.[0]?.imageUrl }} className='w-16 h-12 rounded-lg' />
+                  </TouchableOpacity>
+
+                  <View className='ml-3 flex-1'>
+                    <Text className='font-bold'>{fish.variety}</Text>
+                  </View>
+                  <Text className='font-bold'>x{fish.quantity}</Text>
+                  <Text className='ml-2'>{formatNumber(fish.koiPrice)} VND</Text>
                 </View>
-                <Text className='font-bold'>x{fish.quantity}</Text>
-                <Text className='ml-2'>{formatNumber(fish.koiPrice)} VND</Text>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
 
-          {/* Total Price */}
-          <View>
-            <View className='flex-row justify-between'>
-              <Text className='font-bold mt-3 text-right'>Total Koi price:</Text>
-              <Text className='mt-3 font-semibold'> {formatNumber(order.totalFishAmount)} VND</Text>
-            </View>
-            <View className='flex-row justify-between'>
-              <Text className='font-bold mt-3 text-right'>Total delivery:</Text>
-              <Text className='mt-3 font-semibold'>{formatNumber(order.totalDeliveringAmount)} VND</Text>
-            </View>
-            <View className='rounded-lg shadow-md mt-3' style={{ backgroundColor: '#DFE5FB' }}>
+            {/* Total Price */}
+            <View>
               <View className='flex-row justify-between'>
-                <Text className='font-bold text-right'>Deposit Amout (Paid):</Text>
-                <Text className='font-semibold'>- {formatNumber(order.paidAmount)} VND</Text>
+                <Text className='font-bold mt-3 text-right'>Total Koi price:</Text>
+                <Text className='mt-3 font-semibold'> {formatNumber(order.totalFishAmount)} VND</Text>
               </View>
               <View className='flex-row justify-between'>
-                <Text className='font-bold mt-3 text-right'>Remaining: </Text>
-                <Text className='mt-3 font-semibold'>{formatNumber(order.remaining)} VND</Text>
+                <Text className='font-bold mt-3 text-right'>Total delivery:</Text>
+                <Text className='mt-3 font-semibold'>{formatNumber(order.totalDeliveringAmount)} VND</Text>
+              </View>
+              <View className='rounded-lg shadow-md mt-3' style={{ backgroundColor: '#DFE5FB' }}>
+                <View className='flex-row justify-between'>
+                  <Text className='font-bold text-right'>Deposit Amout (Paid):</Text>
+                  <Text className='font-semibold'>- {formatNumber(order.paidAmount)} VND</Text>
+                </View>
+                <View className='flex-row justify-between'>
+                  <Text className='font-bold mt-3 text-right'>Remaining: </Text>
+                  <Text className='mt-3 font-semibold'>{formatNumber(order.remaining)} VND</Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          {/* Final Total */}
-          <View className='flex-row justify-between border-t mt-3 pt-3'>
-            <Text className='font-bold text-lg'>Total price: </Text>
-            <Text className='font-bold text-lg'>{formatNumber(order.totalOrderAmount)} VND</Text>
+            {/* Final Total */}
+            <View className='flex-row justify-between border-t mt-3 pt-3'>
+              <Text className='font-bold text-lg'>Total price: </Text>
+              <Text className='font-bold text-lg'>{formatNumber(order.totalOrderAmount)} VND</Text>
+            </View>
           </View>
-        </View>
-        <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
-          {/* Order ID Row */}
-          <View className='flex-row items-center justify-between mb-2'>
-            <Text className='font-bold'>Order ID</Text>
-            <View className='flex-row items-center'>
-              <Text className='text-gray-600 mr-2'>{orderId}</Text>
-              <TouchableOpacity onPress={handleCopy} className='border border-gray-300 px-2 py-1 rounded-md'>
-                <Text className='text-gray-600 text-sm'>Copy</Text>
+          <View className='p-4 bg-white rounded-lg shadow-md mt-3'>
+            {/* Order ID Row */}
+            <View className='flex-row items-center justify-between mb-2'>
+              <Text className='font-bold'>Order ID</Text>
+              <View className='flex-row items-center'>
+                <Text className='text-gray-600 mr-2'>{orderId}</Text>
+                <TouchableOpacity onPress={handleCopy} className='border border-gray-300 px-2 py-1 rounded-md'>
+                  <Text className='text-gray-600 text-sm'>Copy</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Payment Method Row */}
+            <View className='flex-row justify-between mb-2'>
+              <Text className='text-gray-600'>Payment method</Text>
+              <Text className='text-gray-800 font-medium'>Online Banking</Text>
+            </View>
+
+            {/* Note Row */}
+            <View className='flex-row'>
+              <Text className='text-gray-600 w-1/4'>Note</Text>
+              <Text className='text-gray-800 w-3/4 text-right'>{order.note || 'null'}</Text>
+            </View>
+          </View>
+          <View className='flex-row gap-2 w-full pt-5'>
+            {/* Payment Button */}
+            <View className='flex-1'>
+              <TouchableOpacity
+                className='items-center rounded-lg shadow-md p-3'
+                style={{ backgroundColor: '#CA2629' }}
+                onPress={() => navigation.navigate('PaymentDetails', { orderId: orderId })}
+              >
+                <Text className='text-white'>Payment</Text>
               </TouchableOpacity>
             </View>
-          </View>
-
-          {/* Payment Method Row */}
-          <View className='flex-row justify-between mb-2'>
-            <Text className='text-gray-600'>Payment method</Text>
-            <Text className='text-gray-800 font-medium'>Online Banking</Text>
-          </View>
-
-          {/* Note Row */}
-          <View className='flex-row'>
-            <Text className='text-gray-600 w-1/4'>Note</Text>
-            <Text className='text-gray-800 w-3/4 text-right'>{order.note || 'null'}</Text>
+            <View>
+              {/* Menu Button */}
+              <Menu
+                visible={visibleButton}
+                onDismiss={() => setVisibleButton(false)}
+                anchor={
+                  <TouchableOpacity
+                    className='rounded-lg border '
+                    style={{ borderColor: '#CA2629' }}
+                    onPress={() => setVisibleButton((prev) => !prev)}
+                  >
+                    <IconButton icon='dots-vertical' size={13} />
+                  </TouchableOpacity>
+                }
+                contentStyle={{
+                  width: 120,
+                  paddingVertical: 2
+                }}
+              >
+                <Menu.Item
+                  onPress={() => {
+                    setVisibleButton(false)
+                    navigation.navigate('UpdatedScreen', { orderId })
+                  }}
+                  title='Update Order'
+                  titleStyle={{ fontSize: 12 }}
+                  style={{ height: 30, justifyContent: 'center', paddingVertical: 2 }}
+                />
+                <Divider />
+                <Menu.Item
+                  onPress={() => {
+                    setVisibleButton(false)
+                    navigation.navigate('CancelledScreen', { orderId })
+                  }}
+                  title='Cancel Order'
+                  titleStyle={{ fontSize: 12 }}
+                  style={{ height: 30, justifyContent: 'center', paddingVertical: 2 }}
+                />
+              </Menu>
+            </View>
           </View>
         </View>
-        <View className='pt-5 flex-row gap-2 w-full'>
-          <TouchableOpacity
-            className='flex-1 items-center rounded-lg  p-3 '
-            style={{ borderColor: '#CA2629', borderWidth: 1 }}
-            onPress={() => navigation.navigate('UpdatedScreen', { orderId: orderId })}
-          >
-            <Text className='text-center' style={{ color: '#CA2629' }}>
-              Update Order
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className='flex-2  items-center rounded-lg shadow-md p-3 '
-            style={{ backgroundColor: '#CA2629' }}
-            onPress={() => navigation.navigate('CancelledScreen', { orderId: orderId })}
-          >
-            <Text className='text-center' style={{ color: '#fff' }}>
-              Cancel Order
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {/* <Modal visible={visible} transparent={true} onRequestClose={() => setVisible(false)}>
+        {/* <Modal visible={visible} transparent={true} onRequestClose={() => setVisible(false)}>
         <View className='flex-1 bg-black bg-opacity-75 justify-center items-center'>
           {selectedImages.map((img, index) => (
             <Image key={index} source={{ uri: img.imageUrl }} className='w-80 h-80 mb-4' />
@@ -271,6 +308,7 @@ export default function OrderDetailsScreen() {
           </TouchableOpacity>
         </View>
       </Modal> */}
-    </ScrollView>
+      </ScrollView>
+    </Provider>
   )
 }
