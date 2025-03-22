@@ -33,7 +33,16 @@ export type CustomerSettingsStackParamList = {
   Withdraw: undefined
   TopUpWeb: { url?: string }
 }
+export type CustomerOrderStackParamList = {
+  Orders: undefined
+  OrderDetails: { orderId: number }
+  CancelledScreen: { orderId: number }
+  UpdatedScreen: { orderId: number }
+  PaymentScreen: { orderId: number }
+  PaymentDetails: { orderId: number }
+}
 
 export type CustomerHomeStackNavigationProp = StackNavigationProp<CustomerHomeStackParamList>
 export type CustomerTripsStackNavigationProp = StackNavigationProp<CustomerTripsStackParamList>
 export type CustomerSettingsStackNavigationProp = StackNavigationProp<CustomerSettingsStackParamList>
+export type CustomerOrderStackNavigationProp = StackNavigationProp<CustomerOrderStackParamList>
