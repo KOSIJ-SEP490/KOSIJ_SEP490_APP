@@ -1,5 +1,6 @@
 import { CustomerInfoPrice } from '@apps/customer/components/Booking/CustomerInfoPrice'
 import { PaymentReminder } from '@apps/customer/components/Booking/PaymentReminder'
+import TripBookingInfo from '@apps/customer/components/Booking/TripBookingInfo'
 import { StaffInfo } from '@apps/customer/components/Card/ConsultingStaff/ConsultingStaffInfo'
 import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
 import ItineraryCard from '@apps/customer/components/Card/Tour/ItineraryCard'
@@ -36,18 +37,25 @@ export default function TripBookingDetailsScreen() {
       backgroundImage={tripBookingDetail?.imageUrl || ''}
       showBackButton={true}
     >
-      <PaymentReminder
-        status={tripBookingDetail?.tripBookingStatus ?? 'Pending'}
-        expiredTime={tripBookingDetail?.expiredTime ?? ''}
-        paymentPolicy={
-          tripBookingDetail?.paymentPolicy?.map((policy, index) => ({
-            id: index,
-            description: policy.description
-          })) ?? []
-        }
-        cancellationReason={tripBookingDetail?.cancellationReason ?? ''}
-        tripBookingID={tripBookingID}
-      />
+      {tripBookingDetail?.tripBookingStatus !== 'Paid' && (
+        <>
+          <PaymentReminder
+            status={tripBookingDetail?.tripBookingStatus ?? 'Pending'}
+            expiredTime={tripBookingDetail?.expiredTime ?? ''}
+            paymentPolicy={
+              tripBookingDetail?.paymentPolicy?.map((policy, index) => ({
+                id: index,
+                description: policy.description
+              })) ?? []
+            }
+            cancellationReason={tripBookingDetail?.cancellationReason ?? ''}
+            tripBookingID={tripBookingID}
+          />
+          <Divider />
+        </>
+      )}
+
+      <TripBookingInfo tripBooking={tripBookingDetail} />
 
       <Divider />
 

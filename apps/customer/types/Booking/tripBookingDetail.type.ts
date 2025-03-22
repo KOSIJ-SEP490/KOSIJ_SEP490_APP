@@ -4,6 +4,7 @@ export interface TripBookingDetailType {
   imageUrl: string
   bookingTime: string
   customerInfo: CustomerInfo
+  tripId: number
   tripType: string
   departureDate: string
   returnDate: string
@@ -40,7 +41,9 @@ export interface AdditionalInformation {
   hotelService: string
   departurePoint: string
   destinationPoint: string
-  time: string
+  days: number
+  nights: number
+  totalFarmToVisit: number
 }
 
 export interface ConsultStaffInformation {

@@ -8,10 +8,16 @@ import { useBooking } from '@apps/customer/contexts/BookingContext'
 interface QuotationConfirmSuccessProps {
   visible: boolean
   response: string
+  tripBookingId: number
   onClose: () => void
 }
 
-export default function QuotationConfirmSuccess({ visible, response, onClose }: QuotationConfirmSuccessProps) {
+export default function QuotationConfirmSuccess({
+  visible,
+  response,
+  tripBookingId,
+  onClose
+}: QuotationConfirmSuccessProps) {
   const navigation = useNavigation<StackNavigationProp<CustomerTripsStackParamList, 'Trips'>>()
   const { resetBookingRequest } = useBooking()
 
@@ -36,7 +42,12 @@ export default function QuotationConfirmSuccess({ visible, response, onClose }: 
               onClose()
               navigation.reset({
                 index: 0,
-                routes: [{ name: 'Trips', params: { initialTab: 'Request' } as CustomerTripsStackParamList['Trips'] }]
+                routes: [
+                  {
+                    name: 'TripBookingDetails',
+                    params: { tripBookingID: tripBookingId } as CustomerTripsStackParamList['Trips']
+                  }
+                ]
               })
             }}
             className='bg-blue py-3 rounded-lg mt-8'
