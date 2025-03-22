@@ -28,7 +28,6 @@ const PaymentSuccessModal2 = ({
   paymentMethod = '',
   senderName = '',
   totalAmount = 0,
-  depositAmount = 0,
   remainingAmount = 0
 }: PaymentSuccessModalProps) => {
   const navigation = useNavigation<CustomerHomeStackNavigationProp>()
@@ -80,11 +79,6 @@ const PaymentSuccessModal2 = ({
             </View>
 
             <View className='flex-row justify-between'>
-              <Text className='text-base text-gray-600'>Deposit Amount (Paid)</Text>
-              <Text className='text-base text-gray-800'>{depositAmount.toLocaleString()} VND</Text>
-            </View>
-
-            <View className='flex-row justify-between'>
               <Text className='text-base text-gray-600'>Remaining Amount (Paid)</Text>
               <Text className='text-base text-gray-800'>{remainingAmount.toLocaleString()} VND</Text>
             </View>
@@ -93,7 +87,10 @@ const PaymentSuccessModal2 = ({
           <TouchableOpacity
             onPress={() => {
               onClose()
-              navigation.navigate('Home')
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Home' }]
+              })
             }}
             className='bg-blue py-3 rounded-lg mt-8'
           >

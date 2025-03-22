@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert } from 'react-native'
 import { styled } from 'nativewind'
 import { useNavigation } from '@react-navigation/native'
 import { CustomerTripsStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
@@ -114,7 +114,15 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
         <StyledTouchableOpacity
           className={`rounded-lg py-4 px-6 ${isButtonDisabled ? 'bg-gray-400' : 'bg-blue'}`}
           disabled={isButtonDisabled}
-          onPress={() => navigation.navigate('Payment', { tripBookingID: tripBookingID, type: 'Payment2' })}
+          onPress={() => {
+            const paymentType = status === 'Pending' ? 'Payment1' : status === 'Processing' ? 'Payment2' : null
+
+            if (paymentType) {
+              navigation.navigate('Payment', { tripBookingID, type: paymentType })
+            } else {
+              Alert.alert('Invalid Status', 'You can only proceed to payment when status is Pending or Processing.')
+            }
+          }}
         >
           <StyledText className='text-white text-center text-sm font-medium'>Go to Payment</StyledText>
         </StyledTouchableOpacity>

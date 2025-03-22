@@ -15,6 +15,7 @@ export interface TripRequestDetailsType {
   feedback?: string | null
   salesStaffId?: number | null
   salesStaffName?: string | null
+  salesStaffEmail?: string | null
   salesStaffPhone?: string | null
   requestStatus: string
   tripBookingId?: number | null
@@ -24,9 +25,11 @@ export interface TripRequestDetailsType {
   quotationResponse?: QuotationResponse | null
 }
 
-interface TripRequestVariety {
+export interface TripRequestVariety {
   id: number
   koiName: string
+  description: string
+  imageUrl: string
 }
 
 interface PassengerDetail {

@@ -1,10 +1,12 @@
 import CustomerConfirmation from '@apps/customer/components/Booking/CustomizedTrip/CustomerConfirmation'
 import CustomerInfoRequest from '@apps/customer/components/Booking/CustomizedTrip/CustomerInfoRequest'
 import TripBookingInfoCard from '@apps/customer/components/Booking/CustomizedTrip/TripBookingInfoCard'
+import { PaymentReminder } from '@apps/customer/components/Booking/PaymentReminder'
 import { StaffInfo } from '@apps/customer/components/Card/ConsultingStaff/ConsultingStaffInfo'
 import ItineraryCard from '@apps/customer/components/Card/Tour/ItineraryCard'
 import TourPolicyCard from '@apps/customer/components/Card/Tour/TourPolicyCard'
 import Divider from '@apps/customer/components/Divider'
+import { useTripBookingById } from '@apps/customer/hooks/useTripBooking'
 import { useTripRequestById } from '@apps/customer/hooks/useTripRequest'
 import SubLayout from '@apps/customer/layouts/SubLayout'
 import { CustomerTripsStackParamList } from '@apps/customer/types/navigationCustomerType'
@@ -22,9 +24,28 @@ export default function QuotationDetailsScreen() {
   const route = useRoute<QuotationDetailScreenRouteProp>()
   const { tripRequestID } = route.params
   const { tripRequestDetails } = useTripRequestById(tripRequestID)
+  const { tripBookingDetail } = useTripBookingById(tripRequestDetails?.tripBookingId ?? 0)
 
   return (
     <SubLayout title='Quotation' showBackButton={true}>
+      {tripRequestDetails?.requestStatus === 'Confirmed' && (
+        <View className='pt-8'>
+          <PaymentReminder
+            status={tripBookingDetail?.tripBookingStatus ?? 'Pending'}
+            expiredTime={tripBookingDetail?.expiredTime ?? ''}
+            paymentPolicy={
+              tripBookingDetail?.paymentPolicy?.map((policy, index) => ({
+                id: index,
+                description: policy.description
+              })) ?? []
+            }
+            cancellationReason={tripBookingDetail?.cancellationReason ?? ''}
+            tripBookingID={tripRequestDetails?.tripBookingId ?? 0}
+          />
+          <Divider />
+        </View>
+      )}
+
       <TripBookingInfoCard tripRequest={tripRequestDetails ?? null} />
 
       <Divider />
@@ -33,7 +54,7 @@ export default function QuotationDetailsScreen() {
         staffType='Sales Staff'
         fullName={tripRequestDetails?.salesStaffName ?? ''}
         phoneNumber={tripRequestDetails?.salesStaffPhone ?? ''}
-        email={tripRequestDetails?.salesStaffPhone ?? ''}
+        email={tripRequestDetails?.salesStaffEmail ?? ''}
       />
 
       <View className='px-5'>
