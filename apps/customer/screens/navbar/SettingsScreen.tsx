@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { View, Text, Alert } from 'react-native'
+import { View, Text, Alert, ScrollView } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import AuthContext from '@shared/context/AuthContext'
 import { AuthStackNavigationProp } from '@shared/types/navigationAuthType'
@@ -47,23 +47,25 @@ export default function AccountScreen() {
   }
 
   return (
-    <View className='flex-1 p-6 bg-white pt-16'>
-      <Text className='text-lg font-bold text-center mb-4'>Account</Text>
+    <ScrollView>
+      <View className='flex-1 p-6 bg-white pt-16'>
+        <Text className='text-lg font-bold text-center mb-4'>Account</Text>
 
-      <ProfileCard account={account ?? undefined} />
+        <ProfileCard account={account ?? undefined} />
 
-      <WalletBalance balance={wallet?.balance ?? 0} />
+        <WalletBalance balance={wallet?.balance ?? 0} />
 
-      <SettingsCard
-        notificationsEnabled={notificationsEnabled}
-        setNotificationsEnabled={setNotificationsEnabled}
-        darkModeEnabled={darkModeEnabled}
-        setDarkModeEnabled={setDarkModeEnabled}
-        onTermsPress={() => console.log('Navigate to Terms and Policies')}
-        onChangePasswordPress={() => console.log('Navigate to Change Password')}
-      />
+        <SettingsCard
+          notificationsEnabled={notificationsEnabled}
+          setNotificationsEnabled={setNotificationsEnabled}
+          darkModeEnabled={darkModeEnabled}
+          setDarkModeEnabled={setDarkModeEnabled}
+          onTermsPress={() => console.log('Navigate to Terms and Policies')}
+          onChangePasswordPress={() => console.log('Navigate to Change Password')}
+        />
 
-      <LogoutButton onPress={confirmLogout} />
-    </View>
+        <LogoutButton onPress={confirmLogout} />
+      </View>
+    </ScrollView>
   )
 }

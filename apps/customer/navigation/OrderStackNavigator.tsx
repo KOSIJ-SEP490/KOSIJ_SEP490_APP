@@ -4,8 +4,9 @@ import OrderDetailsScreen from '../screens/Home/orders/OrderDetails'
 import OrdersScreen from '../screens/navbar/OrdersScreen'
 import CancelledScreen from '../screens/Home/orders/CancelledScreen'
 import UpdatedScreen from '../screens/Home/orders/UpdatedScreen'
-import PaymentScreen from '../screens/Home/orders/PaymentScreen'
 import PaymentDetails from '../screens/Home/orders/PaymentDetails'
+import PaymentSuccess from '../screens/Home/orders/PaymentSuccess'
+import PaymentFailed from '../screens/Home/orders/PaymentFailed'
 
 const Stack = createStackNavigator<CustomerOrderStackParamList>()
 
@@ -16,8 +17,9 @@ export default function CustomerOrderStackNavigator() {
       <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
       <Stack.Screen name='CancelledScreen' component={CancelledScreen} />
       <Stack.Screen name='UpdatedScreen' component={UpdatedScreen} />
-      <Stack.Screen name='PaymentScreen' component={PaymentScreen} />
       <Stack.Screen name='PaymentDetails' component={PaymentDetails} />
+      <Stack.Screen name='PaymentSuccess' component={PaymentSuccess} />
+      <Stack.Screen name='PaymentFailed' component={PaymentFailed} />
     </Stack.Navigator>
   )
 }

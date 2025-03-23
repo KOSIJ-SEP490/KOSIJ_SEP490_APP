@@ -34,6 +34,8 @@ type RootStackParamList = {
   UpdatedScreen: { orderId: number }
   PaymentScreen: { orderId: number }
   PaymentDetails: { orderId: number }
+  PaymentFailed: undefined
+  Orders: undefined
 }
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'OrderDetails'>
 type OrderDetailsScreenRouteProp = RouteProp<RootStackParamList, 'OrderDetails'>
@@ -147,7 +149,7 @@ export default function OrderDetailsScreen() {
         <View className='flex-1 mt-3 bg-white p-4'>
           {/* Header */}
           <View className='flex-row items-center px-4 py-2'>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.navigate('Orders')}>
               <ChevronLeft color={'#292D32'} size={24} />
             </TouchableOpacity>
             <Text className='text-lg font-semibold text-center flex-1'>Order Details</Text>

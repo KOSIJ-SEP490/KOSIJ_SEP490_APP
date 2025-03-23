@@ -33,8 +33,9 @@ export type CustomerOrderStackParamList = {
   OrderDetails: { orderId: number }
   CancelledScreen: { orderId: number }
   UpdatedScreen: { orderId: number }
-  PaymentScreen: { orderId: number }
   PaymentDetails: { orderId: number }
+  PaymentSuccess: { orderId: number }
+  PaymentFailed: { orderId: number }
 }
 
 export type CustomerHomeStackNavigationProp = StackNavigationProp<CustomerHomeStackParamList>
