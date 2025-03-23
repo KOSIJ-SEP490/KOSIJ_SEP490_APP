@@ -27,6 +27,11 @@ export type CustomerTripsStackParamList = {
 export type CustomerSettingsStackParamList = {
   Settings: undefined
   Account: { account?: AccountType }
+  ChangePassword: { account?: AccountType }
+  Wallet?: undefined
+  Recharge: undefined
+  Withdraw: undefined
+  TopUpWeb: { url?: string }
 }
 export type CustomerOrderStackParamList = {
   Orders: undefined

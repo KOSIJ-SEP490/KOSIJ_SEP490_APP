@@ -35,20 +35,24 @@ const PricingRow: React.FC<{
   price?: number
   quantity?: number
   currency: string
-}> = ({ type, description, price, quantity, currency }) => (
-  <StyledView className='flex-row items-center justify-between mb-3 last:mb-0'>
-    <StyledView className='flex-1'>
-      <StyledText className='text-sm font-medium'>{type}:</StyledText>
-      {description && <StyledText className='text-gray-500'>({description})</StyledText>}
+}> = ({ type, description, price, quantity, currency }) => {
+  const priceTextColor = quantity === 0 ? 'text-gray-500' : 'text-red-500'
+
+  return (
+    <StyledView className='flex-row items-center justify-between mb-3 last:mb-0'>
+      <StyledView className='flex-1'>
+        <StyledText className='text-sm font-medium'>{type}:</StyledText>
+        {description && <StyledText className='text-gray-500'>({description})</StyledText>}
+      </StyledView>
+      <StyledText className={`text-sm font-medium mx-4 ${priceTextColor}`}>
+        {price?.toLocaleString()} {currency}
+      </StyledText>
+      <StyledView className='w-12 h-12 border border-gray-300 rounded-lg items-center justify-center'>
+        <StyledText className='text-sm'>{quantity}</StyledText>
+      </StyledView>
     </StyledView>
-    <StyledText className='text-sm text-red-500 font-medium mx-4'>
-      {price?.toLocaleString()} {currency}
-    </StyledText>
-    <StyledView className='w-12 h-12 border border-gray-300 rounded-lg items-center justify-center'>
-      <StyledText className='text-sm'>{quantity}</StyledText>
-    </StyledView>
-  </StyledView>
-)
+  )
+}
 
 export const CustomerInfoPrice: React.FC<TripBookingProps> = ({
   totalTripBookingAmount,

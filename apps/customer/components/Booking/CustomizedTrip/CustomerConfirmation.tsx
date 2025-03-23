@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { styled } from 'nativewind'
-import { useUpdateTripRequest } from '@apps/customer/hooks/useTripRequest'
+import { useTripRequestById, useUpdateTripRequest } from '@apps/customer/hooks/useTripRequest'
 import QuotationConfirmSuccess from './QuotationConfirmSuccess'
 
 const StyledView = styled(View)
@@ -17,6 +17,7 @@ const CustomerConfirmation: React.FC<CustomerConfirmationProps> = ({ tripRequest
   const [confirmed, setConfirmed] = useState<boolean | null>(null)
   const [successModalVisible, setSuccessModalVisible] = useState(false)
   const [apiResponse, setApiResponse] = useState<string | null>(null)
+  const { tripRequestDetails } = useTripRequestById(tripRequestId)
 
   const { updateTripRequest, loading } = useUpdateTripRequest()
 
@@ -84,6 +85,7 @@ const CustomerConfirmation: React.FC<CustomerConfirmationProps> = ({ tripRequest
       <QuotationConfirmSuccess
         visible={successModalVisible}
         response={apiResponse || ''}
+        tripBookingId={tripRequestDetails?.tripBookingId ?? 0}
         onClose={() => setSuccessModalVisible(false)}
       />
     </>

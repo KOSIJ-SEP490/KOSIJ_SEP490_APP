@@ -88,3 +88,74 @@ export function useUpdateAccount() {
 
   return { updateAccount, loading, error, success, responseMessage }
 }
+
+export interface ResetPasswordAccountRequest {
+  oldPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export function useResetPasswordAccount() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<boolean | null>(null)
+  const [responseMessage, setResponseMessage] = useState<string | null>(null)
+
+  const authContext = useContext(AuthContext)
+  const userToken = authContext?.user?.token
+
+  const updateAccount = async (updatedData: ResetPasswordAccountRequest) => {
+    if (!userToken) {
+      setError('User is not authenticated.')
+      return { error: 'User is not authenticated.' }
+    }
+
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+    setResponseMessage(null)
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await axios.post<{ message: string; value: any }>(
+        `${API_BASE_URL}accounts/password/reset`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      if (response.status === 200) {
+        setSuccess(true)
+        setResponseMessage(response.data.message)
+        return response.data
+      } else {
+        setError('Unexpected response from server.')
+        setSuccess(false)
+        return { error: 'Unexpected response from server.' }
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const errors = err.response?.data?.errors
+      const message = err.response?.data?.message
+      let errorMessage = 'Failed to update account.'
+
+      if (Array.isArray(errors) && errors.length > 0) {
+        errorMessage = errors[0]
+      } else if (message) {
+        errorMessage = message
+      }
+
+      setError(errorMessage)
+      setSuccess(false)
+      return { error: errorMessage }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { updateAccount, loading, error, success, responseMessage }
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Image, ActivityIndicator, Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { storage } from 'firebaseConfig'
@@ -31,7 +31,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   onUpdateProfile = () => {}
 }) => {
-  const [email, setEmail] = useState(initialEmail)
+  const [email] = useState(initialEmail)
   const [fullName, setFullName] = useState(initialFullName)
   const [phoneNumber, setPhoneNumber] = useState(initialPhoneNumber)
   const [address, setAddress] = useState(initialAddress)
@@ -60,7 +60,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
       }
     } catch (error) {
       console.error('Error picking image:', error)
-      Alert.alert('Error', 'Failed to pick an image')
     }
   }
 
@@ -80,17 +79,14 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
         },
         (error) => {
           console.error('Upload failed:', error)
-          Alert.alert('Upload Error', 'Failed to upload image')
         },
         async () => {
           const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
           setProfileImage(downloadURL)
-          Alert.alert('Upload Success', 'Image uploaded successfully')
         }
       )
     } catch (error) {
       console.error('Image upload error:', error)
-      Alert.alert('Error', 'Failed to upload image')
     } finally {
       setIsUploading(false)
     }
@@ -131,19 +127,16 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
       {isUploading && <ActivityIndicator size='large' color='#0000ff' />}
 
       <View className='mb-4'>
-        <Text className='text-gray-700 mb-1 ml-1'>Email</Text>
+        <Text className='font-medium mb-1 ml-1'>Email</Text>
         <TextInput
-          className='border border-gray-300 rounded-lg p-3 text-gray-800'
+          className='border border-gray-300 rounded-lg p-3 text-gray-800 bg-gray-200'
           value={email}
-          onChangeText={setEmail}
-          placeholder='Enter your email'
-          keyboardType='email-address'
-          autoCapitalize='none'
+          editable={false}
         />
       </View>
 
       <View className='mb-4'>
-        <Text className='text-gray-700 mb-1 ml-1'>Full Name</Text>
+        <Text className='font-medium mb-1 ml-1'>Full Name</Text>
         <TextInput
           className='border border-gray-300 rounded-lg p-3 text-gray-800'
           value={fullName}
@@ -153,7 +146,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
       </View>
 
       <View className='mb-4'>
-        <Text className='text-gray-700 mb-1 ml-1'>Phone Number</Text>
+        <Text className='font-medium mb-1 ml-1'>Phone Number</Text>
         <TextInput
           className='border border-gray-300 rounded-lg p-3 text-gray-800'
           value={phoneNumber}
@@ -164,7 +157,7 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
       </View>
 
       <View className='mb-4'>
-        <Text className='text-gray-700 mb-1 ml-1'>Address</Text>
+        <Text className='font-medium mb-1 ml-1'>Address</Text>
         <TextInput
           className='border border-gray-300 rounded-lg p-3 text-gray-800'
           value={address}
@@ -173,9 +166,8 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
         />
       </View>
 
-      {/* Sex Selection */}
       <View className='mb-6'>
-        <Text className='text-gray-700 mb-2 ml-1'>Sex</Text>
+        <Text className='font-medium mb-2 ml-1'>Sex</Text>
         <View className='flex-row space-x-3'>
           <TouchableOpacity
             className={`py-2 px-4 rounded-lg border ${sex === 'Male' ? 'bg-blue border-blue' : 'bg-white border-gray-300'}`}

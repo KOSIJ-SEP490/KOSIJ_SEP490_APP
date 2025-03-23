@@ -49,6 +49,7 @@
     "react-native-svg": "^15.11.2",
     "react-native-toast-message": "^2.2.1",
     "react-native-vector-icons": "^10.2.0",
+    "react-native-webview": "13.12.5",
     "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
