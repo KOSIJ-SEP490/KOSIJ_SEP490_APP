@@ -3,6 +3,7 @@ import AuthContext from '@shared/context/AuthContext'
 import axios from 'axios'
 import { useContext, useEffect, useState, useCallback } from 'react'
 import { WalletType } from '../types/Wallet/wallet.type'
+import { WithDrawResponseType } from '../types/Wallet/withdraw.type'
 
 export function useWallet() {
   const [wallet, setWallet] = useState<WalletType | null>(null)
@@ -67,4 +68,82 @@ export function useTopUpWallet() {
   )
 
   return { topUpUrl, loading, error, topUpWallet }
+}
+
+export function useWithdraw() {
+  const [withdrawalResponse, setWithdrawalResponse] = useState<WithDrawResponseType | null>(null)
+  const [message, setMessage] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+  const userToken = authContext?.user?.token
+
+  const withdraw = useCallback(
+    async (amount: number, bankName: string, bankNumber: string, holderName: string) => {
+      if (!userToken) {
+        setError('User is not authenticated.')
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+      setMessage(null)
+
+      try {
+        const response = await axios.post<{ message: string; value: WithDrawResponseType }>(
+          `${API_BASE_URL}withdrawal`,
+          { amount, bankName, bankNumber, holderName },
+          { headers: { Authorization: `Bearer ${userToken}` } }
+        )
+
+        setWithdrawalResponse(response.data.value)
+        setMessage(response.data.message)
+      } catch (err: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setError((err as any)?.response?.data?.detail || 'Failed to process withdrawal.')
+      } finally {
+        setLoading(false)
+      }
+    },
+    [userToken]
+  )
+
+  return { withdrawalResponse, message, loading, error, withdraw }
+}
+
+export function useWithdrawRequestByAll() {
+  const [withdrawalRequests, setWithdrawalRequests] = useState<WithDrawResponseType[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+  const userToken = authContext?.user?.token
+
+  useEffect(() => {
+    const fetchWithdrawals = async () => {
+      if (!userToken) {
+        setError('User is not authenticated.')
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+
+      try {
+        const response = await axios.get<{ message: string; value: WithDrawResponseType[] }>(
+          `${API_BASE_URL}withdrawals/current-user`,
+          { headers: { Authorization: `Bearer ${userToken}` } }
+        )
+        setWithdrawalRequests(response.data.value)
+      } catch (err: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setError((err as any)?.response?.data?.detail || 'Failed to fetch withdrawal requests.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWithdrawals()
+  }, [userToken])
+
+  return { withdrawalRequests, loading, error }
 }
