@@ -24,7 +24,7 @@ const PaymentSuccess = () => {
   const navigation = useNavigation<NavigationProps>()
   const route = useRoute<PaymentSuccessScreenRouteProp>()
   const { orderId } = route.params
-  const { fetchOrderDetails, checkOutPayment } = useOrders()
+  const { fetchOrderDetails, checkOutPayments } = useOrders()
   const [loading, setLoading] = useState(true)
   const [order, setOrder] = useState<any>({})
   const { wallet, refetch: refetchWallet } = useWallet()
@@ -51,8 +51,8 @@ const PaymentSuccess = () => {
     }
     const fetchPaymentDetails = async () => {
       try {
-        const response = await checkOutPayment(orderId)
-        setPaymentData((response as { message: string; value: PaymentData }).value)
+        const response = await checkOutPayments(orderId)
+        setPaymentData(response)
       } catch (error) {
         console.error('Error fetching payment details:', error)
       } finally {

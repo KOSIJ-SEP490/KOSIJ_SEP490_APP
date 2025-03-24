@@ -99,7 +99,6 @@ export function useOrders() {
     }
   }
 
-  // Define the expected response type
   interface CheckOutPaymentResponse {
     message: string
     value: {
@@ -126,7 +125,7 @@ export function useOrders() {
         }
       )
 
-      console.log('API Response:', response.data) // Debugging Log
+      console.log('API Response:', response.data)
 
       return response.data
     } catch (error) {
@@ -134,6 +133,27 @@ export function useOrders() {
       throw error
     }
   }
+  async function checkOutPayments(orderId: number): Promise<CheckOutPaymentResponse['value']> {
+    try {
+      const response = await axios.post<CheckOutPaymentResponse>(
+        `${API_BASE_URL}order/${orderId}/check-out-payment`,
+        {},
+        {
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+      )
 
-  return { fetchOrders, fetchOrderDetails, updateOrder, fetchOrderDetailed, checkOutPayment }
+      console.log('API Response:', response.data)
+
+      return response.data.value
+    } catch (error) {
+      console.error('Error checkout payment order:', error)
+      throw error
+    }
+  }
+
+  return { fetchOrders, fetchOrderDetails, updateOrder, fetchOrderDetailed, checkOutPayment, checkOutPayments }
 }

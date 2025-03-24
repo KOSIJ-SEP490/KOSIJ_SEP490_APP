@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react'
-import { View, Text, Alert, LogBox } from 'react-native'
+import { View, Text, Alert, LogBox, ScrollView } from 'react-native'
 import { useNavigation, CommonActions } from '@react-navigation/native'
 import AuthContext from '@shared/context/AuthContext'
 import { AuthStackNavigationProp } from '@shared/types/navigationAuthType'
@@ -64,16 +64,16 @@ export default function SettingsScreen() {
 
         <ProfileCard account={account ?? undefined} />
 
-      <WalletBalance balance={wallet?.balance ?? 0} onPress={() => navigation2.navigate('Wallet')} />
+        <WalletBalance balance={wallet?.balance ?? 0} onPress={() => navigation2.navigate('Wallet')} />
 
-      <SettingsCard
-        notificationsEnabled={notificationsEnabled}
-        setNotificationsEnabled={setNotificationsEnabled}
-        darkModeEnabled={darkModeEnabled}
-        setDarkModeEnabled={setDarkModeEnabled}
-        onTermsPress={() => console.log('Navigate to Terms and Policies')}
-        onChangePasswordPress={() => navigation2.navigate('ChangePassword', { account: account ?? undefined })}
-      />
+        <SettingsCard
+          notificationsEnabled={notificationsEnabled}
+          setNotificationsEnabled={setNotificationsEnabled}
+          darkModeEnabled={darkModeEnabled}
+          setDarkModeEnabled={setDarkModeEnabled}
+          onTermsPress={() => console.log('Navigate to Terms and Policies')}
+          onChangePasswordPress={() => navigation2.navigate('ChangePassword', { account: account ?? undefined })}
+        />
 
         <LogoutButton onPress={confirmLogout} />
       </View>
