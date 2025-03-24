@@ -36,7 +36,7 @@ const TopUpWebScreen: React.FC = () => {
         })
       }
 
-      navigation.replace('Wallet')
+      navigation.replace('Settings')
     }
   }
 
