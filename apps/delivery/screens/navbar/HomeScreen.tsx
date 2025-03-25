@@ -1,10 +1,15 @@
+import MainLayout from '@shared/layouts/MainLayout'
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 
 export default function HomeScreen() {
   return (
-    <View>
-      <Text>Delivery Home Screen</Text>
-    </View>
+    <MainLayout
+      title='Welcome to Koi Ordering System in Japan'
+      backgroundImage='https://images.unsplash.com/photo-1551825687-f9de1603ed8b?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      showBackButton={false}
+    >
+      <View></View>
+    </MainLayout>
   )
 }

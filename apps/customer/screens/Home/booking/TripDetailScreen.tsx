@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { useRoute, RouteProp } from '@react-navigation/native'
-import SubLayout from '@apps/customer/layouts/SubLayout'
+import SubLayout from '@shared/layouts/SubLayout'
 import { useTourById } from '@apps/customer/hooks/useTour'
 import { useTripById } from '@apps/customer/hooks/useTrip'
 import TripInfoCard from '@apps/customer/components/Card/Trip/TripInfoCard'

@@ -1,11 +1,11 @@
-import MainLayout from '@apps/customer/layouts/MainLayout'
+import MainLayout from '@shared/layouts/MainLayout'
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import TourListCard from '@apps/customer/components/Card/Tour/TourListCard'
 import CreateTripCard from '@apps/customer/components/Card/Tour/CreateTripCard'
 import { useTourCards } from '@apps/customer/hooks/useTour'
-import Divider from '@apps/customer/components/Divider'
+import Divider from '@shared/components/Divider'
 
 export default function BookingScreen() {
   const { tourCards } = useTourCards()

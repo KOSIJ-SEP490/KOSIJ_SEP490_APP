@@ -3,7 +3,7 @@ import { View, Text, TextInput, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useAllKoiVarieties } from '@apps/customer/hooks/useKoi'
 import KoiCard from '@apps/customer/components/Card/Koi/KoiCard'
-import MainLayout from '@apps/customer/layouts/MainLayout'
+import MainLayout from '@shared/layouts/MainLayout'
 
 export default function KoisScreen() {
   const { koiVarieties, error } = useAllKoiVarieties()
