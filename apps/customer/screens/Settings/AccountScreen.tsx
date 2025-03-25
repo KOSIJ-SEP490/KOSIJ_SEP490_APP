@@ -2,7 +2,7 @@ import React from 'react'
 import { Alert, SafeAreaView, ScrollView } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import ProfileEditForm from '@apps/customer/components/Form/ProfileEditForm'
-import SubLayout from '@apps/customer/layouts/SubLayout'
+import SubLayout from '@shared/layouts/SubLayout'
 import { CustomerSettingsStackParamList } from '@apps/customer/types/navigationCustomerType'
 import { useUpdateAccount } from '@apps/customer/hooks/useAccount'
 

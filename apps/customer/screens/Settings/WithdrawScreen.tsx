@@ -1,7 +1,7 @@
 import WithdrawRequestCard from '@apps/customer/components/Card/Wallet/WithdrawRequestCard'
 import WithdrawForm from '@apps/customer/components/Form/WithDrawForm'
 import { useWithdrawRequestByAll } from '@apps/customer/hooks/useWallet'
-import SubLayout from '@apps/customer/layouts/SubLayout'
+import SubLayout from '@shared/layouts/SubLayout'
 import React, { useState } from 'react'
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 

@@ -37,9 +37,9 @@ const getStatusStyle = (status: string) => {
   switch (status) {
     case 'Pending':
       return 'bg-orange-100'
-    case 'Approved':
+    case 'Success':
       return 'bg-green-100'
-    case 'Rejected':
+    case 'Failed':
       return 'bg-red-100'
     default:
       return ''
@@ -50,9 +50,9 @@ const getStatusTextColor = (status: string) => {
   switch (status) {
     case 'Pending':
       return 'text-orange-500'
-    case 'Approved':
+    case 'Success':
       return 'text-green-500'
-    case 'Rejected':
+    case 'Failed':
       return 'text-red-500'
     default:
       return ''

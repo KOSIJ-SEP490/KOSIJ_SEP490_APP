@@ -1,22 +1,22 @@
 import React from 'react'
 import AppNavigator from './AppNavigator'
-import HomeScreen from '../../apps/delivery/screens/navbar/HomeScreen'
-import OrdersScreen from '../../apps/delivery/screens/navbar/OrdersScreen'
 import NotificationsScreen from '../../apps/delivery/screens/navbar/NotificationsScreen'
-import SettingsScreen from '../../apps/delivery/screens/navbar/SettingsScreen'
+import HomeStackNavigator from '@apps/delivery/navigation/HomeStackNavigator'
+import OrderStackNavigator from '@apps/delivery/navigation/OrderStackNavigator'
+import SettingStackNavigator from '@apps/delivery/navigation/SettingStackNavigator'
 
 export default function DeliveryNavigator() {
   return (
     <AppNavigator
       screens={[
-        { name: 'Home', component: HomeScreen, icon: 'home' },
-        { name: 'Orders', component: OrdersScreen, icon: 'cart' },
+        { name: 'Home', component: HomeStackNavigator, icon: 'home' },
+        { name: 'Orders', component: OrderStackNavigator, icon: 'cart' },
         {
           name: 'Notifications',
           component: NotificationsScreen,
           icon: 'notifications'
         },
-        { name: 'Settings', component: SettingsScreen, icon: 'settings' }
+        { name: 'Settings', component: SettingStackNavigator, icon: 'settings' }
       ]}
     />
   )

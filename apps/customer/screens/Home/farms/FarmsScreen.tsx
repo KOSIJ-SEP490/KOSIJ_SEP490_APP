@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { View, Text, TextInput, ScrollView } from 'react-native'
-import MainLayout from '@apps/customer/layouts/MainLayout'
+import MainLayout from '@shared/layouts/MainLayout'
 import { useAllFarms } from '@apps/customer/hooks/useFarm'
 import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
 
