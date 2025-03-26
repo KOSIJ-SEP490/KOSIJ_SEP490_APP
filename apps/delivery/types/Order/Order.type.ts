@@ -62,3 +62,11 @@ export interface Order {
   confirmedUrl: string | null
   orderDetails: OrderDetail[]
 }
+
+export interface OrderUpdate {
+  expectedDeliveryDate: string
+  thirdPartyLogisticsInfo: string
+  orderStatus: string
+  confirmedUrl: string
+  cancellationReason: string
+}

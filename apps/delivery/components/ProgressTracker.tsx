@@ -4,24 +4,33 @@ import { FontAwesome5 } from '@expo/vector-icons'
 
 interface ProgressTrackerProps {
   orderStatus?: string
+  cancelledReason?: string | null
 }
 
 const statuses = [
   { key: 'Deposited', icon: 'clipboard-list', label: 'Deposited' },
   { key: 'Packaged', icon: 'box', label: 'Packaged' },
   { key: 'Delivering', icon: 'truck', label: 'Delivering' },
-  { key: 'Delivered', icon: 'home', label: 'Delivered' }
+  { key: 'Delivered', icon: 'home', label: 'Delivered' },
+  { key: 'Cancelled', icon: 'ban', label: 'Cancelled' },
+  { key: 'Refunded', icon: 'money-check-alt', label: 'Refunded' }
 ]
 
-const ProgressTracker: React.FC<ProgressTrackerProps> = ({ orderStatus }) => {
+const ProgressTracker: React.FC<ProgressTrackerProps> = ({ orderStatus, cancelledReason }) => {
   const currentIndex = statuses.findIndex((s) => s.key === orderStatus)
+  const modifiedStatuses = [...statuses.slice(0, 4)]
+
+  if (orderStatus === 'Cancelled' || orderStatus === 'Refunded') {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    modifiedStatuses[3] = statuses.find((s) => s.key === orderStatus)!
+  }
 
   return (
     <View className='pt-6 px-6 mt-3 bg-white rounded-lg'>
       <View className='flex-row justify-between items-center mb-8'>
-        {statuses.map((status, index) => (
+        {modifiedStatuses.map((status, index) => (
           <View key={status.key} className='items-center relative'>
-            {index < statuses.length - 1 && (
+            {index < 3 && (
               <View
                 className={`absolute h-1 top-4 left-6 right-0 -mr-7 rounded-full ${
                   index < currentIndex
@@ -43,21 +52,23 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ orderStatus }) => {
             <Text className={`text-xs mt-2 font-medium ${index <= currentIndex ? 'text-blue' : 'text-gray-400'}`}>
               {status.label}
             </Text>
-
-            {index === currentIndex && <View className='absolute -bottom-1 w-2 h-2 rounded-full bg-blue' />}
           </View>
         ))}
       </View>
 
-      <View className=' p-4 rounded-lg border border-gray-300'>
+      <View className='p-4 rounded-lg border border-gray-300'>
         <Text className='text-center text-gray-700 font-medium leading-5'>
           {orderStatus === 'Deposited'
-            ? 'Customer Order is submitted successfully. Please wait for the farm to prepare the package.'
+            ? 'Customer Order is submitted successfully. Please wait for the farm to prepare the package'
             : orderStatus === 'Packaged'
-              ? 'Your order has been packed and is ready for shipping.'
+              ? 'Your order has been packed and is ready for shipping'
               : orderStatus === 'Delivering'
                 ? 'Order is on the way!'
-                : 'Order has been delivered'}
+                : orderStatus === 'Delivered'
+                  ? 'Order has been delivered successfully'
+                  : orderStatus === 'Cancelled'
+                    ? `Order is cancelled. ${cancelledReason}`
+                    : 'Order is refunded'}
         </Text>
       </View>
     </View>
