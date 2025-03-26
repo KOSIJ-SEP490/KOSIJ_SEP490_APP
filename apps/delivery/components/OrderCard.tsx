@@ -13,9 +13,9 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
       case 'packaged':
         return 'text-green-700 bg-green-100'
       case 'delivering':
-        return 'text-blue-700 bg-blue-100'
+        return 'text-white bg-blue'
       case 'delivered':
-        return 'text-gray-700 bg-gray-200'
+        return 'text-green-700 bg-green-100'
       case 'cancelled':
         return 'text-red-700 bg-red-100'
       case 'refunded':
@@ -31,7 +31,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
   }
 
   return (
-    <Pressable onPress={onPress} className='border border-gray-200 rounded-lg p-5 bg-white mb-4 active:opacity-75'>
+    <Pressable onPress={onPress} className='border border-gray-400 rounded-lg p-5 bg-white mb-4 active:opacity-75'>
       <View className='flex-row justify-between items-start'>
         <Text className='text-sm font-bold'>
           Order ID: <Text className='text-gray-700 font-semibold'>{order?.orderId}</Text>
