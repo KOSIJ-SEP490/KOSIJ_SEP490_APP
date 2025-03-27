@@ -1,4 +1,4 @@
-import SubLayout from '@apps/customer/layouts/SubLayout'
+import SubLayout from '@shared/layouts/SubLayout'
 import {
   CustomerSettingsStackNavigationProp,
   CustomerSettingsStackParamList
@@ -36,7 +36,7 @@ const TopUpWebScreen: React.FC = () => {
         })
       }
 
-      navigation.replace('Wallet')
+      navigation.replace('Settings')
     }
   }
 

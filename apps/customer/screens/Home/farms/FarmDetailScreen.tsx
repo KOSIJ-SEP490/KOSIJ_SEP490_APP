@@ -1,10 +1,10 @@
 import React from 'react'
 import { View, Text, ActivityIndicator, ScrollView } from 'react-native'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import MainLayout from '@apps/customer/layouts/MainLayout'
+import MainLayout from '@shared/layouts/MainLayout'
 import { useFarmById } from '@apps/customer/hooks/useFarm'
 import { Star } from 'lucide-react-native'
-import Divider from '@apps/customer/components/Divider'
+import Divider from '@shared/components/Divider'
 import { useKoiVarietyListByFarmId } from '@apps/customer/hooks/useKoi'
 
 import { useFeedbackByFarmId } from '@apps/customer/hooks/useFeedback'

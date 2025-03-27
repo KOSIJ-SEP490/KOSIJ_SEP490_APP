@@ -1,8 +1,8 @@
 import NotesInput from '@apps/customer/components/Booking/NotesInput'
 import SubmitBtn from '@apps/customer/components/Booking/CustomizedTrip/SubmitBtn'
 import TravelInfoCard from '@apps/customer/components/Booking/CustomizedTrip/TravelInforCard'
-import Divider from '@apps/customer/components/Divider'
-import SubLayout from '@apps/customer/layouts/SubLayout'
+import Divider from '@shared/components/Divider'
+import SubLayout from '@shared/layouts/SubLayout'
 import React from 'react'
 import { View } from 'react-native'
 
