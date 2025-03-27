@@ -51,7 +51,8 @@ export function useOrders() {
       const response = await axios.post(`${API_BASE_URL}order`, orderData, {
         headers: {
           Authorization: `Bearer ${user.token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          Accept: 'text/plain'
         }
       })
       return response.data

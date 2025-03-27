@@ -248,9 +248,9 @@ const CreateOrder = () => {
         deliveryAddress: forms[0].address,
         paidAmount: Number(forms[0].koiDeposit) || 0,
         note: forms[0].note,
-        farmId: Number(forms[0].koiFarm) || null,
+        farmId: Number(forms[0].koiFarm) || 0,
         tripBookingId: Number(forms[0].bookingAccout) || 0,
-        orderDetails: orderDetails // ✅ Filtered to remove duplicates
+        orderDetails: orderDetails
       }
 
       console.log('Final Order Data:', JSON.stringify(orderData, null, 2))

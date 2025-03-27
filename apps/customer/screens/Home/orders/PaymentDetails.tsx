@@ -258,30 +258,31 @@ const PaymentDetails = () => {
             />
           </TouchableOpacity>
         </Card>
+        <View style={{ marginHorizontal: 16, marginTop: 30, marginBottom: 10 }}>
+          {/* Pay Button */}
+          <Button
+            mode='contained'
+            style={{ backgroundColor: '#1E51A4', paddingVertical: 8 }}
+            onPress={async () => {
+              try {
+                const response = await checkOutPayment(orderId)
 
-        {/* Pay Button */}
-        <Button
-          mode='contained'
-          style={{ backgroundColor: '#1E51A4', paddingVertical: 8 }}
-          onPress={async () => {
-            try {
-              const response = await checkOutPayment(orderId)
+                console.log('Checkout Response:', response)
 
-              console.log('Checkout Response:', response) // Debugging Log
-
-              if (response?.message === 'Check out Order') {
-                navigation.navigate('PaymentSuccess', { orderId })
-              } else {
+                if (response?.message === 'Check out Order') {
+                  navigation.navigate('PaymentSuccess', { orderId })
+                } else {
+                  navigation.navigate('PaymentFailed', { orderId: orderId })
+                }
+              } catch (error) {
+                console.error('Payment error:', error)
                 navigation.navigate('PaymentFailed', { orderId: orderId })
               }
-            } catch (error) {
-              console.error('Payment error:', error)
-              navigation.navigate('PaymentFailed', { orderId: orderId })
-            }
-          }}
-        >
-          <Text style={{ fontSize: 18, color: 'white', fontWeight: 'bold' }}>Pay</Text>
-        </Button>
+            }}
+          >
+            <Text style={{ fontSize: 18, color: 'white', fontWeight: 'bold' }}>Pay</Text>
+          </Button>
+        </View>
       </View>
     </ScrollView>
   )
