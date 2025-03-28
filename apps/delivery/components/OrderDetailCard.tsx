@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import { Order } from '../types/Order/Order.type'
 
 interface OrderDetailCardProps {
@@ -7,7 +7,7 @@ interface OrderDetailCardProps {
 }
 
 const statusColors: Record<string, { text: string; bg: string; border: string }> = {
-  Packaged: { text: 'text-green-700', bg: 'bg-green-100', border: 'border-green-200' },
+  Packaged: { text: 'text-orange-700', bg: 'bg-orange-100', border: 'border-orange-200' },
   Delivering: { text: 'text-white', bg: 'bg-blue', border: 'border-blue-400' },
   Delivered: { text: 'text-green-700', bg: 'bg-green-100', border: 'border-green-200' },
   Cancelled: { text: 'text-red-700', bg: 'bg-red-100', border: 'border-red-200' },
@@ -15,7 +15,6 @@ const statusColors: Record<string, { text: string; bg: string; border: string }>
   Default: { text: 'text-red-500', bg: 'bg-red-100', border: 'border-red-200' }
 }
 
-// Function to format date
 const formatDate = (dateString?: string) => {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
@@ -83,7 +82,18 @@ const OrderDetailCard: React.FC<OrderDetailCardProps> = ({ order }) => {
             <Text className='text-sm text-gray-500'>{order.farmName || 'N/A'}</Text>
           </View>
         </View>
+
+        <View className='mt-2'>
+          <Text className='text-xs font-semibold text-gray-900 mb-1'>NOTES</Text>
+          <Text className='text-sm text-gray-500'>{order.note || 'N/A'}</Text>
+        </View>
       </View>
+
+      {order.orderStatus === 'Delivered' && order.confirmedUrl && (
+        <View className='mt-4 items-center'>
+          <Image source={{ uri: order.confirmedUrl }} className='w-full h-48 rounded-lg' resizeMode='cover' />
+        </View>
+      )}
     </View>
   )
 }

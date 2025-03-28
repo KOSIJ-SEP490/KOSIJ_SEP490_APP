@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text } from 'react-native'
 import { RouteProp, useRoute } from '@react-navigation/native'
-import { useOrderById } from '@apps/delivery/hooks/useOrder'
+import { useOrderById, useUpdateOrder } from '@apps/delivery/hooks/useOrder'
 import { DeliveryOrdersStackParamList } from '@apps/delivery/types/navigationDelivery.type'
 import EditOrderButton from '@apps/delivery/components/EditOrderBtn'
 import FishOrderTable from '@apps/delivery/components/FishOrderTable'
@@ -11,23 +11,48 @@ import ProgressTracker from '@apps/delivery/components/ProgressTracker'
 import Divider from '@shared/components/Divider'
 import SubLayout from '@shared/layouts/SubLayout'
 import EditOrderModal from '@apps/delivery/components/EditOrderModal'
+import StartOrderButton from '@apps/delivery/components/StartOrderBtn'
+import StartSuccessPopup from '@apps/delivery/components/StartSuccessPopup'
+import FailSuccessPopup from '@apps/delivery/components/FailSuccessPopup'
 
 type OrderDetailScreenRouteProp = RouteProp<DeliveryOrdersStackParamList, 'OrderDetails'>
 
 export default function OrderDetailsScreen() {
   const route = useRoute<OrderDetailScreenRouteProp>()
   const { orderID } = route.params
-  const { order } = useOrderById(orderID)
+  const { order, refetch } = useOrderById(orderID)
+  const { updateOrder, isLoading } = useUpdateOrder()
 
   const isEditable = order?.orderStatus === 'Delivering'
+  const isPackaged = order?.orderStatus === 'Packaged'
+
   const [isModalVisible, setModalVisible] = useState(false)
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false)
+  const [showFailPopup, setShowFailPopup] = useState(false)
 
-  const handleEditOrder = () => {
-    setModalVisible(true)
-  }
-
+  const handleEditOrder = () => setModalVisible(true)
   const closeModal = () => {
     setModalVisible(false)
+    refetch()
+  }
+
+  const handleStartOrder = async () => {
+    if (!order || order.orderStatus !== 'Packaged') return
+
+    const success = await updateOrder(order.orderId, {
+      orderStatus: 'Delivering',
+      expectedDeliveryDate: order.expectedDeliveryDate,
+      thirdPartyLogisticsInfo: order.thirdPartyLogisticsInfo || '',
+      confirmedUrl: order.confirmedUrl || '',
+      cancellationReason: order.cancellationReason || ''
+    })
+
+    if (success) {
+      setShowSuccessPopup(true)
+      refetch()
+    } else {
+      setShowFailPopup(true)
+    }
   }
 
   return (
@@ -45,8 +70,17 @@ export default function OrderDetailsScreen() {
         <Text className='text-base font-bold text-black'>Amount</Text>
       </View>
       <OrderSummary order={order} />
-      <EditOrderButton isEditable={isEditable} onPress={handleEditOrder} />
+
+      {isPackaged ? (
+        <StartOrderButton onPress={handleStartOrder} disabled={isLoading} />
+      ) : (
+        <EditOrderButton isEditable={isEditable} onPress={handleEditOrder} />
+      )}
+
       {isModalVisible && <EditOrderModal orderID={order?.orderId} onClose={closeModal} />}
+
+      <StartSuccessPopup isVisible={showSuccessPopup} onClose={() => setShowSuccessPopup(false)} />
+      <FailSuccessPopup isVisible={showFailPopup} onClose={() => setShowFailPopup(false)} />
     </SubLayout>
   )
 }
