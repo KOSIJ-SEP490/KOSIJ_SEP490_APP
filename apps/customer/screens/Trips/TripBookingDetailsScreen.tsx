@@ -70,7 +70,7 @@ export default function TripBookingDetailsScreen() {
                 description: policy.description
               })) ?? []
             }
-            cancellationReason={tripBookingDetail?.cancellationReason ?? ''}
+            cancellationReason={tripBookingDetail?.cancelTripBookingDetails?.cancellationReason ?? ''}
             tripBookingID={tripBookingID}
           />
           <Divider />
