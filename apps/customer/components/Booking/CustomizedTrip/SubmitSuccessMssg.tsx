@@ -24,7 +24,7 @@ export default function SubmitSuccessMssg({ visible, onClose, tripRequestRespons
             <View className='w-16 h-16 rounded-full bg-blue items-center justify-center mb-4'>
               <CheckCircle width={26} height={26} stroke='#ffffff' strokeWidth={3} />
             </View>
-            <Text className='text-lg text-gray-700 font-medium'>Booking Submitted!</Text>
+            <Text className='text-lg text-gray-700 font-medium'>Customized Request Submitted!</Text>
           </View>
 
           <View className='h-px bg-gray-200 my-6' />
@@ -32,7 +32,7 @@ export default function SubmitSuccessMssg({ visible, onClose, tripRequestRespons
           {tripRequestResponse && (
             <View className='space-y-6'>
               <View className='flex-row justify-between'>
-                <Text className='text-base text-gray-600'>Booking ID</Text>
+                <Text className='text-base text-gray-600'>Trip Request ID</Text>
                 <Text className='text-base text-gray-800'>{tripRequestResponse.id || 'N/A'}</Text>
               </View>
 
@@ -57,7 +57,7 @@ export default function SubmitSuccessMssg({ visible, onClose, tripRequestRespons
           </View>
 
           <Text className='text-gray-500 text-sm mt-4'>
-            Please wait for us to confirm your booking as soon as possible.
+            Please wait for us to finalize your trip request as soon as possible.
           </Text>
 
           <TouchableOpacity
