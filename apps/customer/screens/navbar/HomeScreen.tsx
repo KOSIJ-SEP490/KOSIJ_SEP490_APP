@@ -149,7 +149,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 10 }}
-          style={{ height: 350 }}
+          style={{ height: 390 }}
+          className='mb-10'
         >
           {feedbacks && feedbacks.length > 0 ? (
             feedbacks.map((feedback) => (

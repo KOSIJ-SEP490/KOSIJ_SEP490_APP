@@ -11,7 +11,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
   const getStatusStyle = (status?: string) => {
     switch (status?.toLowerCase()) {
       case 'packaged':
-        return 'text-green-700 bg-green-100'
+        return 'text-orange-700 bg-orange-100'
       case 'delivering':
         return 'text-white bg-blue'
       case 'delivered':

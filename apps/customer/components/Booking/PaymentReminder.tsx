@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import { styled } from 'nativewind'
 import { useNavigation } from '@react-navigation/native'
 import { CustomerTripsStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
@@ -30,10 +30,21 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
 }) => {
   const [timeRemaining, setTimeRemaining] = useState<string>('')
   const [isExpired, setIsExpired] = useState<boolean>(false)
+  const [hasNoExpiry, setHasNoExpiry] = useState<boolean>(false)
   const navigation = useNavigation<CustomerTripsStackNavigationProp>()
 
   useEffect(() => {
     if (status === 'Cancelled') return
+
+    // Check if expiredTime is empty
+    if (!expiredTime || expiredTime.trim() === '') {
+      setTimeRemaining('Expired Time')
+      setIsExpired(true)
+      setHasNoExpiry(true)
+      return
+    }
+
+    setHasNoExpiry(false)
 
     const updateCountdown = () => {
       const now = new Date().getTime()
@@ -41,7 +52,7 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
       const diff = expiryDate - now
 
       if (diff <= 0) {
-        setTimeRemaining('Expired')
+        setTimeRemaining('Expired Time')
         setIsExpired(true)
         return
       }
@@ -65,9 +76,9 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
   const getPaymentText = () => {
     switch (status) {
       case 'Pending':
-        return 'Time to pay Deposited Amount'
+        return hasNoExpiry ? 'Payment Expired' : 'Time to pay Deposited Amount'
       case 'Processing':
-        return 'Time to pay Remaining Amount'
+        return hasNoExpiry ? 'Payment Expired' : 'Time to pay Remaining Amount'
       case 'Deposited':
         return 'Wait for Sales Staff to process the information'
       case 'Cancelled':
@@ -77,15 +88,17 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
     }
   }
 
-  const isButtonVisible = status !== 'Cancelled'
-  const isButtonDisabled = status === 'Deposited' || isExpired
+  const isButtonVisible = status !== 'Cancelled' && !isExpired && (status === 'Pending' || status === 'Processing')
+  const isButtonDisabled = status === 'Deposited' || isExpired || hasNoExpiry
 
   return (
     <StyledView className='p-4 w-full max-w-lg'>
       <StyledView className='mb-4'>
         <StyledText className='text-center text-base font-medium'>{getPaymentText()}</StyledText>
         {status !== 'Cancelled' && (
-          <StyledText className={`text-center text-base font-medium ${isExpired ? 'text-red-500' : 'text-red-500'}`}>
+          <StyledText
+            className={`text-center text-base font-medium ${isExpired || hasNoExpiry ? 'text-red-500' : 'text-red-500'}`}
+          >
             {timeRemaining}
           </StyledText>
         )}
@@ -98,8 +111,9 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
           </StyledText>
         ) : status === 'Pending' ? (
           <StyledText className='text-gray-700 text-sm leading-6'>
-            For pending payments, please complete the payment at least 1 hour before the deadline to secure your
-            booking.
+            {hasNoExpiry
+              ? 'The payment period has expired.'
+              : 'For pending payments, please complete the payment at least 1 hour before the deadline to secure your booking.'}
           </StyledText>
         ) : (
           paymentPolicy.map((policy) => (
@@ -110,23 +124,22 @@ export const PaymentReminder: React.FC<PaymentReminderProps> = ({
         )}
       </StyledView>
 
-      {isButtonVisible && (
+      {isButtonVisible ? (
         <StyledTouchableOpacity
           className={`rounded-lg py-4 px-6 ${isButtonDisabled ? 'bg-gray-400' : 'bg-blue'}`}
           disabled={isButtonDisabled}
           onPress={() => {
-            const paymentType = status === 'Pending' ? 'Payment1' : status === 'Processing' ? 'Payment2' : null
-
-            if (paymentType) {
-              navigation.navigate('Payment', { tripBookingID, type: paymentType })
-            } else {
-              Alert.alert('Invalid Status', 'You can only proceed to payment when status is Pending or Processing.')
-            }
+            const paymentType = status === 'Pending' ? 'Payment1' : 'Payment2'
+            navigation.navigate('Payment', { tripBookingID, type: paymentType })
           }}
         >
           <StyledText className='text-white text-center text-sm font-medium'>Go to Payment</StyledText>
         </StyledTouchableOpacity>
-      )}
+      ) : (isExpired || hasNoExpiry) && (status === 'Pending' || status === 'Processing') ? (
+        <StyledView className='rounded-lg py-4 px-6 bg-gray-400'>
+          <StyledText className='text-white text-center text-sm font-medium'>Payment Expired</StyledText>
+        </StyledView>
+      ) : null}
     </StyledView>
   )
 }

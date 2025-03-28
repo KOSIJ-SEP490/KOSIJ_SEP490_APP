@@ -27,7 +27,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ order }) => {
 
       <View className='flex-row justify-between mt-3'>
         <Text className='text-gray-600 text-base'>Amount to collect</Text>
-        <Text className='text-red-600 text-base font-bold'>{formatCurrency(order?.totalDeliveringAmount)}</Text>
+        <Text className='text-red-600 text-base font-bold'>{formatCurrency(order?.remaining)}</Text>
       </View>
     </View>
   )

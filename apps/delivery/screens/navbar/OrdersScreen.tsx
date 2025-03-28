@@ -9,7 +9,7 @@ import { DeliveryOrderStackNavigationProp } from '@apps/delivery/types/navigatio
 export default function OrdersScreen() {
   const { orders, error, refetch } = useOrderByAll()
   const navigation = useNavigation<DeliveryOrderStackNavigationProp>()
-  const [selectedTab, setSelectedTab] = useState<'Ongoing' | 'History'>('Ongoing')
+  const [selectedTab, setSelectedTab] = useState<'Packaged' | 'Ongoing' | 'History'>('Ongoing')
 
   useFocusEffect(
     useCallback(() => {
@@ -31,15 +31,24 @@ export default function OrdersScreen() {
     navigation.navigate('OrderDetails', { orderID: orderId })
   }
 
-  const filteredOrders = orders.filter((order) =>
-    selectedTab === 'Ongoing' ? order.orderStatus === 'Delivering' : order.orderStatus !== 'Delivering'
-  )
+  const filteredOrders = orders.filter((order) => {
+    if (selectedTab === 'Packaged') return order.orderStatus === 'Packaged'
+    if (selectedTab === 'Ongoing') return order.orderStatus === 'Delivering'
+    return ['Cancelled', 'Refunded', 'Delivered'].includes(order.orderStatus)
+  })
 
   return (
     <SubLayout title='Orders' showBackButton={false}>
       <View className='flex-row justify-center mt-10'>
         <TouchableOpacity
-          className={`px-5 py-3 rounded-lg ${selectedTab === 'Ongoing' ? 'bg-blue' : 'border border-black'}`}
+          className={`px-5 py-3 rounded-lg ${selectedTab === 'Packaged' ? 'bg-blue' : 'border border-black'}`}
+          onPress={() => setSelectedTab('Packaged')}
+        >
+          <Text className={selectedTab === 'Packaged' ? 'text-white' : 'text-black'}>Packaged</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className={`ml-4 px-5 py-3 rounded-lg ${selectedTab === 'Ongoing' ? 'bg-blue' : 'border border-black'}`}
           onPress={() => setSelectedTab('Ongoing')}
         >
           <Text className={selectedTab === 'Ongoing' ? 'text-white' : 'text-black'}>Ongoing</Text>
