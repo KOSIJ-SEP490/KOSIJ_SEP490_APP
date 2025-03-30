@@ -246,7 +246,6 @@ const CreateOrder = () => {
         district: forms[0].district,
         ward: forms[0].ward,
         deliveryAddress: forms[0].address,
-        paidAmount: Number(forms[0].koiDeposit) || 0,
         note: forms[0].note,
         farmId: Number(forms[0].koiFarm) || 0,
         tripBookingId: Number(forms[0].bookingAccout) || 0,
@@ -451,8 +450,8 @@ const CreateOrder = () => {
                   />
                 </View>
               </View>
-              <View className='flex-row justify-between'>
-                <View className='w-36'>
+              <View className='flex-row'>
+                <View className='w-full'>
                   <Text>
                     Koi Price <Text style={{ color: 'red' }}>*</Text>
                   </Text>
@@ -463,21 +462,6 @@ const CreateOrder = () => {
                     onChangeText={(text) => {
                       const newForms = [...forms]
                       newForms[index].koiPrice = text
-                      setForms(newForms)
-                    }}
-                  />
-                </View>
-                <View className='w-36'>
-                  <Text>
-                    Koi Deposit <Text style={{ color: 'red' }}>*</Text>
-                  </Text>
-                  <TextInput
-                    style={{ borderWidth: 1, borderColor: '#ccc', padding: 8, borderRadius: 5, marginBottom: 10 }}
-                    placeholder='Enter'
-                    value={form.koiDeposit}
-                    onChangeText={(text) => {
-                      const newForms = [...forms]
-                      newForms[index].koiDeposit = text
                       setForms(newForms)
                     }}
                   />

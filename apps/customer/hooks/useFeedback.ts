@@ -107,3 +107,32 @@ export function useFeedbackByFarmId(farmId: number) {
 
   return { feedbacks, error }
 }
+
+export const useCreateFeedback = () => {
+  const authContext = useContext(AuthContext)
+
+  const createFeedback = async (feedbackData: {
+    tripBookingID: number
+    feedbackType: string
+    rating: number
+    review: string
+  }) => {
+    if (!authContext || !authContext.user) {
+      throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
+    }
+
+    const { user } = authContext
+    try {
+      const response = await axios.post(`${API_BASE_URL}feedback`, feedbackData, {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      })
+      return response.data
+    } catch (error: any) {
+      throw new Error('Error submitting feedback: ' + error.message)
+    }
+  }
+
+  return { createFeedback }
+}

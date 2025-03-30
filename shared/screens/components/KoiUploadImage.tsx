@@ -37,7 +37,7 @@ export default function KoiUploadImage({ value, onChange, maxCount = 4 }: KoiUpl
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync()
     if (permissionResult.granted) {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: 'images', // Correct string literal usage
         quality: 1 // Set quality as per your requirement
       })
       if (!result.canceled && result.assets?.[0].uri) {
@@ -53,7 +53,7 @@ export default function KoiUploadImage({ value, onChange, maxCount = 4 }: KoiUpl
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (permissionResult.granted) {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: 'images', // Correct string literal usage
         quality: 1 // Set quality as per your requirement
       })
       if (!result.canceled && result.assets?.[0].uri) {

@@ -10,9 +10,10 @@ import { useFarmsByTripBooking } from '@apps/customer/hooks/useFarm'
 import { useTripBookingById } from '@apps/customer/hooks/useTripBooking'
 import MainLayout from '@shared/layouts/MainLayout'
 import { CustomerTripsStackParamList } from '@apps/customer/types/navigationCustomerType'
-import { RouteProp, useRoute } from '@react-navigation/native'
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import React from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { StackNavigationProp } from '@react-navigation/stack'
 
 type TripBookingDetailScreenRouteProp = RouteProp<CustomerTripsStackParamList, 'TripBookingDetails'>
 
@@ -30,11 +31,11 @@ export default function TripBookingDetailsScreen() {
     tripBookingDetail?.tripBookingStatus !== 'Cancelled' &&
     tripBookingDetail?.tripBookingStatus !== 'Completed' &&
     tripBookingDetail?.tripBookingStatus !== 'Refunded'
-
+  const navigation = useNavigation<StackNavigationProp<CustomerTripsStackParamList, 'RateTripDetails'>>()
   return (
     <MainLayout
       title={tripBookingDetail?.tourName || ''}
-      backgroundImage={tripBookingDetail?.imageUrl || ''}
+      backgroundImage={tripBookingDetail?.imageUrl ?? 'https://example.com/default-image.jpg'}
       showBackButton={true}
     >
       {tripBookingDetail?.tripBookingStatus !== 'Paid' && (
@@ -136,10 +137,20 @@ export default function TripBookingDetailsScreen() {
         </View>
       </View>
 
-      {shouldShowCancelButton && (
+      {shouldShowCancelButton ? (
         <View className='p-4 bg-white mb-5'>
           <TouchableOpacity className='bg-red-700 rounded-lg py-3'>
             <Text className='text-white text-center text-lg font-semibold'>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View className='p-4 bg-white mb-5'>
+          <TouchableOpacity
+            className='rounded-lg py-3'
+            style={{ backgroundColor: '#264eca' }}
+            onPress={() => navigation.navigate('RateTripDetails', { tripBookingID: tripBookingID })}
+          >
+            <Text className='text-white text-center text-lg font-semibold'>Rate Trip</Text>
           </TouchableOpacity>
         </View>
       )}
