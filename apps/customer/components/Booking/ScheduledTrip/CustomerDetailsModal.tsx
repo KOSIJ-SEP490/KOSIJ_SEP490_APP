@@ -42,14 +42,14 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
       phoneNumber: '',
       passport: '',
       isRepresentative: ageGroup === 'adult' && index === 0,
-      hasVisa: false
+      hasVisa: null
     }
   )
 
   const [datePickerVisible, setDatePickerVisible] = useState(false)
   const [selectedDate, setSelectedDate] = useState(new Date())
 
-  const handleChange = (field: keyof CustomerInfo, value: string | number | boolean) => {
+  const handleChange = (field: keyof CustomerInfo, value: string | number | boolean | null) => {
     setCustomerDetails((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -81,7 +81,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
       phoneNumber: '',
       passport: '',
       isRepresentative: ageGroup === 'adult' && index === 0,
-      hasVisa: false
+      hasVisa: null
     })
   }
 
@@ -237,7 +237,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                     <Text>Has Visa</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity onPress={() => handleChange('hasVisa', false)} className='flex-row items-center'>
+                  <TouchableOpacity onPress={() => handleChange('hasVisa', null)} className='flex-row items-center'>
                     <View
                       className={`w-5 h-5 border border-blue rounded-full mr-2 ${!customerDetails.hasVisa ? 'bg-blue' : 'border-gray-400'}`}
                     />

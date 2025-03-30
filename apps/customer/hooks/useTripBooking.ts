@@ -6,6 +6,7 @@ import { TripBookingRequestType, TripBookingType } from '../types/Booking/tripBo
 import AuthContext from '@shared/context/AuthContext'
 import { TripBookingCheckInType, TripBookingCheckInType2 } from '../types/Booking/tripBookingCheckIn.type'
 import { TripCheckOutType } from '../types/Booking/tripCheckout.type'
+import { CanceledTripBookingType } from '../types/TripBooking/canceledTripBooking.type'
 
 export function useTripBookingById(tripBookingId: number) {
   const [tripBookingDetail, setTrip] = useState<TripBookingDetailType | null>(null)
@@ -248,4 +249,37 @@ export function useTripBookingByAll() {
   }, [userToken])
 
   return { tripBookings, error, reload: fetchTrip }
+}
+
+export function useCancelTripBooking() {
+  const [canceledTrip, setCanceledTrip] = useState<CanceledTripBookingType | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+
+  const userToken = authContext?.user?.token
+
+  const cancelTrip = async (tripId: number, cancellationReason: string) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await axios.put<{ message: string; value: CanceledTripBookingType }>(
+        `${API_BASE_URL}trip-booking/${tripId}/cancel`,
+        { cancellationReason },
+        {
+          headers: { Authorization: `Bearer ${userToken}` }
+        }
+      )
+
+      setCanceledTrip(response.data.value)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to cancel the trip.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { canceledTrip, loading, error, cancelTrip }
 }

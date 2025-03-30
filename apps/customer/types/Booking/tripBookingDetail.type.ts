@@ -27,9 +27,26 @@ export interface TripBookingDetailType {
   paidAmount?: number | null
   remaining?: number | null
   totalAmount: number
-  cancellationReason?: string | null
+  cancelTripBookingDetails?: CancelTripBooking | null
 }
 
+export interface CancelTripBooking {
+  id: number
+  cancelTime: string
+  cancellationReason: string
+  penaltyRate: string
+  totalAmount: number
+  totalPaidAmount: number
+  totalPaidAmountDetails: {
+    tripPaidAmount: number
+    totalVisaFee: number
+  }
+  remainingAmount: number
+  refundDetails: {
+    refundAmount: number
+    description: string
+  }
+}
 export interface CustomerInfo {
   customerName: string
   phoneNumber: string

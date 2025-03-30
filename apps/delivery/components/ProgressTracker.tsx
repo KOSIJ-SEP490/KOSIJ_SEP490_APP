@@ -61,7 +61,7 @@ const ProgressTracker: React.FC<ProgressTrackerProps> = ({ orderStatus, cancelle
           {orderStatus === 'Deposited'
             ? 'Customer Order is submitted successfully. Please wait for the farm to prepare the package'
             : orderStatus === 'Packaged'
-              ? 'Your order has been packed and is ready for shipping'
+              ? 'Order has been packed. Click Start to deliver order'
               : orderStatus === 'Delivering'
                 ? 'Order is on the way!'
                 : orderStatus === 'Delivered'

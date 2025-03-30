@@ -17,5 +17,5 @@ export type DeliverySettingsStackParamList = {
 }
 
 export type DeliveryHomeStackNavigationProp = StackNavigationProp<DeliveryHomeStackParamList>
-export type DeliverySettingssStackNavigationProp = StackNavigationProp<DeliverySettingsStackParamList>
+export type DeliverySettingsStackNavigationProp = StackNavigationProp<DeliverySettingsStackParamList>
 export type DeliveryOrderStackNavigationProp = StackNavigationProp<DeliveryOrdersStackParamList>

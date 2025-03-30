@@ -7,13 +7,14 @@ import ItineraryCard from '@apps/customer/components/Card/Tour/ItineraryCard'
 import TourPolicyCard from '@apps/customer/components/Card/Tour/TourPolicyCard'
 import Divider from '@shared/components/Divider'
 import { useFarmsByTripBooking } from '@apps/customer/hooks/useFarm'
-import { useTripBookingById } from '@apps/customer/hooks/useTripBooking'
+import { useCancelTripBooking, useTripBookingById } from '@apps/customer/hooks/useTripBooking'
 import MainLayout from '@shared/layouts/MainLayout'
 import { CustomerTripsStackParamList } from '@apps/customer/types/navigationCustomerType'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import React from 'react'
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import React, { useState } from 'react'
+import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput } from 'react-native'
+import CancelSuccessModal from '@apps/customer/components/Booking/CancelSuccessModal'
 
 type TripBookingDetailScreenRouteProp = RouteProp<CustomerTripsStackParamList, 'TripBookingDetails'>
 
@@ -26,12 +27,34 @@ export default function TripBookingDetailsScreen() {
     ? new Date(tripBookingDetail.expiredTime).getTime() < new Date().getTime()
     : false
 
+  const { cancelTrip, loading, canceledTrip } = useCancelTripBooking()
+  const [showCancelModal, setShowCancelModal] = useState(false)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [cancellationReason, setCancellationReason] = useState('')
+
   const shouldShowCancelButton =
     !isExpired &&
     tripBookingDetail?.tripBookingStatus !== 'Cancelled' &&
     tripBookingDetail?.tripBookingStatus !== 'Completed' &&
     tripBookingDetail?.tripBookingStatus !== 'Refunded'
   const navigation = useNavigation<StackNavigationProp<CustomerTripsStackParamList, 'RateTripDetails'>>()
+
+  const handleCancelTrip = async () => {
+    if (!cancellationReason.trim()) {
+      Alert.alert('Error', 'Please provide a cancellation reason')
+      return
+    }
+
+    try {
+      await cancelTrip(tripBookingID, cancellationReason)
+      setShowCancelModal(false)
+      setShowSuccessModal(true)
+    } catch (error) {
+      setShowCancelModal(false)
+      Alert.alert('Error', 'Failed to Cancel Trip Booking')
+    }
+  }
+
   return (
     <MainLayout
       title={tripBookingDetail?.tourName || ''}
@@ -49,7 +72,7 @@ export default function TripBookingDetailsScreen() {
                 description: policy.description
               })) ?? []
             }
-            cancellationReason={tripBookingDetail?.cancellationReason ?? ''}
+            cancellationReason={tripBookingDetail?.cancelTripBookingDetails?.cancellationReason ?? ''}
             tripBookingID={tripBookingID}
           />
           <Divider />
@@ -139,7 +162,7 @@ export default function TripBookingDetailsScreen() {
 
       {shouldShowCancelButton ? (
         <View className='p-4 bg-white mb-5'>
-          <TouchableOpacity className='bg-red-700 rounded-lg py-3'>
+          <TouchableOpacity className='bg-red-700 rounded-lg py-3' onPress={() => setShowCancelModal(true)}>
             <Text className='text-white text-center text-lg font-semibold'>Cancel</Text>
           </TouchableOpacity>
         </View>
@@ -154,6 +177,56 @@ export default function TripBookingDetailsScreen() {
           </TouchableOpacity>
         </View>
       )}
+
+      <Modal
+        transparent
+        visible={showCancelModal}
+        animationType='fade'
+        onRequestClose={() => setShowCancelModal(false)}
+      >
+        <View className='flex-1 justify-center items-center bg-black/50'>
+          <View className='bg-white p-6 rounded-xl w-11/12 max-w-md'>
+            <Text className='text-xl font-bold mb-4'>Cancel Trip</Text>
+
+            <Text className='text-gray-600 mb-2'>Please provide the reason for cancellation:</Text>
+
+            <TextInput
+              className='border border-gray-300 rounded-lg p-3 mb-4 h-24 text-gray-800'
+              multiline
+              placeholder='Enter your reason here...'
+              value={cancellationReason}
+              onChangeText={setCancellationReason}
+            />
+
+            <View className='flex-row justify-between mt-4'>
+              <TouchableOpacity
+                className='px-6 py-2 border border-gray-300 rounded-lg'
+                onPress={() => setShowCancelModal(false)}
+              >
+                <Text className='text-gray-700 font-medium'>Back</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className='px-6 py-2 bg-red-600 rounded-lg'
+                onPress={handleCancelTrip}
+                disabled={loading}
+              >
+                <Text className='text-white font-medium'>{loading ? 'Processing...' : 'Confirm Cancellation'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <CancelSuccessModal
+        visible={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        bookingId={tripBookingID}
+        canceledTime={new Date().toLocaleString()}
+        senderName={canceledTrip?.customerName || ''}
+        cancellationReason={cancellationReason}
+        refundAmount={canceledTrip?.refundAmount || 0}
+      />
     </MainLayout>
   )
 }

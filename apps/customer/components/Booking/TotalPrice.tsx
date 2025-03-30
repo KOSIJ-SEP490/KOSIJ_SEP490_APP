@@ -76,7 +76,7 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
             phoneNumber,
             passport: passport ?? '',
             isRepresentative,
-            hasVisa: hasVisa ?? false
+            hasVisa: hasVisa ?? null
           })
         )
 

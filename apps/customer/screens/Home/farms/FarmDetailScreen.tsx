@@ -115,7 +115,7 @@ export default function FarmDetailScreen() {
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 10 }}
-          style={{ height: 350 }}
+          style={{ height: 390 }}
         >
           {feedbacks && feedbacks.length > 0 ? (
             feedbacks.map((feedback) => (
