@@ -13,7 +13,9 @@ import { CustomerTripsStackParamList } from '@apps/customer/types/navigationCust
 import { RouteProp, useRoute } from '@react-navigation/native'
 import { styled } from 'nativewind'
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
+import { useFarmsByTripBooking } from '@apps/customer/hooks/useFarm'
+import FarmCard from '@apps/customer/components/Card/Farm/FarmCard'
 
 type QuotationDetailScreenRouteProp = RouteProp<CustomerTripsStackParamList, 'QuotationDetails'>
 
@@ -25,7 +27,7 @@ export default function QuotationDetailsScreen() {
   const { tripRequestID } = route.params
   const { tripRequestDetails } = useTripRequestById(tripRequestID)
   const { tripBookingDetail } = useTripBookingById(tripRequestDetails?.tripBookingId ?? 0)
-
+  const { farmList, error: farmError } = useFarmsByTripBooking(tripRequestDetails?.customizedTripResponse?.farms ?? [])
   return (
     <SubLayout title='Quotation' showBackButton={true}>
       {tripRequestDetails?.requestStatus === 'Confirmed' && (
@@ -39,7 +41,7 @@ export default function QuotationDetailsScreen() {
                 description: policy.description
               })) ?? []
             }
-            cancellationReason={tripBookingDetail?.cancellationReason ?? ''}
+            cancellationReason={tripBookingDetail?.cancelTripBookingDetails?.cancellationReason ?? ''}
             tripBookingID={tripRequestDetails?.tripBookingId ?? 0}
           />
           <Divider />
@@ -63,6 +65,34 @@ export default function QuotationDetailsScreen() {
             If you want to edit trip request, please contact our Sales Staff to exchange
           </StyledText>
         </StyledView>
+      </View>
+
+      <Divider />
+
+      <View className='px-4'>
+        <View className='flex-row justify-between items-center px-4 py-4'>
+          <Text className='text-base font-semibold text-blue'>Farms to Visit</Text>
+        </View>
+
+        <View pointerEvents='none'>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingVertical: 10 }}
+            style={{ height: 370 }}
+          >
+            {farmError ? (
+              <Text className='text-center text-red-500'>{farmError}</Text>
+            ) : farmList.length > 0 ? (
+              farmList.map((farm) => (
+                <View key={farm.id} className='mb-4'>
+                  <FarmCard farm={farm} />
+                </View>
+              ))
+            ) : (
+              <Text className='text-center text-gray-500'>Loading...</Text>
+            )}
+          </ScrollView>
+        </View>
       </View>
 
       <Divider />

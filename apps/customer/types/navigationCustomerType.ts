@@ -31,6 +31,7 @@ export type CustomerSettingsStackParamList = {
   Wallet?: undefined
   Recharge: undefined
   Withdraw: undefined
+  WithdrawDetails: { withdrawID?: number }
   TopUpWeb: { url?: string }
 }
 export type CustomerOrderStackParamList = {

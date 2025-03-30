@@ -28,7 +28,11 @@ export default function ScheduledTourDetailScreen() {
   const setTour = (tourID: number) => {
     setBookingData((prev) => ({
       ...prev,
-      tourID
+      tourID,
+      pricing: {
+        ...prev.pricing,
+        visaPrice: tour?.visaFee || 0
+      }
     }))
   }
   const { farmList, error: farmError } = useFarmsByTour(tour?.farms ?? [])

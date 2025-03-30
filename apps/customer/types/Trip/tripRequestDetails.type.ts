@@ -70,6 +70,11 @@ interface CustomizedTrip {
   tourCancellationResponse: Policy[]
   tourPromotionResponse: Policy[]
   tourPriceResponse: Policy[]
+  farms: Farm[]
+}
+
+interface Farm {
+  id: number
 }
 
 interface TourDetail {

@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { ScrollView, View, Text } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { CustomerSettingsStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
 import SubLayout from '@shared/layouts/SubLayout'
 import WalletSection from '@apps/customer/components/Card/Wallet/WalletSection'
@@ -11,8 +11,8 @@ import { useTransactionByAll } from '@apps/customer/hooks/useTransaction'
 
 export default function WalletScreen() {
   const navigation = useNavigation<CustomerSettingsStackNavigationProp>()
-  const { wallet } = useWallet()
-  const { transactions } = useTransactionByAll()
+  const { wallet, refetch: refetchWallet } = useWallet()
+  const { transactions, refetch: refetchTransactions } = useTransactionByAll()
 
   const handleRecharge = () => {
     navigation.navigate('Recharge')
@@ -21,6 +21,13 @@ export default function WalletScreen() {
   const handleWithdraw = () => {
     navigation.navigate('Withdraw')
   }
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchWallet()
+      refetchTransactions()
+    }, [refetchWallet, refetchTransactions])
+  )
 
   return (
     <SubLayout title='Wallet' showBackButton={true}>

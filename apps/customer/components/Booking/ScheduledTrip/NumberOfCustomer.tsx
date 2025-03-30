@@ -22,11 +22,10 @@ const NumberOfCustomer: React.FC<NumberOfCustomerProps> = ({ tripPrices }) => {
 
   const [customerCount, setCustomerCount] = useState(initialCustomerCount)
 
-  const calculateTotalPrice = () => {
+  const calculateTotalPrice = useCallback(() => {
     let totalAdultPrice = 0
     let totalChildPrice = 0
     let totalInfantPrice = 0
-    let totalPrice = 0
 
     tripPrices.forEach(({ ageGroup, price }) => {
       const groupLower = ageGroup.toLowerCase() as 'adult' | 'child' | 'infant'
@@ -36,9 +35,10 @@ const NumberOfCustomer: React.FC<NumberOfCustomerProps> = ({ tripPrices }) => {
       if (ageGroup === 'Adult') totalAdultPrice = groupTotalPrice
       if (ageGroup === 'Child') totalChildPrice = groupTotalPrice
       if (ageGroup === 'Infant') totalInfantPrice = groupTotalPrice
-
-      totalPrice += groupTotalPrice
     })
+
+    const visaCost = (bookingData.pricing.visaPrice || 0) * (bookingData.pricing.numberOfVisas || 0)
+    const totalPrice = totalAdultPrice + totalChildPrice + totalInfantPrice + visaCost
 
     setBookingData((prevData) => ({
       ...prevData,
@@ -47,10 +47,13 @@ const NumberOfCustomer: React.FC<NumberOfCustomerProps> = ({ tripPrices }) => {
         totalPrice,
         adultPrice: totalAdultPrice,
         childPrice: totalChildPrice,
-        infantPrice: totalInfantPrice
+        infantPrice: totalInfantPrice,
+        // Keep existing visaPrice and numberOfVisas
+        visaPrice: prevData.pricing.visaPrice || 0,
+        numberOfVisas: prevData.pricing.numberOfVisas || 0
       }
     }))
-  }
+  }, [customerCount, tripPrices, bookingData.pricing.visaPrice, bookingData.pricing.numberOfVisas, setBookingData])
 
   const handleIncrease = useCallback(
     debounce((ageGroup: 'adult' | 'child' | 'infant') => {
@@ -64,20 +67,23 @@ const NumberOfCustomer: React.FC<NumberOfCustomerProps> = ({ tripPrices }) => {
         return updatedCount
       })
     }, 200),
-    []
+    [calculateTotalPrice]
   )
 
-  const handleDecrease = (ageGroup: 'adult' | 'child' | 'infant') => {
-    setCustomerCount((prev) => {
-      const updatedCount = { ...prev, [ageGroup]: Math.max(0, prev[ageGroup] - 1) }
-      setBookingData((prevData) => ({
-        ...prevData,
-        numberOfCustomers: updatedCount
-      }))
-      calculateTotalPrice()
-      return updatedCount
-    })
-  }
+  const handleDecrease = useCallback(
+    (ageGroup: 'adult' | 'child' | 'infant') => {
+      setCustomerCount((prev) => {
+        const updatedCount = { ...prev, [ageGroup]: Math.max(0, prev[ageGroup] - 1) }
+        setBookingData((prevData) => ({
+          ...prevData,
+          numberOfCustomers: updatedCount
+        }))
+        calculateTotalPrice()
+        return updatedCount
+      })
+    },
+    [calculateTotalPrice]
+  )
 
   useEffect(() => {
     setBookingData((prevData) => ({
@@ -88,7 +94,7 @@ const NumberOfCustomer: React.FC<NumberOfCustomerProps> = ({ tripPrices }) => {
 
   useEffect(() => {
     calculateTotalPrice()
-  }, [customerCount, tripPrices])
+  }, [calculateTotalPrice])
 
   return (
     <View className='my-10 mb-14'>

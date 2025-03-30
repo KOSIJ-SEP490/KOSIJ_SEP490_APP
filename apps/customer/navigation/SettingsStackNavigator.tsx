@@ -8,6 +8,7 @@ import WalletScreen from '../screens/Settings/WalletScreen'
 import RechargeScreen from '../screens/Settings/RechargeScreen'
 import WithdrawScreen from '../screens/Settings/WithdrawScreen'
 import TopUpWebScreen from '../screens/Settings/TopUpWebScreen'
+import WithdrawDetailsScreen from '../screens/Settings/WithdrawDetailsScreen'
 
 const Stack = createStackNavigator<CustomerSettingsStackParamList>()
 
@@ -20,6 +21,7 @@ export default function CustomerSettingsStackNavigator() {
       <Stack.Screen name='Wallet' component={WalletScreen} />
       <Stack.Screen name='Recharge' component={RechargeScreen} />
       <Stack.Screen name='Withdraw' component={WithdrawScreen} />
+      <Stack.Screen name='WithdrawDetails' component={WithdrawDetailsScreen} />
       <Stack.Screen name='TopUpWeb' component={TopUpWebScreen} />
     </Stack.Navigator>
   )

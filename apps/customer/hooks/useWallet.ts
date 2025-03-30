@@ -118,32 +118,105 @@ export function useWithdrawRequestByAll() {
   const authContext = useContext(AuthContext)
   const userToken = authContext?.user?.token
 
-  useEffect(() => {
-    const fetchWithdrawals = async () => {
-      if (!userToken) {
-        setError('User is not authenticated.')
-        return
-      }
-
-      setLoading(true)
-      setError(null)
-
-      try {
-        const response = await axios.get<{ message: string; value: WithDrawResponseType[] }>(
-          `${API_BASE_URL}withdrawals/current-user`,
-          { headers: { Authorization: `Bearer ${userToken}` } }
-        )
-        setWithdrawalRequests(response.data.value)
-      } catch (err: unknown) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setError((err as any)?.response?.data?.detail || 'Failed to fetch withdrawal requests.')
-      } finally {
-        setLoading(false)
-      }
+  const fetchWithdrawals = useCallback(async () => {
+    if (!userToken) {
+      setError('User is not authenticated.')
+      return
     }
 
-    fetchWithdrawals()
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await axios.get<{ message: string; value: WithDrawResponseType[] }>(
+        `${API_BASE_URL}withdrawals/current-user`,
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      )
+      setWithdrawalRequests(response.data.value)
+    } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((err as any)?.response?.data?.detail || 'Failed to fetch withdrawal requests.')
+    } finally {
+      setLoading(false)
+    }
   }, [userToken])
 
-  return { withdrawalRequests, loading, error }
+  useEffect(() => {
+    fetchWithdrawals()
+  }, [fetchWithdrawals])
+
+  return { withdrawalRequests, loading, error, refetch: fetchWithdrawals }
+}
+
+export function useCancelWithdraw() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+  const userToken = authContext?.user?.token
+
+  const cancelWithdrawal = async (id: number): Promise<{ success: boolean; message?: string }> => {
+    if (!userToken) {
+      setError('User is not authenticated.')
+      return { success: false }
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await axios.put<{ message: string; value: string }>(
+        `${API_BASE_URL}cancel/withdrawal/${id}`,
+        { id },
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      )
+
+      return { success: true, message: response.data.value }
+    } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const errorMessage = (err as any)?.response?.data?.detail || 'Failed to cancel withdrawal request.'
+      setError(errorMessage)
+      return { success: false, message: errorMessage }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { cancelWithdrawal, loading, error }
+}
+
+export function useWithdrawById(id: number) {
+  const [withdrawal, setWithdrawal] = useState<WithDrawResponseType | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const authContext = useContext(AuthContext)
+  const userToken = authContext?.user?.token
+
+  const fetchWithdrawalById = useCallback(async () => {
+    if (!userToken) {
+      setError('User is not authenticated.')
+      return
+    }
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const response = await axios.get<{ message: string; value: WithDrawResponseType }>(
+        `${API_BASE_URL}withdrawal/${id}/current-user`,
+        { headers: { Authorization: `Bearer ${userToken}` } }
+      )
+      setWithdrawal(response.data.value)
+    } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((err as any)?.response?.data?.detail || 'Failed to fetch withdrawal details.')
+    } finally {
+      setLoading(false)
+    }
+  }, [id, userToken])
+
+  useEffect(() => {
+    fetchWithdrawalById()
+  }, [fetchWithdrawalById])
+
+  return { withdrawal, loading, error, refetch: fetchWithdrawalById }
 }
