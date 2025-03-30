@@ -1,4 +1,4 @@
-import { useWithdraw } from '@apps/customer/hooks/useWallet'
+import { useWallet, useWithdraw } from '@apps/customer/hooks/useWallet'
 import { useState, useEffect } from 'react'
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import WithDrawSuccessModal from '../Card/Wallet/WithDrawSuccessModal'
@@ -12,17 +12,14 @@ export default function WithdrawForm() {
   const { withdrawalResponse, error, loading, withdraw } = useWithdraw()
   const [successModalVisible, setSuccessModalVisible] = useState(false)
   const [failModalVisible, setFailModalVisible] = useState(false)
+  const { wallet } = useWallet()
 
   useEffect(() => {
-    if (withdrawalResponse) {
-      setSuccessModalVisible(true)
-    }
+    if (withdrawalResponse) setSuccessModalVisible(true)
   }, [withdrawalResponse])
 
   useEffect(() => {
-    if (error) {
-      setFailModalVisible(true)
-    }
+    if (error) setFailModalVisible(true)
   }, [error])
 
   const handleSubmit = async () => {
@@ -31,25 +28,32 @@ export default function WithdrawForm() {
       return
     }
 
-    const numericAmount = Number(amount.replace(/\./g, '')) // Remove dots before sending
+    const numericAmount = Number(amount.replace(/\D/g, ''))
+
+    if (numericAmount > (wallet?.balance ?? 0)) {
+      const formattedBalance = new Intl.NumberFormat('vi-VN').format(wallet?.balance ?? 0)
+
+      Alert.alert('Error', `Withdraw amount must be ≤ current balance: ${formattedBalance} VND`)
+      return
+    }
+
     await withdraw(numericAmount, bankName, bankNumber, holderName)
   }
 
   const formatCurrency = (value: string) => {
-    const numericValue = value.replace(/\D/g, '') // Remove non-numeric characters
+    const numericValue = value.replace(/\D/g, '')
     return new Intl.NumberFormat('vi-VN').format(Number(numericValue))
   }
 
   const handleAmountChange = (text: string) => {
-    const formattedValue = formatCurrency(text)
-    setAmount(formattedValue)
+    setAmount(formatCurrency(text))
   }
 
   return (
     <View className='flex-1 px-5 py-6 bg-white'>
       <Text className='text-base font-medium mb-1'>Enter the amount</Text>
       <TextInput
-        className='border border-gray-300 rounded-lg p-3 pt-2 text-sm text-gray-700'
+        className='border border-gray-300 rounded-lg p-3 text-sm text-gray-700'
         placeholder='Enter amount in VND'
         value={amount}
         onChangeText={handleAmountChange}
@@ -89,15 +93,16 @@ export default function WithdrawForm() {
         <Text className='text-white text-lg font-bold'>{loading ? 'Processing...' : 'Submit'}</Text>
       </TouchableOpacity>
 
-      {withdrawalResponse && (
+      {successModalVisible && withdrawalResponse && (
         <WithDrawSuccessModal
           visible={successModalVisible}
           onClose={() => setSuccessModalVisible(false)}
-          response={withdrawalResponse}
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          response={withdrawalResponse!}
         />
       )}
 
-      {error && (
+      {failModalVisible && (
         <WithDrawFailModal
           visible={failModalVisible}
           onClose={() => setFailModalVisible(false)}

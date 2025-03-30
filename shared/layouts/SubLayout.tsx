@@ -14,7 +14,7 @@ export default function SubLayout({ children, title, showBackButton = false }: L
 
   return (
     <View className='flex-1'>
-      <View className='bg-blue py-5 px-4 pt-14 flex-row items-center'>
+      <View className='bg-blue py-5 px-4 pt-12 flex-row items-center'>
         {showBackButton && (
           <TouchableOpacity onPress={() => navigation.goBack()} className='mr-3'>
             <Ionicons name='arrow-back' size={24} color='white' />

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { TransactionType } from '../types/Wallet/transaction.type'
 import AuthContext from '@shared/context/AuthContext'
 import { API_BASE_URL } from '@env'
@@ -44,34 +44,27 @@ export function useTransactionByAll() {
   const [transactions, setTransactions] = useState<TransactionType[]>([])
   const [error, setError] = useState<string | null>(null)
   const authContext = useContext(AuthContext)
-
   const userToken = authContext?.user?.token
 
-  useEffect(() => {
+  const fetchTransactions = useCallback(async () => {
     if (!userToken) {
       setError('User is not authenticated.')
       return
     }
 
-    const fetchTransactions = async () => {
-      try {
-        const response = await axios.get<{ message: string; value: TransactionType[] }>(
-          `${API_BASE_URL}transactions/current-user`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`
-            }
-          }
-        )
-        setTransactions(response.data.value || [])
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        setError(err.response?.data?.detail || 'Failed to fetch transactions.')
-      }
+    try {
+      const response = await axios.get<{ message: string; value: TransactionType[] }>(
+        `${API_BASE_URL}transactions/current-user`,
+        {
+          headers: { Authorization: `Bearer ${userToken}` }
+        }
+      )
+      setTransactions(response.data.value || [])
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to fetch transactions.')
     }
-
-    fetchTransactions()
   }, [userToken])
 
-  return { transactions, error }
+  return { transactions, error, refetch: fetchTransactions }
 }

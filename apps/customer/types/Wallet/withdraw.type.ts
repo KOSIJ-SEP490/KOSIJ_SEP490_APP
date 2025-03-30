@@ -5,6 +5,7 @@ export interface WithDrawResponseType {
   bankName: string
   bankNumber: string
   holderName: string
+  createdTime: string
   withdrawStatus: string
   deniedReason: string | null
 }

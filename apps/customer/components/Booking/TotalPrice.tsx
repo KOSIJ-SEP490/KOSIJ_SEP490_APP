@@ -21,7 +21,7 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
   const { trip } = useTripById(bookingData.tripID ?? 0)
   const { bookTrip } = useTripBooking()
 
-  const { totalPrice, adultPrice, childPrice, infantPrice } = bookingData.pricing
+  const { totalPrice, adultPrice, childPrice, infantPrice, visaPrice, numberOfVisas } = bookingData.pricing
   const { adult, child, infant } = bookingData.numberOfCustomers
 
   const [isDetailVisible, setIsDetailVisible] = useState(false)
@@ -141,6 +141,16 @@ const TotalPrice: React.FC<TotalPriceProps> = ({ navigationLocation }) => {
               <Text className='text-white text-sm'>Infant Price (x{infant})</Text>
               <Text className='text-white text-sm'>{infantPrice.toLocaleString()} VND</Text>
             </View>
+          )}
+
+          {numberOfVisas > 0 && (
+            <>
+              <View className='h-[2px] bg-blue-light my-5 w-full' />
+              <View className='flex-row justify-between items-center mt-2'>
+                <Text className='text-white text-sm'>Visa Fee (x{numberOfVisas})</Text>
+                <Text className='text-white text-sm'>{visaPrice.toLocaleString()} VND</Text>
+              </View>
+            </>
           )}
         </View>
       )}
