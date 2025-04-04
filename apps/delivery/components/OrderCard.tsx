@@ -16,8 +16,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
         return 'text-white bg-blue'
       case 'delivered':
         return 'text-green-700 bg-green-100'
-      case 'cancelled':
-        return 'text-red-700 bg-red-100'
+      case 'pendingrefund':
+        return 'text-cyan-700 bg-cyan-100'
       case 'refunded':
         return 'text-purple-700 bg-purple-100'
       default:

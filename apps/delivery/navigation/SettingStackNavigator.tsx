@@ -7,7 +7,7 @@ import ChangePasswordScreen from '../screens/Settings/ChangePasswordScreen'
 
 const Stack = createStackNavigator<DeliverySettingsStackParamList>()
 
-export default function DeliveryHomeStackNavigator() {
+export default function DeliverySettingsStackNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='Settings' component={SettingsScreen} />

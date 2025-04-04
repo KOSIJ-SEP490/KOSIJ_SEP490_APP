@@ -2,7 +2,13 @@ import { useCallback, useContext, useEffect, useState } from 'react'
 import AuthContext from '@shared/context/AuthContext'
 import { API_BASE_URL } from '@env'
 import axios from 'axios'
-import { Order, OrderType, OrderUpdate } from '../types/Order/Order.type'
+import {
+  Order,
+  OrderType,
+  OrderUpdate,
+  ReportFishDeathRequest,
+  ReportFishDeathResponse
+} from '../types/Order/Order.type'
 import { DashBoardType } from '../types/DashBoard/DashBoard.type'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { storage } from 'firebaseConfig'
@@ -233,4 +239,48 @@ export function useCurrentOrderByAll() {
   }, [fetchOrders])
 
   return { orders, error, refetch: fetchOrders }
+}
+
+export function useReportOrderFishDeath() {
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [response, setResponse] = useState<ReportFishDeathResponse | null>(null)
+  const authContext = useContext(AuthContext)
+
+  const userToken = authContext?.user?.token
+
+  const reportFishDeath = async (orderId: number, reportData: ReportFishDeathRequest): Promise<boolean> => {
+    if (!userToken) {
+      setError('User is not authenticated.')
+      return false
+    }
+
+    setIsLoading(true)
+    setError(null)
+    setResponse(null)
+
+    try {
+      const res = await axios.post<{ message: string; value: ReportFishDeathResponse }>(
+        `${API_BASE_URL}order/${orderId}/report-fish-deaths`,
+        reportData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+
+      setResponse(res.data.value)
+      return true
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to report fish deaths.')
+      return false
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return { reportFishDeath, isLoading, error, response }
 }
