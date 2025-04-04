@@ -8,7 +8,7 @@ interface EditOrderButtonProps {
 
 const EditOrderButton: React.FC<EditOrderButtonProps> = ({ isEditable, onPress }) => {
   return (
-    <View className='px-5 py-2 mb-14'>
+    <View className='px-5 py-2 mb-10'>
       <TouchableOpacity
         onPress={onPress}
         disabled={!isEditable}

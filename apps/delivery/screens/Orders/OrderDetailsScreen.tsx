@@ -14,6 +14,8 @@ import EditOrderModal from '@apps/delivery/components/EditOrderModal'
 import StartOrderButton from '@apps/delivery/components/StartOrderBtn'
 import StartSuccessPopup from '@apps/delivery/components/StartSuccessPopup'
 import FailSuccessPopup from '@apps/delivery/components/FailSuccessPopup'
+import ReportFishDeathButton from '@apps/delivery/components/ReportFishDeathBtn'
+import ReportFishDeathModal from '@apps/delivery/components/ReportFishDeathModal'
 
 type OrderDetailScreenRouteProp = RouteProp<DeliveryOrdersStackParamList, 'OrderDetails'>
 
@@ -29,10 +31,19 @@ export default function OrderDetailsScreen() {
   const [isModalVisible, setModalVisible] = useState(false)
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
   const [showFailPopup, setShowFailPopup] = useState(false)
+  const [isModalVisible2, setModalVisible2] = useState(false)
 
   const handleEditOrder = () => setModalVisible(true)
+
+  const handleReport = () => setModalVisible2(true)
+
   const closeModal = () => {
     setModalVisible(false)
+    refetch()
+  }
+
+  const closeModal2 = () => {
+    setModalVisible2(false)
     refetch()
   }
 
@@ -43,8 +54,8 @@ export default function OrderDetailsScreen() {
       orderStatus: 'Delivering',
       expectedDeliveryDate: order.expectedDeliveryDate,
       thirdPartyLogisticsInfo: order.thirdPartyLogisticsInfo || '',
-      confirmedUrl: order.confirmedUrl || '',
-      cancellationReason: order.cancellationReason || ''
+      confirmedUrl: '',
+      cancellationReason: ''
     })
 
     if (success) {
@@ -74,10 +85,16 @@ export default function OrderDetailsScreen() {
       {isPackaged ? (
         <StartOrderButton onPress={handleStartOrder} disabled={isLoading} />
       ) : (
-        <EditOrderButton isEditable={isEditable} onPress={handleEditOrder} />
+        <>
+          {order?.orderStatus !== 'Delivered' && <EditOrderButton isEditable={isEditable} onPress={handleEditOrder} />}
+
+          {order?.orderStatus === 'Delivered' && <ReportFishDeathButton isReportable={true} onPress={handleReport} />}
+        </>
       )}
 
       {isModalVisible && <EditOrderModal orderID={order?.orderId} onClose={closeModal} />}
+
+      {isModalVisible2 && <ReportFishDeathModal orderID={order?.orderId} onClose={closeModal2} />}
 
       <StartSuccessPopup isVisible={showSuccessPopup} onClose={() => setShowSuccessPopup(false)} />
       <FailSuccessPopup isVisible={showFailPopup} onClose={() => setShowFailPopup(false)} />

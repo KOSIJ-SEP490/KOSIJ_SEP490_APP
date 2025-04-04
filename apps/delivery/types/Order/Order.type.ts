@@ -70,3 +70,28 @@ export interface OrderUpdate {
   confirmedUrl: string
   cancellationReason: string
 }
+
+export interface OrderDetailsFishDeath {
+  orderDetailsId: number
+  quantity: number
+  deadReason: string
+}
+
+export interface ReportFishDeathRequest {
+  orderDetailsFishDeaths: OrderDetailsFishDeath[]
+}
+
+export interface ReportedFishDeath {
+  orderDetailsId: number
+  variety: string
+  quantity: number
+  deadReason: string
+}
+
+export interface ReportFishDeathResponse {
+  orderId: number
+  orderDetailsFishDeaths: ReportedFishDeath[]
+  totalRefundAmount: number
+  createdTime: string
+  createdBy: string
+}

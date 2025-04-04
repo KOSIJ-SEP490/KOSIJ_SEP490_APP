@@ -10,6 +10,10 @@ export type DeliveryOrdersStackParamList = {
   OrderDetails: { orderID: number }
 }
 
+export type DeliveryNotificationsStackParamList = {
+  Notifications: undefined
+}
+
 export type DeliverySettingsStackParamList = {
   Settings: undefined
   Account: { account?: AccountType }
@@ -19,3 +23,4 @@ export type DeliverySettingsStackParamList = {
 export type DeliveryHomeStackNavigationProp = StackNavigationProp<DeliveryHomeStackParamList>
 export type DeliverySettingsStackNavigationProp = StackNavigationProp<DeliverySettingsStackParamList>
 export type DeliveryOrderStackNavigationProp = StackNavigationProp<DeliveryOrdersStackParamList>
+export type DeliveryNotificationsStackNavigationProp = StackNavigationProp<DeliveryNotificationsStackParamList>
