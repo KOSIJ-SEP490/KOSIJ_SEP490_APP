@@ -6,7 +6,7 @@ import OrderDetailsScreen from '../screens/Orders/OrderDetailsScreen'
 
 const Stack = createStackNavigator<DeliveryOrdersStackParamList>()
 
-export default function DeliveryHomeStackNavigator() {
+export default function DeliveryOrdersStackNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='Orders' component={OrdersScreen} />

@@ -34,7 +34,9 @@ export default function OrdersScreen() {
   const filteredOrders = orders.filter((order) => {
     if (selectedTab === 'Packaged') return order.orderStatus === 'Packaged'
     if (selectedTab === 'Ongoing') return order.orderStatus === 'Delivering'
-    return ['Cancelled', 'Refunded', 'Delivered'].includes(order.orderStatus)
+    return ['Refunded', 'Delivered', 'CancelledByCustomer', 'CancelledByCompany', 'PendingRefund'].includes(
+      order.orderStatus
+    )
   })
 
   return (
