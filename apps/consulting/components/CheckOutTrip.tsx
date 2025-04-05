@@ -1,5 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack'
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native'
 import { ChevronLeft, ArrowRight, UploadCloud, CheckCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
@@ -123,8 +123,46 @@ const CheckOutTrip = ({ route }: Props) => {
     }
   }
 
+  const [attendance, setAttendance] = useState<
+    Record<number, { isCheckOut: boolean | null; isAbsent: boolean | null }>
+  >({})
+
+  const updateAttendance = (id: any, status: string) => {
+    setAttendance((prev) => ({
+      ...prev,
+      [id]: status === 'yes' ? { isCheckOut: true, isAbsent: null } : { isCheckOut: null, isAbsent: true }
+    }))
+  }
+
+  const handleSubmit = async () => {
+    const requestBody = {
+      checkInPassengersRequest: Object.entries(attendance).map(([id, status]) => ({
+        id: Number(id),
+        ...(status || {})
+      }))
+    }
+
+    try {
+      const response = await axios.put<{ value: Passenger[] }>(
+        `${API_BASE_URL}trip/${tripId}/passengers/check-in`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      alert(response.data.value || 'Check-in successful!')
+      navigation.navigate('TourDetails', { id: tripId })
+    } catch (error) {
+      console.error('Error during check-in:', error)
+      alert('Failed to check in passengers.')
+    }
+  }
+
   return (
-    <View className='flex-1 bg-white px-4 pt-4'>
+    <SafeAreaView className='flex-1 bg-white px-4'>
       {/* Header */}
       <View className='mt-3 flex-row items-center px-4 py-2'>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -139,7 +177,7 @@ const CheckOutTrip = ({ route }: Props) => {
 
       {currentStep === 1 ? (
         // ✅ STEP 1: Collect Tickets
-        <>
+        <ScrollView style={{ paddingBottom: 80 }}>
           <View className='p-4 rounded-lg mt-4' style={{ backgroundColor: '#264eca' }}>
             <Text className='text-white font-bold'>🚀 Please collect tickets at the check-in counter</Text>
             <Text className='text-white text-sm'>Please collect tickets at least 3 hours before the flight.</Text>
@@ -156,10 +194,10 @@ const CheckOutTrip = ({ route }: Props) => {
               </View>
             )}
           </View>
-        </>
+        </ScrollView>
       ) : (
         // ✅ STEP 2: Take Attendance
-        <ScrollView>
+        <ScrollView style={{ flexGrow: 1, paddingBottom: 80 }}>
           <View className='p-4 rounded-lg mt-4' style={{ backgroundColor: '#264eca' }}>
             <Text className='text-white font-bold'>
               ℹ️ Please complete the attendance check before proceeding to check-in.
@@ -167,21 +205,19 @@ const CheckOutTrip = ({ route }: Props) => {
           </View>
 
           {/* Attendance List */}
-          <ScrollView className='mt-4' style={{ maxHeight: 400 }}>
-            <View className='bg-gray-100 p-4 rounded-lg mt-4'>
-              <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
-              {passengers.map((passenger, index) => (
-                <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
-                  <Text>{passenger.fullName}</Text>
-                  <Checkbox
-                    status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
-                    onPress={() => toggleCheck(passenger.id)}
-                    disabled={passenger.isCheckIn}
-                  />
-                </View>
-              ))}
-            </View>
-          </ScrollView>
+          <View className='bg-gray-100 p-4 rounded-lg mt-4'>
+            <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
+            {passengers.map((passenger, index) => (
+              <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
+                <Text>{passenger.fullName}</Text>
+                <Checkbox
+                  status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
+                  onPress={() => toggleCheck(passenger.id)}
+                  disabled={passenger.isCheckIn}
+                />
+              </View>
+            ))}
+          </View>
         </ScrollView>
       )}
 
@@ -203,7 +239,7 @@ const CheckOutTrip = ({ route }: Props) => {
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 

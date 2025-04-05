@@ -1,5 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack'
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native'
 import { ChevronLeft, ArrowRight, UploadCloud, CheckCircle } from 'lucide-react-native'
 import { useNavigation } from '@react-navigation/native'
 import React, { useContext, useEffect, useState } from 'react'
@@ -162,7 +162,7 @@ const CollectTicket = ({ route }: Props) => {
   }
 
   return (
-    <View className='flex-1 bg-white px-4 pt-4'>
+    <SafeAreaView className='flex-1 bg-white px-4'>
       {/* Header */}
       <View className='mt-3 flex-row items-center px-4 py-2'>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -177,7 +177,7 @@ const CollectTicket = ({ route }: Props) => {
 
       {currentStep === 1 ? (
         // ✅ STEP 1: Collect Tickets
-        <>
+        <ScrollView style={{ paddingBottom: 80 }}>
           <View className='p-4 rounded-lg mt-4' style={{ backgroundColor: '#264eca' }}>
             <Text className='text-white font-bold'>🚀 Please collect tickets at the check-in counter</Text>
             <Text className='text-white text-sm'>Please collect tickets at least 3 hours before the flight.</Text>
@@ -186,7 +186,7 @@ const CollectTicket = ({ route }: Props) => {
           {/* Ticket Image Upload */}
           <View className='mt-4 border-dashed border-2 border-gray-300 rounded-lg p-4 items-center'>
             {ticketUrl ? (
-              <Image source={{ uri: ticketUrl }} className='w-full h-56 rounded-lg' />
+              <Image source={{ uri: ticketUrl }} className='w-full h-screen rounded-lg' />
             ) : (
               <View className='items-center'>
                 <UploadCloud size={32} className='text-gray-400' />
@@ -194,10 +194,10 @@ const CollectTicket = ({ route }: Props) => {
               </View>
             )}
           </View>
-        </>
+        </ScrollView>
       ) : (
         // ✅ STEP 2: Take Attendance
-        <ScrollView>
+        <ScrollView style={{ flexGrow: 1, paddingBottom: 80 }}>
           <View className='p-4 rounded-lg mt-4' style={{ backgroundColor: '#264eca' }}>
             <Text className='text-white font-bold'>
               ℹ️ Please complete the attendance check before proceeding to check-in.
@@ -205,50 +205,49 @@ const CollectTicket = ({ route }: Props) => {
           </View>
 
           {/* Attendance List */}
-          <ScrollView className='mt-4' style={{ maxHeight: 400 }}>
-            <View className='bg-gray-100 p-4 rounded-lg mt-4'>
-              <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
-              {passengers.map((passenger, index) => (
-                <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
-                  <Text>{passenger.fullName}</Text>
-                  <View className='flex-row'>
-                    <TouchableOpacity
-                      onPress={() => updateAttendance(passenger.id, 'yes')}
-                      style={{
-                        backgroundColor: attendance[passenger.id]?.isCheckIn ? '#4CAF50' : 'transparent',
-                        padding: 8,
-                        borderRadius: 16
-                      }}
-                    >
-                      <Text>Yes</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => updateAttendance(passenger.id, 'no')}
-                      style={{
-                        backgroundColor: attendance[passenger.id]?.isAbsent ? '#F44336' : 'transparent',
-                        padding: 8,
-                        borderRadius: 16,
-                        marginLeft: 10
-                      }}
-                    >
-                      <Text>No</Text>
-                    </TouchableOpacity>
-                  </View>
+          <View className='bg-gray-100 p-4 rounded-lg mt-4'>
+            <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
+            {passengers.map((passenger, index) => (
+              <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
+                <Text>{passenger.fullName}</Text>
+                <View className='flex-row'>
+                  <TouchableOpacity
+                    onPress={() => updateAttendance(passenger.id, 'yes')}
+                    style={{
+                      backgroundColor: attendance[passenger.id]?.isCheckIn ? '#4CAF50' : 'transparent',
+                      padding: 8,
+                      borderRadius: 16
+                    }}
+                  >
+                    <Text>Yes</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => updateAttendance(passenger.id, 'no')}
+                    style={{
+                      backgroundColor: attendance[passenger.id]?.isAbsent ? '#F44336' : 'transparent',
+                      padding: 8,
+                      borderRadius: 16,
+                      marginLeft: 10
+                    }}
+                  >
+                    <Text>No</Text>
+                  </TouchableOpacity>
                 </View>
-              ))}
-            </View>
-          </ScrollView>
+              </View>
+            ))}
+          </View>
         </ScrollView>
       )}
 
       {/* Navigation Buttons (Fixed at Bottom) */}
-      <View className='absolute bottom-4 left-4 right-4 flex-row justify-between'>
+      <View className=' bottom-2 left-4 right-4 flex-row justify-between' style={{ paddingTop: 20 }}>
         <TouchableOpacity className='px-4 py-2 border border-blue-600 rounded-full' onPress={() => setCurrentStep(1)}>
           <Text className='text-blue-600'>← Prev</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          className={`px-4 py-2 rounded-full flex-row items-center ${currentStep === 1 ? '#264eca' : 'bg-green-600'}`}
+          style={{ backgroundColor: currentStep === 1 ? '#264eca' : 'green' }}
+          className='px-4 py-2 rounded-full flex-row items-center'
           onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleSubmit())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>
@@ -259,7 +258,7 @@ const CollectTicket = ({ route }: Props) => {
           )}
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 

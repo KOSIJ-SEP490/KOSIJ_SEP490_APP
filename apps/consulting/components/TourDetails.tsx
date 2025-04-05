@@ -246,7 +246,8 @@ export default function TourDetailsScreen() {
               </View>
             ) : (
               <TouchableOpacity
-                className='bg-blue-500 p-3 rounded-lg items-center mt-2 bottom-4 right-4'
+                style={{ backgroundColor: '#264eca' }}
+                className='p-3 rounded-lg items-center mt-2 bottom-4 right-4'
                 onPress={() => {
                   if (getButtonText() === 'Start Trip') {
                     navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })

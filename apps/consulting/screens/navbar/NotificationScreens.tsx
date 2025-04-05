@@ -2,6 +2,7 @@ import { useNotifications } from '@apps/consulting/api/useNotification.api'
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import dayjs from 'dayjs'
 
 export default function NotiScreen() {
   const [notifications, setNotifications] = useState<any[]>([])
@@ -17,12 +18,24 @@ export default function NotiScreen() {
   }, [])
 
   const formatTime = (createdTime: string) => {
-    const notificationDate = new Date(createdTime)
+    console.log('Received createdTime:', createdTime)
+
+    const [date, time] = createdTime.split(' ')
+    const [day, month, year] = date.split('-')
+
+    const formattedDate = `${year}-${month}-${day}T${time}`
+
+    const notificationDate = new Date(formattedDate)
+    console.log('notificationDate: ', notificationDate)
 
     if (isNaN(notificationDate.getTime())) {
       console.error('Invalid date format:', createdTime)
       return ''
     }
+
+    const dayFormatted = String(notificationDate.getDate()).padStart(2, '0')
+    const monthFormatted = String(notificationDate.getMonth() + 1).padStart(2, '0')
+    const yearFormatted = notificationDate.getFullYear()
 
     const now = new Date()
     const diffInMs = now.getTime() - notificationDate.getTime()
@@ -31,7 +44,7 @@ export default function NotiScreen() {
     if (diffInHours < 24) {
       return notificationDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     } else {
-      return notificationDate.toLocaleDateString('en-GB')
+      return `${dayFormatted}/${monthFormatted}/${yearFormatted}`
     }
   }
 
@@ -68,7 +81,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f8f8f8'
+    backgroundColor: '#f8f8f8',
+    marginBottom: 20
   },
   headerContainer: {
     flexDirection: 'row',
