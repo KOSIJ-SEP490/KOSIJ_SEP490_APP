@@ -1,12 +1,22 @@
 import { useNotifications } from '@apps/consulting/api/useNotification.api'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome5'
-import dayjs from 'dayjs'
+
+type RootStackParamList = {
+  Notification: undefined
+  OrderDetails: { orderId: number }
+  TourDetails: { id: number }
+}
+
+type NotificationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Notification'>
 
 export default function NotiScreen() {
   const [notifications, setNotifications] = useState<any[]>([])
-  const { fetchNotification } = useNotifications()
+  const { fetchNotification, updateNotification, updateAllNotification } = useNotifications()
+  const navigation = useNavigation<NotificationScreenNavigationProp>()
 
   useEffect(() => {
     async function getNotifications() {
@@ -48,29 +58,63 @@ export default function NotiScreen() {
     }
   }
 
+  const handleNotificationClick = async (notification: any) => {
+    if (!notification.markAsRead) {
+      await updateNotification(notification.id)
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notif) => (notif.id === notification.id ? { ...notif, markAsRead: true } : notif))
+      )
+    }
+
+    const { referenceType, refId } = notification
+    if (referenceType === 'Trip') {
+      navigation.navigate('TourDetails', { id: refId })
+    } else if (referenceType === 'Order') {
+      navigation.navigate('OrderDetails', { orderId: refId })
+    }
+  }
+
+  const handleReadAllClick = async () => {
+    try {
+      await updateAllNotification()
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notification) => ({
+          ...notification,
+          markAsRead: true
+        }))
+      )
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error)
+    }
+  }
+
+  const unreadCount = notifications.filter((notification) => notification.markAsRead === false).length
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Notifications</Text>
-        <TouchableOpacity>
-          <Text style={styles.readAllText}>Read All</Text>
+        <TouchableOpacity onPress={handleReadAllClick}>
+          <Text style={styles.readAllText}>Read All({unreadCount})</Text>
         </TouchableOpacity>
       </View>
       {notifications.map((notification) => {
         const title = `${notification.actionType} ${notification.referenceType}`
         return (
-          <View
-            key={notification.id}
-            style={[styles.notification, notification.markAsRead && styles.unreadNotification]}
-          >
-            <Icon name='plane' size={20} color='#333' style={styles.icon} solid={false} />
-            <View style={styles.textContainer}>
-              <Text style={styles.title}>{title}</Text>
-              <Text style={styles.message}>{notification.message}</Text>
+          <TouchableOpacity onPress={() => handleNotificationClick(notification)}>
+            <View
+              key={notification.id}
+              style={[styles.notification, notification.markAsRead == false && styles.unreadNotification]}
+            >
+              <Icon name='plane' size={20} color='#333' style={styles.icon} solid={false} />
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.message}>{notification.message}</Text>
+              </View>
+              <Text style={styles.time}>{formatTime(notification.createdTime)}</Text>
+              {notification.markAsRead == false && <View style={styles.unreadDot} />}
             </View>
-            <Text style={styles.time}>{formatTime(notification.createdTime)}</Text>
-            {notification.markAsRead && <View style={styles.unreadDot} />}
-          </View>
+          </TouchableOpacity>
         )
       })}
     </ScrollView>

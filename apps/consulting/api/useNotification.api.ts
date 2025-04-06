@@ -27,5 +27,39 @@ export function useNotifications() {
       throw error
     }
   }
-  return { fetchNotification }
+
+  async function updateNotification(id: number): Promise<Notifications[]> {
+    const response = await axios.put<Notifications[]>(
+      `${API_BASE_URL}notification/${id}/mark-as-read`,
+      {},
+      {
+        headers: {
+          Accept: 'text/plain',
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+    )
+    return response.data
+  }
+
+  async function updateAllNotification(): Promise<Notifications[]> {
+    try {
+      const response = await axios.put<Notifications[]>(
+        `${API_BASE_URL}notifications/mark-as-read`,
+        {},
+        {
+          headers: {
+            Accept: 'text/plain',
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+      )
+      return response.data
+    } catch (error) {
+      console.error('Error updating all notifications:', error)
+      throw error
+    }
+  }
+
+  return { fetchNotification, updateNotification, updateAllNotification }
 }
