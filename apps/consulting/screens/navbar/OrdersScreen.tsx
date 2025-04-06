@@ -79,7 +79,7 @@ type RootStackParamList = {
 
 type OrdersScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Orders'>
 
-const ORDER_STATUSES = ['All', 'Deposited', 'Refunded', 'Pending', 'Delivering', 'Packed', 'Delivered']
+const ORDER_STATUSES = ['All', 'Deposited', 'Refunded', 'Pending', 'Delivering', 'Packed', 'Delivered', 'Cancelled']
 
 export default function OrdersScreen() {
   const navigation = useNavigation<OrdersScreenNavigationProp>()
@@ -214,7 +214,9 @@ export default function OrdersScreen() {
                               ? '#0000FF'
                               : item.orderStatus === 'Delivered'
                                 ? '#008000'
-                                : '#D3D3D3'
+                                : item.orderStatuss === 'Cancelled'
+                                  ? '#000000'
+                                  : '#D3D3D3'
                 }}
               >
                 <Text className='text-white text-xs'>{item.orderStatus}</Text>
