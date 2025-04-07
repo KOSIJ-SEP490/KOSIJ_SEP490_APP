@@ -25,6 +25,10 @@ export type CustomerTripsStackParamList = {
   RateTripDetails: { tripBookingID: number }
 }
 
+export type CustomerNotificationsStackParamList = {
+  Notifications: undefined
+}
+
 export type CustomerSettingsStackParamList = {
   Settings: undefined
   Account: { account?: AccountType }
@@ -49,3 +53,4 @@ export type CustomerHomeStackNavigationProp = StackNavigationProp<CustomerHomeSt
 export type CustomerTripsStackNavigationProp = StackNavigationProp<CustomerTripsStackParamList>
 export type CustomerSettingsStackNavigationProp = StackNavigationProp<CustomerSettingsStackParamList>
 export type CustomerOrderStackNavigationProp = StackNavigationProp<CustomerOrderStackParamList>
+export type CustomerNotificationsStackNavigationProp = StackNavigationProp<CustomerNotificationsStackParamList>
