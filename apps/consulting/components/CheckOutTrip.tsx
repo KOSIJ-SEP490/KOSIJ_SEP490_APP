@@ -207,16 +207,18 @@ const CheckOutTrip = ({ route }: Props) => {
           {/* Attendance List */}
           <View className='bg-gray-100 p-4 rounded-lg mt-4'>
             <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
-            {passengers.map((passenger, index) => (
-              <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
-                <Text>{passenger.fullName}</Text>
-                <Checkbox
-                  status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
-                  onPress={() => toggleCheck(passenger.id)}
-                  disabled={!passenger.isCheckIn}
-                />
-              </View>
-            ))}
+            {passengers
+              .filter((passenger) => !passenger.isCheckIn)
+              .map((passenger, index) => (
+                <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
+                  <Text>{passenger.fullName}</Text>
+                  <Checkbox
+                    status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
+                    onPress={() => toggleCheck(passenger.id)}
+                    // disabled={!passenger.isCheckIn}
+                  />
+                </View>
+              ))}
           </View>
         </ScrollView>
       )}
@@ -228,7 +230,8 @@ const CheckOutTrip = ({ route }: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className={`px-4 py-2 rounded-full flex-row items-center ${currentStep === 1 ? '#264eca' : 'bg-green-600'}`}
+          className={`px-4 py-2 rounded-full flex-row items-center `}
+          style={{ backgroundColor: currentStep === 1 ? '#264eca' : 'green' }}
           onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleCheckIn())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>

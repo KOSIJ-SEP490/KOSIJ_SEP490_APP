@@ -207,34 +207,36 @@ const CollectTicket = ({ route }: Props) => {
           {/* Attendance List */}
           <View className='bg-gray-100 p-4 rounded-lg mt-4'>
             <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
-            {passengers.map((passenger, index) => (
-              <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
-                <Text>{passenger.fullName}</Text>
-                <View className='flex-row'>
-                  <TouchableOpacity
-                    onPress={() => updateAttendance(passenger.id, 'yes')}
-                    style={{
-                      backgroundColor: attendance[passenger.id]?.isCheckIn ? '#4CAF50' : 'transparent',
-                      padding: 8,
-                      borderRadius: 16
-                    }}
-                  >
-                    <Text>Yes</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => updateAttendance(passenger.id, 'no')}
-                    style={{
-                      backgroundColor: attendance[passenger.id]?.isAbsent ? '#F44336' : 'transparent',
-                      padding: 8,
-                      borderRadius: 16,
-                      marginLeft: 10
-                    }}
-                  >
-                    <Text>No</Text>
-                  </TouchableOpacity>
+            {passengers
+              .filter((passenger) => !passenger.isCheckIn)
+              .map((passenger, index) => (
+                <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
+                  <Text>{passenger.fullName}</Text>
+                  <View className='flex-row'>
+                    <TouchableOpacity
+                      onPress={() => updateAttendance(passenger.id, 'yes')}
+                      style={{
+                        backgroundColor: attendance[passenger.id]?.isCheckIn ? '#4CAF50' : 'transparent',
+                        padding: 8,
+                        borderRadius: 16
+                      }}
+                    >
+                      <Text>Yes</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => updateAttendance(passenger.id, 'no')}
+                      style={{
+                        backgroundColor: attendance[passenger.id]?.isAbsent ? '#F44336' : 'transparent',
+                        padding: 8,
+                        borderRadius: 16,
+                        marginLeft: 10
+                      }}
+                    >
+                      <Text>No</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))}
           </View>
         </ScrollView>
       )}
@@ -246,8 +248,8 @@ const CollectTicket = ({ route }: Props) => {
         </TouchableOpacity>
 
         <TouchableOpacity
+          className={`px-4 py-2 rounded-full flex-row items-center`}
           style={{ backgroundColor: currentStep === 1 ? '#264eca' : 'green' }}
-          className='px-4 py-2 rounded-full flex-row items-center'
           onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleSubmit())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>
