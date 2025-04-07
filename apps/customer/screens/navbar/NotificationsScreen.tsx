@@ -1,10 +1,52 @@
+import NotificationCard from '@apps/customer/components/Card/Notification/NotificationCard'
+import { useMarkAsReadAll, useNotificationsByAll } from '@apps/customer/hooks/useNotifications'
+import SubLayout from '@shared/layouts/SubLayout'
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { ActivityIndicator } from 'react-native'
 
 export default function NotificationsScreen() {
+  const { notifications, error, reload } = useNotificationsByAll()
+  const { markAllAsRead, loading: markAllLoading } = useMarkAsReadAll()
+
+  const handleMarkAll = async () => {
+    await markAllAsRead()
+    reload()
+  }
+
   return (
-    <View>
-      <Text>Customer Notifications Screen</Text>
-    </View>
+    <SubLayout title='Notifications' showBackButton={false}>
+      {error ? (
+        <View className='flex-1 justify-center items-center p-4'>
+          <Text className='text-red-500 text-center'>{error}</Text>
+        </View>
+      ) : !notifications ? (
+        <View className='flex-1 justify-center items-center'>
+          <ActivityIndicator size='large' />
+        </View>
+      ) : notifications.length === 0 ? (
+        <View className='flex-1 justify-center items-center'>
+          <Text className='text-gray-500 text-lg'>There are no notifications yet</Text>
+        </View>
+      ) : (
+        <ScrollView className='flex-1 mt-10' contentContainerStyle={{ paddingBottom: 20 }}>
+          <TouchableOpacity
+            onPress={handleMarkAll}
+            disabled={markAllLoading}
+            className='bg-blue mx-4 my-2 p-3 rounded-lg items-center'
+          >
+            {markAllLoading ? (
+              <ActivityIndicator color='white' />
+            ) : (
+              <Text className='text-white font-medium'>Mark All Notifications as Read</Text>
+            )}
+          </TouchableOpacity>
+
+          {notifications.map((item) => (
+            <NotificationCard key={item.id.toString()} notification={item} onMarkAsRead={reload} />
+          ))}
+        </ScrollView>
+      )}
+    </SubLayout>
   )
 }
