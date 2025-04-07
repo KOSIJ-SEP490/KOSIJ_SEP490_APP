@@ -123,43 +123,43 @@ const CheckOutTrip = ({ route }: Props) => {
     }
   }
 
-  const [attendance, setAttendance] = useState<
-    Record<number, { isCheckOut: boolean | null; isAbsent: boolean | null }>
-  >({})
+  // const [attendance, setAttendance] = useState<
+  //   Record<number, { isCheckOut: boolean | null; isAbsent: boolean | null }>
+  // >({})
 
-  const updateAttendance = (id: any, status: string) => {
-    setAttendance((prev) => ({
-      ...prev,
-      [id]: status === 'yes' ? { isCheckOut: true, isAbsent: null } : { isCheckOut: null, isAbsent: true }
-    }))
-  }
+  // const updateAttendance = (id: any, status: string) => {
+  //   setAttendance((prev) => ({
+  //     ...prev,
+  //     [id]: status === 'yes' ? { isCheckOut: true, isAbsent: null } : { isCheckOut: null, isAbsent: true }
+  //   }))
+  // }
 
-  const handleSubmit = async () => {
-    const requestBody = {
-      checkInPassengersRequest: Object.entries(attendance).map(([id, status]) => ({
-        id: Number(id),
-        ...(status || {})
-      }))
-    }
+  // const handleSubmit = async () => {
+  //   const requestBody = {
+  //     checkInPassengersRequest: Object.entries(attendance).map(([id, status]) => ({
+  //       id: Number(id),
+  //       ...(status || {})
+  //     }))
+  //   }
 
-    try {
-      const response = await axios.put<{ value: Passenger[] }>(
-        `${API_BASE_URL}trip/${tripId}/passengers/check-in`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-      alert(response.data.value || 'Check-in successful!')
-      navigation.navigate('TourDetails', { id: tripId })
-    } catch (error) {
-      console.error('Error during check-in:', error)
-      alert('Failed to check in passengers.')
-    }
-  }
+  //   try {
+  //     const response = await axios.put<{ value: Passenger[] }>(
+  //       `${API_BASE_URL}trip/${tripId}/passengers/check-in`,
+  //       requestBody,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${user.token}`,
+  //           'Content-Type': 'application/json'
+  //         }
+  //       }
+  //     )
+  //     alert(response.data.value || 'Check-in successful!')
+  //     navigation.navigate('TourDetails', { id: tripId })
+  //   } catch (error) {
+  //     console.error('Error during check-in:', error)
+  //     alert('Failed to check in passengers.')
+  //   }
+  // }
 
   return (
     <SafeAreaView className='flex-1 bg-white px-4'>
@@ -213,7 +213,7 @@ const CheckOutTrip = ({ route }: Props) => {
                 <Checkbox
                   status={checkedPassengers[passenger.id] ? 'checked' : 'unchecked'}
                   onPress={() => toggleCheck(passenger.id)}
-                  disabled={passenger.isCheckIn}
+                  disabled={!passenger.isCheckIn}
                 />
               </View>
             ))}
