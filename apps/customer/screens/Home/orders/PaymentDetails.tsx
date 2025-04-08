@@ -97,7 +97,7 @@ const PaymentDetails = () => {
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         {/* Header */}
         <Appbar.Header style={{ backgroundColor: '#1E51A4' }}>
-          <Appbar.BackAction onPress={() => navigation.goBack()} color='white' />
+          <Appbar.BackAction onPress={() => navigation.navigate('OrderDetails', { orderId: orderId })} color='white' />
           <Appbar.Content title='Pay with KOSIJ Wallet' titleStyle={{ color: 'white' }} />
         </Appbar.Header>
 

@@ -81,7 +81,7 @@ const PaymentSuccess = () => {
             <Text style={styles.title}>Payment Success!</Text>
             <View style={styles.divider} />
 
-            <Card style={styles.detailsCard}>
+            {/* <Card style={styles.detailsCard}>
               <View style={styles.row}>
                 <Text style={styles.label}>Order ID</Text>
                 <Text>{orderId}</Text>
@@ -103,7 +103,7 @@ const PaymentSuccess = () => {
                 <Text style={styles.totalText}>Total Amount</Text>
                 <Text style={styles.totalAmount}>{paymentData?.depositAmount ?? 'N/A'} VND</Text>
               </View>
-            </Card>
+            </Card> */}
             <View style={styles.divider} />
 
             <View style={{ marginHorizontal: 16, marginTop: 30 }}>
@@ -129,7 +129,7 @@ const PaymentSuccess = () => {
             <Text style={styles.title}>Payment Success!</Text>
             <View style={styles.divider} />
 
-            <Card style={styles.detailsCard}>
+            {/* <Card style={styles.detailsCard}>
               <View style={styles.row}>
                 <Text style={styles.label}>Order ID</Text>
                 <Text>{orderId}</Text>
@@ -151,7 +151,7 @@ const PaymentSuccess = () => {
                 <Text style={styles.totalText}>Total Amount</Text>
                 <Text style={styles.totalAmount}>{paymentData?.remainingAmount ?? 'N/A'} VND</Text>
               </View>
-            </Card>
+            </Card> */}
             <View style={styles.divider} />
 
             <View style={{ marginHorizontal: 16, marginTop: 30 }}>

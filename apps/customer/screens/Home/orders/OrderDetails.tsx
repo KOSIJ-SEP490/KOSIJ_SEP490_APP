@@ -20,7 +20,8 @@ import {
   Alert,
   ActivityIndicator,
   ImageSourcePropType,
-  Modal
+  Modal,
+  RefreshControl
 } from 'react-native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 import { format } from 'date-fns'
@@ -99,6 +100,8 @@ export default function OrderDetailsScreen() {
   const [loading, setLoading] = useState(true)
   const [visible, setVisible] = useState(false)
   const [selectedImages, setSelectedImages] = useState([])
+  const [refreshing, setRefreshing] = useState(false)
+
   const statusMap: Record<string, 'unpacked' | 'deposited' | 'packed' | 'delivering' | 'delivered'> = {
     pending: 'unpacked',
     deposited: 'deposited',
@@ -130,6 +133,17 @@ export default function OrderDetailsScreen() {
     }
     getOrderDetails()
   }, [orderId])
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await fetchOrderDetails(orderId)
+      setOrder(data)
+    } catch (error) {
+      console.error('Error refreshing the page:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -145,7 +159,7 @@ export default function OrderDetailsScreen() {
 
   return (
     <Provider>
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className='flex-1 mt-3 bg-white p-4'>
           {/* Header */}
           <View className='flex-row items-center px-4 py-2'>
@@ -207,8 +221,8 @@ export default function OrderDetailsScreen() {
               </View>
               <View className='rounded-lg shadow-md mt-3' style={{ backgroundColor: '#DFE5FB' }}>
                 <View className='flex-row justify-between'>
-                  <Text className='font-bold text-right'>Deposit Amout (Paid):</Text>
-                  <Text className='font-semibold'>- {formatNumber(order.paidAmount)} VND</Text>
+                  <Text className='font-bold text-right'>Deposit Amout:</Text>
+                  <Text className='font-semibold'>{formatNumber(order.paidAmount)} VND</Text>
                 </View>
                 <View className='flex-row justify-between'>
                   <Text className='font-bold mt-3 text-right'>Remaining: </Text>
@@ -238,7 +252,7 @@ export default function OrderDetailsScreen() {
             {/* Payment Method Row */}
             <View className='flex-row justify-between mb-2'>
               <Text className='text-gray-600'>Payment method</Text>
-              <Text className='text-gray-800 font-medium'>Online Banking</Text>
+              <Text className='text-gray-800 font-medium'>KOSIJ Wallet</Text>
             </View>
 
             {/* Note Row */}
@@ -252,7 +266,7 @@ export default function OrderDetailsScreen() {
             <View className='flex-1'>
               <TouchableOpacity
                 className='items-center rounded-lg shadow-md p-3'
-                style={{ backgroundColor: '#CA2629' }}
+                style={{ backgroundColor: '#F0A500' }}
                 onPress={() => navigation.navigate('PaymentDetails', { orderId: orderId })}
               >
                 <Text className='text-white'>Payment</Text>
@@ -266,7 +280,7 @@ export default function OrderDetailsScreen() {
                 anchor={
                   <TouchableOpacity
                     className='rounded-lg border '
-                    style={{ borderColor: '#CA2629' }}
+                    style={{ borderColor: '#F0A500' }}
                     onPress={() => setVisibleButton((prev) => !prev)}
                   >
                     <IconButton icon='dots-vertical' size={13} />

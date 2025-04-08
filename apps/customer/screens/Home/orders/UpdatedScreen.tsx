@@ -89,7 +89,7 @@ export default function UpdatedScreen() {
       <View className='flex-1 mt-3 bg-white p-4'>
         {/* Header */}
         <View className='flex-row items-center px-4 py-2'>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate('OrderDetails', { orderId: orderId })}>
             <ChevronLeft color={'#292D32'} size={24} />
           </TouchableOpacity>
           <Text className='text-lg font-semibold text-center flex-1'>Update Order</Text>

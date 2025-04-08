@@ -2,7 +2,16 @@ import { useOrders } from '@apps/customer/hooks/useOrder'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useState } from 'react'
-import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {
+  View,
+  Text,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl
+} from 'react-native'
 
 type RootStackParamList = {
   Orders: undefined
@@ -22,6 +31,8 @@ export default function OrdersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+
   useEffect(() => {
     const getOrders = async () => {
       try {
@@ -55,6 +66,18 @@ export default function OrdersScreen() {
 
     setFilteredOrders(filtered)
   }, [searchQuery, selectedStatus, orders])
+
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await fetchOrders()
+      setOrders(data)
+    } catch (error) {
+      console.error('Error refreshing the page:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -103,58 +126,60 @@ export default function OrdersScreen() {
         </View>
       )}
       {/* Order List */}
-      {filteredOrders.length === 0 ? (
-        <View className='flex-1 justify-center items-center'>
-          <Text className='text-gray-500 text-lg'>No Order is found</Text>
-        </View>
-      ) : (
-        <FlatList
-          data={filteredOrders}
-          keyExtractor={(item) => item.orderId.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
-              onPress={() => navigation.navigate('OrderDetails', { orderId: item.orderId })}
-            >
-              {/* Icon */}
-              <View className='mr-3'>
-                <Text>📦</Text>
-              </View>
-
-              {/* Order Details */}
-              <View className='flex-1'>
-                <Text className='font-semibold'>{item.farmName}</Text>
-                <Text className='text-gray-500'>Order ID: {item.orderId}</Text>
-                <Text className='text-gray-500'>Customer: {item.fullName}</Text>
-                <Text className='text-blue-500'>{new Date(item.createdTime).toLocaleDateString()}</Text>
-              </View>
-
-              {/* Status Badge */}
-              <View
-                className={`px-3 py-1 rounded-full `}
-                style={{
-                  backgroundColor:
-                    item.orderStatus === 'Deposited'
-                      ? '#ADD8E6'
-                      : item.orderStatus === 'Refunded'
-                        ? '#A94064'
-                        : item.orderStatus === 'Pending'
-                          ? '#FFA500'
-                          : item.orderStatus === 'Delivering'
-                            ? '#FFD700'
-                            : item.orderStatus === 'Packed'
-                              ? '#0000FF'
-                              : item.orderStatus === 'Delivered'
-                                ? '#008000'
-                                : '#D3D3D3'
-                }}
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        {filteredOrders.length === 0 ? (
+          <View className='flex-1 justify-center items-center'>
+            <Text className='text-gray-500 text-lg'>No Order is found</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={filteredOrders}
+            keyExtractor={(item) => item.orderId.toString()}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
+                onPress={() => navigation.navigate('OrderDetails', { orderId: item.orderId })}
               >
-                <Text className='text-white text-xs'>{item.orderStatus}</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        />
-      )}
+                {/* Icon */}
+                <View className='mr-3'>
+                  <Text>📦</Text>
+                </View>
+
+                {/* Order Details */}
+                <View className='flex-1'>
+                  <Text className='font-semibold'>{item.farmName}</Text>
+                  <Text className='text-gray-500'>Order ID: {item.orderId}</Text>
+                  <Text className='text-gray-500'>Customer: {item.fullName}</Text>
+                  <Text className='text-blue-500'>{new Date(item.createdTime).toLocaleDateString()}</Text>
+                </View>
+
+                {/* Status Badge */}
+                <View
+                  className={`px-3 py-1 rounded-full `}
+                  style={{
+                    backgroundColor:
+                      item.orderStatus === 'Deposited'
+                        ? '#ADD8E6'
+                        : item.orderStatus === 'Refunded'
+                          ? '#A94064'
+                          : item.orderStatus === 'Pending'
+                            ? '#FFA500'
+                            : item.orderStatus === 'Delivering'
+                              ? '#FFD700'
+                              : item.orderStatus === 'Packed'
+                                ? '#0000FF'
+                                : item.orderStatus === 'Delivered'
+                                  ? '#008000'
+                                  : '#D3D3D3'
+                  }}
+                >
+                  <Text className='text-white text-xs'>{item.orderStatus}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+      </ScrollView>
     </View>
   )
 }
