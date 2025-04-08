@@ -30,6 +30,26 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' VND'
   }
 
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return ''
+
+    const date = new Date(dateString)
+
+    const formattedDate = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+
+    const formattedTime = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    })
+
+    return `${formattedDate} ${formattedTime}`
+  }
+
   return (
     <Pressable onPress={onPress} className='border border-gray-400 rounded-lg p-5 bg-white mb-4 active:opacity-75'>
       <View className='flex-row justify-between items-start'>
@@ -56,7 +76,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
 
         <View className='flex-row'>
           <Text className='font-semibold text-gray-800 w-2/5'>Expected Day:</Text>
-          <Text className='text-gray-700 flex-1'>{order?.expectedDeliveryDate}</Text>
+          <Text className='text-gray-700 flex-1'>{formatDate(order?.expectedDeliveryDate)}</Text>
         </View>
 
         <View className='flex-row'>

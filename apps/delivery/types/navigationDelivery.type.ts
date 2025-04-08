@@ -3,6 +3,7 @@ import { AccountType } from './Account/account.type'
 
 export type DeliveryHomeStackParamList = {
   Home: undefined
+  OrderDetails: { orderID: number }
 }
 
 export type DeliveryOrdersStackParamList = {
@@ -12,6 +13,7 @@ export type DeliveryOrdersStackParamList = {
 
 export type DeliveryNotificationsStackParamList = {
   Notifications: undefined
+  OrderDetails: { orderID: number }
 }
 
 export type DeliverySettingsStackParamList = {

@@ -30,6 +30,11 @@ export default function WithdrawForm() {
 
     const numericAmount = Number(amount.replace(/\D/g, ''))
 
+    if (numericAmount <= 50000) {
+      Alert.alert('Error', 'Withdrawal amount must be > 50,000 VND')
+      return
+    }
+
     if (numericAmount > (wallet?.balance ?? 0)) {
       const formattedBalance = new Intl.NumberFormat('vi-VN').format(wallet?.balance ?? 0)
 

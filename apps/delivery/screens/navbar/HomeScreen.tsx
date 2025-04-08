@@ -1,7 +1,7 @@
 import DashboardCard from '@apps/delivery/components/DashBoardCard'
 import OrderCard from '@apps/delivery/components/OrderCard'
 import { useCurrentOrderByAll } from '@apps/delivery/hooks/useOrder'
-import { DeliveryOrderStackNavigationProp } from '@apps/delivery/types/navigationDelivery.type'
+import { DeliveryHomeStackNavigationProp } from '@apps/delivery/types/navigationDelivery.type'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import MainLayout from '@shared/layouts/MainLayout'
 import React, { useCallback } from 'react'
@@ -9,7 +9,7 @@ import { ScrollView, View, Text } from 'react-native'
 
 export default function HomeScreen() {
   const { orders, error, refetch } = useCurrentOrderByAll()
-  const navigation = useNavigation<DeliveryOrderStackNavigationProp>()
+  const navigation = useNavigation<DeliveryHomeStackNavigationProp>()
 
   useFocusEffect(
     useCallback(() => {

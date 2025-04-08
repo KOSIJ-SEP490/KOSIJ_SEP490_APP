@@ -46,7 +46,7 @@ export default function TripsScreen() {
             case 'OnGoing':
               return (
                 (trip.tripBookingStatus === 'Paid' && trip.departureDate?.startsWith(today)) ||
-                ['Checkin', 'Checkout'].includes(trip.tripBookingStatus)
+                ['CheckIn', 'CheckOut'].includes(trip.tripBookingStatus)
               )
             case 'History':
               return ['Completed', 'Cancelled', 'Refunded'].includes(trip.tripBookingStatus)

@@ -1,9 +1,9 @@
 import React from 'react'
 import AppNavigator from './AppNavigator'
-import NotificationsScreen from '../../apps/delivery/screens/navbar/NotificationsScreen'
 import HomeStackNavigator from '@apps/delivery/navigation/HomeStackNavigator'
 import OrderStackNavigator from '@apps/delivery/navigation/OrderStackNavigator'
 import SettingStackNavigator from '@apps/delivery/navigation/SettingStackNavigator'
+import NotificationStackNavigator from '@apps/delivery/navigation/NotificationStackNavigator'
 
 export default function DeliveryNavigator() {
   return (
@@ -13,7 +13,7 @@ export default function DeliveryNavigator() {
         { name: 'Orders', component: OrderStackNavigator, icon: 'cart' },
         {
           name: 'Notifications',
-          component: NotificationsScreen,
+          component: NotificationStackNavigator,
           icon: 'notifications'
         },
         { name: 'Settings', component: SettingStackNavigator, icon: 'settings' }
