@@ -1,7 +1,7 @@
 import { useTripBookingCheckInById, useTripBookingCheckoutPayment } from '@apps/customer/hooks/useTripBooking'
 import { useWallet } from '@apps/customer/hooks/useWallet'
 import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert } from 'react-native'
 import { ChevronDown } from 'react-native-feather'
 import PaymentSuccessModal from './PaymentSuccessModal'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
@@ -18,7 +18,7 @@ const PaymentDetailsCard = ({ tripBookingID }: PaymentDetailsCardProps) => {
   const [isGrandTotalExpanded, setIsGrandTotalExpanded] = useState(false)
   const [isDepositExpanded, setIsDepositExpanded] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const { checkoutTrip, checkoutData, isLoading } = useTripBookingCheckoutPayment()
+  const { checkoutTrip, checkoutData, isLoading, error: paymentError } = useTripBookingCheckoutPayment()
 
   const handlePayment = async () => {
     const response = await checkoutTrip(tripBookingID ?? 0)
@@ -27,6 +27,12 @@ const PaymentDetailsCard = ({ tripBookingID }: PaymentDetailsCardProps) => {
       setIsModalVisible(true)
     }
   }
+
+  useEffect(() => {
+    if (paymentError) {
+      Alert.alert('Payment Error', paymentError)
+    }
+  }, [paymentError])
 
   useEffect(() => {
     if (tripBookingCheckIn?.expiredTime) {
@@ -168,12 +174,8 @@ const PaymentDetailsCard = ({ tripBookingID }: PaymentDetailsCardProps) => {
         </Text>
       </View>
 
-      <View className='flex-row justify-between mt-4'>
-        <TouchableOpacity className='bg-red-600 px-6 py-3 rounded-md w-32'>
-          <Text className='text-white text-sm font-medium text-center'>Cancel</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity className='bg-blue px-6 py-3 rounded-md w-32' onPress={handlePayment} disabled={isLoading}>
+      <View className='flex-row justify-center mt-4'>
+        <TouchableOpacity className='bg-blue px-6 py-3 rounded-md w-40' onPress={handlePayment} disabled={isLoading}>
           <Text className='text-white text-sm font-medium text-center'>{isLoading ? 'Processing...' : 'Pay'}</Text>
         </TouchableOpacity>
       </View>

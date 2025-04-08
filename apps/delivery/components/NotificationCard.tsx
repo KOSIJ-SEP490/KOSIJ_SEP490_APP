@@ -1,14 +1,11 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { format } from 'date-fns'
-import { NotificationType } from '@apps/customer/types/Notifications/Notification.type'
-import { useMarkAsRead } from '@apps/customer/hooks/useNotifications'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import {
-  CustomerSettingsStackParamList,
-  CustomerTripsStackParamList
-} from '@apps/customer/types/navigationCustomerType'
+import { DeliveryNotificationsStackParamList } from '../types/navigationDelivery.type'
+import { NotificationType } from '../types/Notifications/Notification.type'
+import { useMarkAsRead } from '../hooks/useNotification'
 
 interface NotificationCardProps {
   notification?: NotificationType | null
@@ -17,8 +14,7 @@ interface NotificationCardProps {
 
 const NotificationCard: React.FC<NotificationCardProps> = ({ notification, onMarkAsRead }) => {
   const { markAsRead, loading } = useMarkAsRead()
-  const navigation = useNavigation<StackNavigationProp<CustomerTripsStackParamList>>()
-  const navigation1 = useNavigation<StackNavigationProp<CustomerSettingsStackParamList>>()
+  const navigation = useNavigation<StackNavigationProp<DeliveryNotificationsStackParamList>>()
 
   if (!notification) {
     return null
@@ -52,14 +48,8 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ notification, onMar
     if (!type || !refId) return
 
     switch (type) {
-      case 'TripRequest':
-        navigation.navigate('TripRequestDetails', { tripRequestID: refId })
-        break
-      case 'TripBooking':
-        navigation.navigate('TripBookingDetails', { tripBookingID: refId })
-        break
-      case 'WithdrawalRequest':
-        navigation1.navigate('WithdrawDetails', { withdrawID: refId })
+      case 'Order':
+        navigation.navigate('OrderDetails', { orderID: refId })
         break
       default:
         break

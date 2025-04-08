@@ -189,18 +189,28 @@ export function useTripBookingCheckoutPayment() {
     setError(null)
 
     try {
-      const response = await axios.post<{ message: string; value: TripCheckOutType }>(
+      const response = await axios.post<{ message: string; value: TripCheckOutType | string }>(
         `${API_BASE_URL}trip-booking/check-out-payment`,
         { id },
         {
           headers: {
             Authorization: `Bearer ${userToken}`
-          }
+          },
+          validateStatus: () => true
         }
       )
 
-      setCheckoutData(response.data.value)
-      return response.data.value
+      if (response.status === 200 && typeof response.data.value !== 'string') {
+        setCheckoutData(response.data.value)
+        return response.data.value
+      } else {
+        const errorMessage =
+          typeof response.data.value === 'string'
+            ? response.data.value
+            : response.data.message || 'Failed to process payment.'
+        setError(errorMessage)
+        return null
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed to process payment.')

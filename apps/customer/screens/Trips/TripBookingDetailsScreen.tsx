@@ -34,6 +34,8 @@ export default function TripBookingDetailsScreen() {
 
   const shouldShowCancelButton =
     !isExpired &&
+    tripBookingDetail?.tripBookingStatus !== 'CheckIn' &&
+    tripBookingDetail?.tripBookingStatus !== 'CheckOut' &&
     tripBookingDetail?.tripBookingStatus !== 'Cancelled' &&
     tripBookingDetail?.tripBookingStatus !== 'Completed' &&
     tripBookingDetail?.tripBookingStatus !== 'Refunded'
@@ -61,23 +63,27 @@ export default function TripBookingDetailsScreen() {
       backgroundImage={tripBookingDetail?.imageUrl ?? 'https://example.com/default-image.jpg'}
       showBackButton={true}
     >
-      {tripBookingDetail?.tripBookingStatus !== 'Paid' && (
-        <>
-          <PaymentReminder
-            status={tripBookingDetail?.tripBookingStatus ?? 'Pending'}
-            expiredTime={tripBookingDetail?.expiredTime ?? ''}
-            paymentPolicy={
-              tripBookingDetail?.paymentPolicy?.map((policy, index) => ({
-                id: index,
-                description: policy.description
-              })) ?? []
-            }
-            cancellationReason={tripBookingDetail?.cancelTripBookingDetails?.cancellationReason ?? ''}
-            tripBookingID={tripBookingID}
-          />
-          <Divider />
-        </>
-      )}
+      {tripBookingDetail?.tripBookingStatus !== 'Paid' &&
+        tripBookingDetail?.tripBookingStatus !== 'CheckIn' &&
+        tripBookingDetail?.tripBookingStatus !== 'CheckOut' &&
+        tripBookingDetail?.tripBookingStatus !== 'Cancelled' &&
+        tripBookingDetail?.tripBookingStatus !== 'Completed' && (
+          <>
+            <PaymentReminder
+              status={tripBookingDetail?.tripBookingStatus ?? 'Pending'}
+              expiredTime={tripBookingDetail?.expiredTime ?? ''}
+              paymentPolicy={
+                tripBookingDetail?.paymentPolicy?.map((policy, index) => ({
+                  id: index,
+                  description: policy.description
+                })) ?? []
+              }
+              cancellationReason={tripBookingDetail?.cancelTripBookingDetails?.cancellationReason ?? ''}
+              tripBookingID={tripBookingID}
+            />
+            <Divider />
+          </>
+        )}
 
       <TripBookingInfo tripBooking={tripBookingDetail} />
 

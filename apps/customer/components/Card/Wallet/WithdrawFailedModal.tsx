@@ -1,5 +1,3 @@
-import { CustomerSettingsStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
-import { useNavigation } from '@react-navigation/native'
 import React from 'react'
 import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import { XCircle } from 'react-native-feather'
@@ -11,7 +9,6 @@ interface WithDrawFailModalProps {
 }
 
 const WithDrawFailModal = ({ visible, onClose, errorMessage }: WithDrawFailModalProps) => {
-  const navigation = useNavigation<CustomerSettingsStackNavigationProp>()
   const failTime = new Date().toLocaleString()
 
   return (
@@ -33,9 +30,11 @@ const WithDrawFailModal = ({ visible, onClose, errorMessage }: WithDrawFailModal
               <Text className='text-base text-gray-800'>{failTime}</Text>
             </View>
 
-            <View className='flex-row justify-between'>
-              <Text className='text-base text-gray-600'>Reason</Text>
-              <Text className='text-base text-gray-800'>{errorMessage}</Text>
+            <View className='flex-row'>
+              <Text className='text-base text-gray-600 mr-2'>Reason:</Text>
+              <Text className='text-base text-gray-800 ml-20 flex-1 flex-wrap' numberOfLines={3}>
+                {errorMessage}
+              </Text>
             </View>
 
             <View className='flex-row items-center py-2'>
@@ -51,16 +50,7 @@ const WithDrawFailModal = ({ visible, onClose, errorMessage }: WithDrawFailModal
             </View>
           </View>
 
-          <TouchableOpacity
-            onPress={() => {
-              onClose()
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'Settings' }]
-              })
-            }}
-            className='bg-red-500 py-3 rounded-lg mt-8'
-          >
+          <TouchableOpacity onPress={onClose} className='bg-red-500 py-3 rounded-lg mt-8'>
             <Text className='text-white text-center text-lg font-medium'>Close</Text>
           </TouchableOpacity>
         </View>

@@ -27,6 +27,12 @@ export type CustomerTripsStackParamList = {
 
 export type CustomerNotificationsStackParamList = {
   Notifications: undefined
+  WithdrawDetails: { withdrawID?: number }
+  TripBookingDetails: { tripBookingID: number }
+  TripRequestDetails: { tripRequestID: number }
+  QuotationDetails: { tripRequestID: number }
+  Payment: { tripBookingID: number; type: string }
+  RateTripDetails: { tripBookingID: number }
 }
 
 export type CustomerSettingsStackParamList = {

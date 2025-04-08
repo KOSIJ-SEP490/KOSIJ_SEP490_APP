@@ -1,18 +1,27 @@
 import NotificationCard from '@apps/customer/components/Card/Notification/NotificationCard'
 import { useMarkAsReadAll, useNotificationsByAll } from '@apps/customer/hooks/useNotifications'
 import SubLayout from '@shared/layouts/SubLayout'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import { ActivityIndicator } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 
 export default function NotificationsScreen() {
   const { notifications, error, reload } = useNotificationsByAll()
   const { markAllAsRead, loading: markAllLoading } = useMarkAsReadAll()
 
+  useFocusEffect(
+    useCallback(() => {
+      reload()
+    }, [reload])
+  )
+
   const handleMarkAll = async () => {
     await markAllAsRead()
     reload()
   }
+
+  const reversedNotifications = notifications ? [...notifications].reverse() : []
 
   return (
     <SubLayout title='Notifications' showBackButton={false}>
@@ -29,7 +38,11 @@ export default function NotificationsScreen() {
           <Text className='text-gray-500 text-lg'>There are no notifications yet</Text>
         </View>
       ) : (
-        <ScrollView className='flex-1 mt-10' contentContainerStyle={{ paddingBottom: 20 }}>
+        <ScrollView
+          className='flex-1 mt-10'
+          contentContainerStyle={{ paddingBottom: 20 }}
+          contentOffset={{ x: 0, y: 10000 }}
+        >
           <TouchableOpacity
             onPress={handleMarkAll}
             disabled={markAllLoading}
@@ -42,7 +55,7 @@ export default function NotificationsScreen() {
             )}
           </TouchableOpacity>
 
-          {notifications.map((item) => (
+          {reversedNotifications.map((item) => (
             <NotificationCard key={item.id.toString()} notification={item} onMarkAsRead={reload} />
           ))}
         </ScrollView>

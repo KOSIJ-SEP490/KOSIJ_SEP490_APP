@@ -88,19 +88,26 @@ export function useWithdraw() {
       setLoading(true)
       setError(null)
       setMessage(null)
+      setWithdrawalResponse(null)
 
       try {
-        const response = await axios.post<{ message: string; value: WithDrawResponseType }>(
+        const response = await axios.post<{ message: string; value: WithDrawResponseType | null }>(
           `${API_BASE_URL}withdrawal`,
           { amount, bankName, bankNumber, holderName },
-          { headers: { Authorization: `Bearer ${userToken}` } }
+          {
+            headers: { Authorization: `Bearer ${userToken}` },
+            validateStatus: (status) => status < 500
+          }
         )
 
-        setWithdrawalResponse(response.data.value)
-        setMessage(response.data.message)
+        if (response.status === 200 && response.data.value) {
+          setWithdrawalResponse(response.data.value)
+          setMessage(response.data.message)
+        } else {
+          setError(response.data.message || 'Withdrawal failed')
+        }
       } catch (err: unknown) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setError((err as any)?.response?.data?.detail || 'Failed to process withdrawal.')
+        setError('An unexpected error occurred')
       } finally {
         setLoading(false)
       }

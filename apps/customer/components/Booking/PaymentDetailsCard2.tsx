@@ -1,7 +1,7 @@
 import { useTripBookingCheckInById2, useTripBookingCheckoutPayment } from '@apps/customer/hooks/useTripBooking'
 import { useWallet } from '@apps/customer/hooks/useWallet'
 import React, { useState, useEffect } from 'react'
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert } from 'react-native'
 import { ChevronDown } from 'react-native-feather'
 import { useBooking } from '@apps/customer/contexts/BookingContext'
 import PaymentSuccessModal2 from './PaymentSuccessModal2'
@@ -19,7 +19,7 @@ const PaymentDetailsCard2 = ({ tripBookingID }: PaymentDetailsCard2Props) => {
   const [isGrandTotalExpanded, setIsGrandTotalExpanded] = useState(false)
   const [isDepositExpanded, setIsDepositExpanded] = useState(false)
   const [isModalVisible, setIsModalVisible] = useState(false)
-  const { checkoutTrip, checkoutData, isLoading } = useTripBookingCheckoutPayment()
+  const { checkoutTrip, checkoutData, isLoading, error: paymentError } = useTripBookingCheckoutPayment()
   const remainingAmount = tripBookingCheckIn?.remainingAmount
   const depositedAmount = tripBookingCheckIn?.totalDepositAmount
 
@@ -30,6 +30,12 @@ const PaymentDetailsCard2 = ({ tripBookingID }: PaymentDetailsCard2Props) => {
       setIsModalVisible(true)
     }
   }
+
+  useEffect(() => {
+    if (paymentError) {
+      Alert.alert('Payment Error', paymentError)
+    }
+  }, [paymentError])
 
   useEffect(() => {
     if (tripBookingCheckIn?.expiredTime) {
@@ -126,17 +132,24 @@ const PaymentDetailsCard2 = ({ tripBookingID }: PaymentDetailsCard2Props) => {
 
       <View className='my-4 px-4 py-6 bg-white rounded-lg border border-gray-200 flex-row justify-between items-center mb-4'>
         <Text className='text-blue font-medium'>KOSIJ Wallet</Text>
-        <Text className='text-blue font-medium'>
-          {wallet?.balance.toLocaleString() ?? 'N/A'} {wallet?.currency}
-        </Text>
+        <View>
+          {wallet?.balance != null && wallet.balance < tripBookingCheckIn?.remainingAmount ? (
+            <>
+              <Text className='text-red font-medium'>
+                {wallet.balance.toLocaleString()} {wallet.currency}
+              </Text>
+              <Text className='text-xs text-red'>Your Wallet balance is not enough to pay</Text>
+            </>
+          ) : (
+            <Text className='text-blue font-medium'>
+              {wallet?.balance?.toLocaleString() ?? 'N/A'} {wallet?.currency}
+            </Text>
+          )}
+        </View>
       </View>
 
-      <View className='flex-row justify-between mt-4'>
-        <TouchableOpacity className='bg-red-600 px-6 py-3 rounded-md w-32'>
-          <Text className='text-white text-sm font-medium text-center'>Cancel</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity className='bg-blue px-6 py-3 rounded-md w-32' onPress={handlePayment} disabled={isLoading}>
+      <View className='flex-row justify-center mt-4'>
+        <TouchableOpacity className='bg-blue px-6 py-3 rounded-md w-40' onPress={handlePayment} disabled={isLoading}>
           <Text className='text-white text-sm font-medium text-center'>{isLoading ? 'Processing...' : 'Pay'}</Text>
         </TouchableOpacity>
       </View>
