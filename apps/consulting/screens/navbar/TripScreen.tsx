@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
+import {
+  View,
+  Text,
+  FlatList,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  ScrollView,
+  RefreshControl
+} from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { useTrips } from '@apps/consulting/api/useTrip.api'
@@ -30,6 +39,7 @@ export default function TripScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All')
   const [showDropdown, setShowDropdown] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   const handleSelectTrip = (id: number) => {
     navigation.navigate('TourDetails', { id })
@@ -54,6 +64,18 @@ export default function TripScreen() {
 
     setFilteredTrips(filtered)
   }, [searchQuery, selectedStatus, trips])
+
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await trips
+      setFilteredTrips(data)
+    } catch (error) {
+      console.error('Error refreshing the page:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
   console.log('data trips: ', trips)
 
   return (
@@ -102,65 +124,67 @@ export default function TripScreen() {
             </View>
           )}
           {/* Trip List */}
-          {filteredTrips.length === 0 ? (
-            <View className='flex-1 justify-center items-center'>
-              <Text className='text-gray-500 text-lg'>No Trip is found</Text>
-            </View>
-          ) : (
-            <FlatList
-              data={filteredTrips}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
-                  onPress={() => handleSelectTrip(item.id)}
-                >
-                  {/* Icon */}
-                  <View className='mr-3'>
-                    <Text>🛳️</Text>
-                  </View>
-
-                  {/* Trip Details */}
-                  <View className='flex-1'>
-                    <Text className='font-semibold'>{item.tourName}</Text>
-                    <Text className='text-gray-500'>Trip ID: {item.id}</Text>
-                    <Text className='text-gray-500'>Type: {item.tripType}</Text>
-                    <View className='flex-row'>
-                      <Text className='text-blue-500'>{item.departureDate} -</Text>
-                      <Text className='text-blue-500'> {item.returnDate}</Text>
-                    </View>
-                  </View>
-
-                  {/* Status Badge */}
-                  <View
-                    className='px-3 py-1 rounded-full'
-                    style={{
-                      backgroundColor:
-                        item.tripStatus === 'Available'
-                          ? '#ADD8E6'
-                          : item.tripStatus === 'Not Available'
-                            ? '#D3D3D3'
-                            : item.tripStatus === 'Full'
-                              ? '#A94064'
-                              : item.tripStatus === 'Registration Closed'
-                                ? '#FFA500'
-                                : item.tripStatus === 'NotStarted'
-                                  ? '#FFD700'
-                                  : item.tripStatus === 'Ongoing'
-                                    ? '#0000FF'
-                                    : item.tripStatus === 'Completed'
-                                      ? '#008000'
-                                      : item.tripStatus === 'Canceled'
-                                        ? '#FF0000'
-                                        : '#D3D3D3'
-                    }}
+          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+            {filteredTrips.length === 0 ? (
+              <View className='flex-1 justify-center items-center'>
+                <Text className='text-gray-500 text-lg'>No Trip is found</Text>
+              </View>
+            ) : (
+              <FlatList
+                data={filteredTrips}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
+                    onPress={() => handleSelectTrip(item.id)}
                   >
-                    <Text className='text-white text-xs'>{item.tripStatus}</Text>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
-          )}
+                    {/* Icon */}
+                    <View className='mr-3'>
+                      <Text>🛳️</Text>
+                    </View>
+
+                    {/* Trip Details */}
+                    <View className='flex-1'>
+                      <Text className='font-semibold'>{item.tourName}</Text>
+                      <Text className='text-gray-500'>Trip ID: {item.id}</Text>
+                      <Text className='text-gray-500'>Type: {item.tripType}</Text>
+                      <View className='flex-row'>
+                        <Text className='text-blue-500'>{item.departureDate} -</Text>
+                        <Text className='text-blue-500'> {item.returnDate}</Text>
+                      </View>
+                    </View>
+
+                    {/* Status Badge */}
+                    <View
+                      className='px-3 py-1 rounded-full'
+                      style={{
+                        backgroundColor:
+                          item.tripStatus === 'Available'
+                            ? '#ADD8E6'
+                            : item.tripStatus === 'Not Available'
+                              ? '#D3D3D3'
+                              : item.tripStatus === 'Full'
+                                ? '#A94064'
+                                : item.tripStatus === 'Registration Closed'
+                                  ? '#FFA500'
+                                  : item.tripStatus === 'NotStarted'
+                                    ? '#FFD700'
+                                    : item.tripStatus === 'Ongoing'
+                                      ? '#0000FF'
+                                      : item.tripStatus === 'Completed'
+                                        ? '#008000'
+                                        : item.tripStatus === 'Canceled'
+                                          ? '#FF0000'
+                                          : '#D3D3D3'
+                      }}
+                    >
+                      <Text className='text-white text-xs'>{item.tripStatus}</Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+          </ScrollView>
         </>
       )}
     </View>

@@ -20,7 +20,8 @@ import {
   Alert,
   ActivityIndicator,
   ImageSourcePropType,
-  Modal
+  Modal,
+  RefreshControl
 } from 'react-native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 import { format } from 'date-fns'
@@ -49,6 +50,7 @@ export default function OrderDetailsScreen() {
   const [loading, setLoading] = useState(true)
   const [visible, setVisible] = useState(false)
   const [selectedImages, setSelectedImages] = useState([])
+  const [refreshing, setRefreshing] = useState(false)
 
   const openImageViewer = (images: SetStateAction<never[]>) => {
     setSelectedImages(images)
@@ -68,6 +70,18 @@ export default function OrderDetailsScreen() {
     getOrderDetails()
   }, [orderId])
 
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await fetchOrderDetails(orderId)
+      setOrder(data)
+    } catch (error) {
+      console.error('Error refreshing the page:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
+
   if (loading) {
     return (
       <View className='flex-1 justify-center items-center bg-white'>
@@ -79,7 +93,7 @@ export default function OrderDetailsScreen() {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
   return (
-    <ScrollView>
+    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <View className='flex-1 mt-3 bg-white p-4'>
         {/* Header */}
         <View className='flex-row items-center px-4 py-2'>

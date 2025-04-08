@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import { ChevronLeft } from 'lucide-react-native'
 import axios from 'axios'
@@ -29,30 +29,40 @@ export default function TourDetailsScreen() {
   const [participantList, setParticipantList] = useState<any>(null)
   const apiImageUrl = 'https://example.com/ticket.jpg'
   const authContext = useContext(AuthContext)
+  const [refreshing, setRefreshing] = useState(false)
 
   if (!authContext || !authContext.user) {
     throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
   }
 
   const { user } = authContext
+  const fetchTourDetails = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}staff/trip/${id}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          Accept: 'text/plain'
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching tour details:', error)
+      throw error
+    }
+  }
+
   useEffect(() => {
-    const fetchTourDetails = async () => {
+    const getTourDetails = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}staff/trip/${id}`, {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            Accept: 'text/plain'
-          }
-        })
-        setTourDetails(response.data)
+        const data = await fetchTourDetails()
+        setTourDetails(data)
       } catch (error) {
-        console.error('Error fetching tour details:', error)
+        console.error('Failed to load tour details.')
       } finally {
         setLoading(false)
       }
     }
-
-    fetchTourDetails()
+    getTourDetails()
   }, [id])
 
   useEffect(() => {
@@ -74,6 +84,18 @@ export default function TourDetailsScreen() {
 
     fetchTourParticipantsList()
   }, [id])
+
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const data = await fetchTourDetails()
+      setTourDetails(data)
+    } catch (error) {
+      console.error('Error refreshing the page:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -101,7 +123,7 @@ export default function TourDetailsScreen() {
   }
 
   return (
-    <ScrollView>
+    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       <View className='flex-1 mt-3 bg-white p-4'>
         {/* Header */}
         <View className='flex-row items-center px-4 py-2'>
