@@ -165,7 +165,7 @@ const CollectTicket = ({ route }: Props) => {
     <SafeAreaView className='flex-1 bg-white px-4'>
       {/* Header */}
       <View className='mt-3 flex-row items-center px-4 py-2'>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.navigate('TourDetails', { id: tripId })}>
           <ChevronLeft color={'#292D32'} size={24} />
         </TouchableOpacity>
         <Text className='text-lg font-semibold text-center flex-1'>Tour Detailed</Text>

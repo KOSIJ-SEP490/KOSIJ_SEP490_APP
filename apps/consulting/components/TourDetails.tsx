@@ -16,6 +16,7 @@ type RootStackParamList = {
   CollectTicket: { ticketImage: string; tripId: number }
   CheckOutTrip: { ticketImage: string; tripId: number }
   CreateOrder: { id: number }
+  Trip: undefined
 }
 
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'TourDetails'>
@@ -127,7 +128,7 @@ export default function TourDetailsScreen() {
       <View className='flex-1 mt-3 bg-white p-4'>
         {/* Header */}
         <View className='flex-row items-center px-4 py-2'>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate('Trip')}>
             <ChevronLeft color={'#292D32'} size={24} />
           </TouchableOpacity>
           <Text className='text-lg font-semibold text-center flex-1'>Tour Details</Text>

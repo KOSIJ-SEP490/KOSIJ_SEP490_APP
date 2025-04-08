@@ -16,6 +16,7 @@ import { useTrips } from '@apps/consulting/api/useTrip.api'
 type RootStackParamList = {
   Orders: undefined
   TourDetails: { id: number }
+  Trip: undefined
 }
 
 type TripScreenNavigationProp = StackNavigationProp<RootStackParamList, 'TourDetails'>
