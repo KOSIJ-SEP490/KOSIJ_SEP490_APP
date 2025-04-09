@@ -20,6 +20,7 @@ export type CustomerTripsStackParamList = {
   Trips: { initialTab?: string }
   TripBookingDetails: { tripBookingID: number }
   TripRequestDetails: { tripRequestID: number }
+  FarmDetail: { farmID: number }
   QuotationDetails: { tripRequestID: number }
   Payment: { tripBookingID: number; type: string }
   RateTripDetails: { tripBookingID: number }
