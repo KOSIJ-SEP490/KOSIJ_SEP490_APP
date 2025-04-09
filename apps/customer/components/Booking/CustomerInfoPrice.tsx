@@ -4,7 +4,7 @@ import { styled } from 'nativewind'
 
 const StyledView = styled(View)
 const StyledText = styled(Text)
-const StyledTouchableOpacity = styled(TouchableOpacity)
+// const StyledTouchableOpacity = styled(TouchableOpacity)
 
 interface PassengerDetail {
   ageGroup: string
@@ -63,9 +63,9 @@ export const CustomerInfoPrice: React.FC<TripBookingProps> = ({
     <StyledView className='p-5 w-full'>
       <StyledView className='flex-row justify-between items-center mb-6'>
         <StyledText className='text-base font-semibold text-blue'>Customer Information</StyledText>
-        <StyledTouchableOpacity>
+        {/* <StyledTouchableOpacity>
           <StyledText className='text-blue text-sm'>View Details</StyledText>
-        </StyledTouchableOpacity>
+        </StyledTouchableOpacity> */}
       </StyledView>
 
       <StyledView className='bg-white rounded-lg p-3 pb-0 mb-5 border border-gray-300'>
