@@ -15,6 +15,7 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput } from 'react-native'
 import CancelSuccessModal from '@apps/customer/components/Booking/CancelSuccessModal'
+import { AirplaneTicketCard } from '@apps/customer/components/Booking/AirplaneTicketCard'
 
 type TripBookingDetailScreenRouteProp = RouteProp<CustomerTripsStackParamList, 'TripBookingDetails'>
 
@@ -34,6 +35,7 @@ export default function TripBookingDetailsScreen() {
 
   const shouldShowCancelButton =
     !isExpired &&
+    tripBookingDetail?.expiredTime !== null &&
     tripBookingDetail?.tripBookingStatus !== 'CheckIn' &&
     tripBookingDetail?.tripBookingStatus !== 'CheckOut' &&
     tripBookingDetail?.tripBookingStatus !== 'Cancelled' &&
@@ -86,6 +88,13 @@ export default function TripBookingDetailsScreen() {
         )}
 
       <TripBookingInfo tripBooking={tripBookingDetail} />
+
+      <Divider />
+
+      <AirplaneTicketCard
+        outboundTicketUrl={tripBookingDetail?.outboundTicketUrl}
+        inboundTicketUrl={tripBookingDetail?.inboundTicketUrl}
+      />
 
       <Divider />
 
