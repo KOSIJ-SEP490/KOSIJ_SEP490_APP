@@ -95,11 +95,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const decoded: DecodedToken = jwtDecode(token)
         const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
         const role = (decoded[roleClaim] as 'Customer' | 'ConsultingStaff' | 'DeliveryStaff') || 'Customer'
-        const expiresAt = decoded.exp * 10000
+        const expiresAt = decoded.exp * 1000
+
+        const appRole =
+          process.env.EXPO_APP === 'delivery'
+            ? 'DeliveryStaff'
+            : process.env.EXPO_APP === 'consulting'
+              ? 'ConsultingStaff'
+              : 'Customer'
+
+        if (role !== appRole) {
+          Toast.show({
+            type: 'error',
+            text1: 'Login Failed',
+            text2: `This app is for ${appRole} but you logged in as ${role}.`
+          })
+          return
+        }
 
         const userData = { email, token, role, expiresAt }
 
-        console.log('User Data After Login:', userData)
         Toast.show({
           type: 'success',
           text1: 'Login Successful',
