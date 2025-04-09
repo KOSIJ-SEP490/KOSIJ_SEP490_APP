@@ -12,6 +12,7 @@ type TourDetailsScreenProps = {
 }
 
 type RootStackParamList = {
+  MainTabs: { screen?: string }
   TourDetails: { id: number }
   CollectTicket: { ticketImage: string; tripId: number }
   CheckOutTrip: { ticketImage: string; tripId: number }
@@ -89,8 +90,17 @@ export default function TourDetailsScreen() {
   const onRefresh = async () => {
     setRefreshing(true)
     try {
-      const data = await fetchTourDetails()
-      setTourDetails(data)
+      const [tourData, participantsData] = await Promise.all([
+        fetchTourDetails(),
+        axios.get(`${API_BASE_URL}trip/${id}/passengers`, {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            Accept: 'text/plain'
+          }
+        })
+      ])
+      setTourDetails(tourData)
+      setParticipantList(participantsData.data)
     } catch (error) {
       console.error('Error refreshing the page:', error)
     } finally {
@@ -128,7 +138,13 @@ export default function TourDetailsScreen() {
       <View className='flex-1 mt-3 bg-white p-4'>
         {/* Header */}
         <View className='flex-row items-center px-4 py-2'>
-          <TouchableOpacity onPress={() => navigation.navigate('Trip')}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('MainTabs', {
+                screen: 'Trip'
+              })
+            }
+          >
             <ChevronLeft color={'#292D32'} size={24} />
           </TouchableOpacity>
           <Text className='text-lg font-semibold text-center flex-1'>Tour Details</Text>

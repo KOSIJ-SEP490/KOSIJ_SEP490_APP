@@ -208,7 +208,7 @@ const CheckOutTrip = ({ route }: Props) => {
           <View className='bg-gray-100 p-4 rounded-lg mt-4'>
             <Text className='text-lg font-semibold mb-2'>Take attendance</Text>
             {passengers
-              .filter((passenger) => !passenger.isCheckIn)
+              .filter((passenger) => passenger.isCheckIn)
               .map((passenger, index) => (
                 <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
                   <Text>{passenger.fullName}</Text>

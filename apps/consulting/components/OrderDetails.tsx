@@ -75,9 +75,10 @@ export default function OrderDetailsScreen() {
     setRefreshing(true)
     try {
       const data = await fetchOrderDetails(orderId)
-      setOrder(data)
+      setOrder(JSON.parse(JSON.stringify(data)))
     } catch (error) {
       console.error('Error refreshing the page:', error)
+      Alert.alert('Refresh Failed', 'Unable to refresh order details. Please try again later.')
     } finally {
       setRefreshing(false)
     }
@@ -98,7 +99,7 @@ export default function OrderDetailsScreen() {
       <View className='flex-1 mt-3 bg-white p-4'>
         {/* Header */}
         <View className='flex-row items-center px-4 py-2'>
-          <TouchableOpacity onPress={() => navigation.navigate('Orders')}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <ChevronLeft color={'#292D32'} size={24} />
           </TouchableOpacity>
           <Text className='text-lg font-semibold text-center flex-1'>Order Details</Text>

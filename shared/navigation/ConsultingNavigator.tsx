@@ -13,8 +13,18 @@ import OrderDetailsScreen from '@apps/consulting/components/OrderDetails'
 import CreateOrder from '@apps/consulting/components/CreateOrder'
 import UpdateOrder from '@apps/consulting/components/UpdateOrder'
 
+type MainTabParamList = {
+  Home: undefined
+  Trip: undefined
+  Notification: undefined
+  Orders: undefined
+  Settings: undefined
+}
+
 type RootStackParamList = {
-  MainTabs: undefined
+  MainTabs: {
+    screen?: keyof MainTabParamList // Allow specifying a tab screen
+  }
   TourDetails: undefined
   CollectTicket: { ticketImage: string }
   CheckOutTrip: { ticketImage: string }

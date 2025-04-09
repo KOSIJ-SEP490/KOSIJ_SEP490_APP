@@ -19,7 +19,7 @@ type RootStackParamList = {
   Trip: undefined
 }
 
-type TripScreenNavigationProp = StackNavigationProp<RootStackParamList, 'TourDetails'>
+type TripScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Trip'>
 
 const TRIP_STATUSES = [
   'All',
