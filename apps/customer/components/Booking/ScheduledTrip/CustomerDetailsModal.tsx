@@ -129,8 +129,12 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
           dayOfWeek: 'Sunday'
         }
       }))
+
+      if (Platform.OS === 'android') {
+        setDatePickerVisible(false)
+      }
+      setDatePickerVisible(false)
     }
-    setDatePickerVisible(false)
   }
 
   const handleReset = () => {
@@ -313,25 +317,16 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                         <DateTimePicker
                           value={selectedDate}
                           mode='date'
-                          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                          display={Platform.OS === 'ios' ? 'spinner' : 'calendar'}
                           onChange={(event, date) => {
-                            if (date) setSelectedDate(date)
+                            if (date) {
+                              handleDateConfirm(date)
+                              if (Platform.OS === 'android') {
+                                setDatePickerVisible(false)
+                              }
+                            }
                           }}
                         />
-                        <View className='flex-row justify-between mt-3'>
-                          <TouchableOpacity
-                            className='bg-gray-400 px-4 py-2 rounded-lg'
-                            onPress={() => setDatePickerVisible(false)}
-                          >
-                            <Text className='text-white font-semibold'>Cancel</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity
-                            className='bg-blue px-4 py-2 rounded-lg'
-                            onPress={() => handleDateConfirm(selectedDate)}
-                          >
-                            <Text className='text-white font-semibold'>Confirm</Text>
-                          </TouchableOpacity>
-                        </View>
                       </View>
                     </View>
                   </Modal>
