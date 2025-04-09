@@ -139,9 +139,10 @@ export default function OrdersScreen() {
     setRefreshing(true)
     try {
       const data = await fetchOrders()
-      setOrders(data)
+      setOrders(JSON.parse(JSON.stringify(data)))
     } catch (error) {
       console.error('Error refreshing the page:', error)
+      // Alert.alert('Refresh Failed', 'Unable to refresh orders. Please try again.')
     } finally {
       setRefreshing(false)
     }

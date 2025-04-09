@@ -35,7 +35,7 @@ const TRIP_STATUSES = [
 
 export default function TripScreen() {
   const navigation = useNavigation<TripScreenNavigationProp>()
-  const { data: trips = [], isLoading, error } = useTrips()
+  const { data: trips = [], isLoading, error, refetch } = useTrips()
   const [filteredTrips, setFilteredTrips] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All')
@@ -69,8 +69,7 @@ export default function TripScreen() {
   const onRefresh = async () => {
     setRefreshing(true)
     try {
-      const data = await trips
-      setFilteredTrips(data)
+      await refetch()
     } catch (error) {
       console.error('Error refreshing the page:', error)
     } finally {
