@@ -142,7 +142,6 @@ export default function OrdersScreen() {
       setOrders(JSON.parse(JSON.stringify(data)))
     } catch (error) {
       console.error('Error refreshing the page:', error)
-      // Alert.alert('Refresh Failed', 'Unable to refresh orders. Please try again.')
     } finally {
       setRefreshing(false)
     }

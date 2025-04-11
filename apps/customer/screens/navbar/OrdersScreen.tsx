@@ -39,7 +39,7 @@ export default function OrdersScreen() {
         const data = await fetchOrders()
         setOrders(data)
       } catch (error) {
-        console.error('Failed to load orders')
+        console.error('No Order is found')
       } finally {
         setLoading(false)
       }

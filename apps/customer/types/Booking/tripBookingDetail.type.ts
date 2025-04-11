@@ -88,6 +88,7 @@ export interface Visa {
 
 export interface FarmId {
   id: number
+  farmName: string
 }
 
 export interface TourDetail {

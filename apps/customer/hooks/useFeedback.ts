@@ -112,10 +112,13 @@ export const useCreateFeedback = () => {
   const authContext = useContext(AuthContext)
 
   const createFeedback = async (feedbackData: {
-    tripBookingID: number
-    feedbackType: string
+    tripBookingId: number
     rating: number
     review: string
+    feedbackFarmCommand: [
+      { farmId: number; rating: number; review: string },
+      ...{ farmId: number; rating: number; review: string }[]
+    ]
   }) => {
     if (!authContext || !authContext.user) {
       throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
