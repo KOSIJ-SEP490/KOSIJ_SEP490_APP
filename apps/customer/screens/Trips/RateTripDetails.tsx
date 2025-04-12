@@ -11,6 +11,7 @@ import { useCreateFeedback } from '@apps/customer/hooks/useFeedback'
 type RootStackParamList = {
   TripBookingDetails: { tripBookingID: number }
   RateTripDetails: { tripBookingID: number }
+  Trips: { initialTab?: string }
 }
 type NavigationProps = NativeStackNavigationProp<RootStackParamList, 'RateTripDetails'>
 type RateTripDetailsScreenRouteProp = RouteProp<RootStackParamList, 'RateTripDetails'>
@@ -91,7 +92,7 @@ const RateTripDetails = () => {
         [
           {
             text: 'OK',
-            onPress: () => navigation.navigate('TripBookingDetails', { tripBookingID })
+            onPress: () => navigation.navigate('Trips', { initialTab: 'Completed' })
           }
         ],
         { cancelable: false }
@@ -106,9 +107,6 @@ const RateTripDetails = () => {
       )
     }
   }
-
-  console.log('farmId: ', tripBookingDetail?.farmIds[2].id)
-
   return (
     <ScrollView>
       <View style={{ flex: 1, backgroundColor: 'white' }}>
