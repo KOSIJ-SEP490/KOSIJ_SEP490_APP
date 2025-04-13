@@ -12,6 +12,10 @@ import CheckOutTrip from '@apps/consulting/components/CheckOutTrip'
 import OrderDetailsScreen from '@apps/consulting/components/OrderDetails'
 import CreateOrder from '@apps/consulting/components/CreateOrder'
 import UpdateOrder from '@apps/consulting/components/UpdateOrder'
+import EditProfile from '@apps/consulting/components/EditProfile'
+import { AccountType } from '@shared/types/Account.dto'
+import ChangePassword from '@apps/consulting/components/ChangePassword'
+import AccountScreen from '@apps/consulting/components/AccountComponent'
 
 type MainTabParamList = {
   Home: undefined
@@ -23,7 +27,7 @@ type MainTabParamList = {
 
 type RootStackParamList = {
   MainTabs: {
-    screen?: keyof MainTabParamList // Allow specifying a tab screen
+    screen?: keyof MainTabParamList
   }
   TourDetails: undefined
   CollectTicket: { ticketImage: string }
@@ -31,6 +35,9 @@ type RootStackParamList = {
   OrderDetails: undefined
   CreateOrder: undefined
   UpdateOrder: undefined
+  EditProfile: undefined
+  ChangePassword: { account?: AccountType }
+  AccountDetails: { account?: AccountType }
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -44,6 +51,9 @@ export default function ConsultingNavigator() {
       <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
       <Stack.Screen name='CreateOrder' component={CreateOrder} />
       <Stack.Screen name='UpdateOrder' component={UpdateOrder} />
+      <Stack.Screen name='EditProfile' component={EditProfile} />
+      <Stack.Screen name='ChangePassword' component={ChangePassword} />
+      <Stack.Screen name='AccountDetails' component={AccountScreen} />
     </Stack.Navigator>
   )
 }
