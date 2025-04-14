@@ -1,12 +1,16 @@
 import React from 'react'
 import { Alert, SafeAreaView, ScrollView } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
-import ProfileEditForm from '@apps/customer/components/Form/ProfileEditForm'
 import SubLayout from '@shared/layouts/SubLayout'
-import { CustomerSettingsStackParamList } from '@apps/customer/types/navigationCustomerType'
-import { useUpdateAccount } from '@apps/customer/hooks/useAccount'
+import EditProfile from './EditProfile'
+import { AccountType } from '@shared/types/Account.dto'
+import { useUpdateAccount } from '../api/useAccount.api'
 
-type AccountScreenRouteProp = RouteProp<CustomerSettingsStackParamList, 'Account'>
+type SettingStackParamList = {
+  AccountDetails: { account?: AccountType }
+}
+
+type AccountScreenRouteProp = RouteProp<SettingStackParamList, 'AccountDetails'>
 
 export default function AccountScreen() {
   const navigation = useNavigation()
@@ -54,7 +58,7 @@ export default function AccountScreen() {
     <SubLayout title='Edit User Information' showBackButton={true}>
       <SafeAreaView className='flex-1 bg-white'>
         <ScrollView className='flex-1' showsVerticalScrollIndicator={false}>
-          <ProfileEditForm
+          <EditProfile
             initialEmail={account?.email}
             initialFullName={account?.fullName}
             initialPhoneNumber={account?.phoneNumber}

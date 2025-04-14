@@ -3,20 +3,22 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import { Edit2 } from 'react-native-feather'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
-import { CustomerSettingsStackParamList } from '@apps/customer/types/navigationCustomerType'
-import { AccountType } from '@apps/customer/types/Account/account.type'
+import { AccountType } from '@shared/types/Account.dto'
 
+type SettingStackParamList = {
+  AccountDetails: { account?: AccountType }
+}
 interface ProfileCardProps {
   account?: AccountType
 }
 
 export default function ProfileCard({ account }: ProfileCardProps) {
-  const navigation = useNavigation<StackNavigationProp<CustomerSettingsStackParamList, 'Account'>>()
+  const navigation = useNavigation<StackNavigationProp<SettingStackParamList, 'AccountDetails'>>()
 
   return (
     <TouchableOpacity
       className='bg-blue rounded-lg p-4 px-6 mb-4 flex-row items-center'
-      onPress={() => navigation.navigate('Account', { account: account })}
+      onPress={() => navigation.navigate('AccountDetails', { account: account })}
     >
       <Image
         source={{

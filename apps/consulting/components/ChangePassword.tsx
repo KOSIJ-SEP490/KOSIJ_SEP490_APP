@@ -1,7 +1,7 @@
-import { useResetPasswordAccount } from '@apps/customer/hooks/useAccount'
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { Feather } from '@expo/vector-icons'
+import { useResetPasswordAccount } from '../api/useAccount.api'
 
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState('')
