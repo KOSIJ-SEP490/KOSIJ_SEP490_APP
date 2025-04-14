@@ -32,13 +32,12 @@ export default function KoiUploadImage({ value, onChange, maxCount = 4 }: KoiUpl
     ])
   }
 
-  // Function to launch camera
   const openCamera = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync()
     if (permissionResult.granted) {
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: 'images', // Correct string literal usage
-        quality: 1 // Set quality as per your requirement
+        mediaTypes: 'images',
+        quality: 1
       })
       if (!result.canceled && result.assets?.[0].uri) {
         uploadImageToFirebase(result.assets[0].uri)
@@ -48,13 +47,12 @@ export default function KoiUploadImage({ value, onChange, maxCount = 4 }: KoiUpl
     }
   }
 
-  // Function to launch image library
   const openLibrary = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if (permissionResult.granted) {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'images', // Correct string literal usage
-        quality: 1 // Set quality as per your requirement
+        mediaTypes: 'images',
+        quality: 1
       })
       if (!result.canceled && result.assets?.[0].uri) {
         uploadImageToFirebase(result.assets[0].uri)
@@ -64,7 +62,6 @@ export default function KoiUploadImage({ value, onChange, maxCount = 4 }: KoiUpl
     }
   }
 
-  // Upload image to Firebase Storage
   const uploadImageToFirebase = async (uri: string) => {
     setLoading(true)
     const imageName = new Date().getTime() + '.jpg'
@@ -89,7 +86,6 @@ export default function KoiUploadImage({ value, onChange, maxCount = 4 }: KoiUpl
     )
   }
 
-  // Handle image deletion
   const handleDeleteImage = (imageUri: string) => {
     Alert.alert('Confirm', 'Are you sure you want to delete this image?', [
       { text: 'Cancel', style: 'cancel' },
