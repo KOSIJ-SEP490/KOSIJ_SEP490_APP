@@ -1,10 +1,12 @@
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { styled } from 'nativewind'
+import { CustomerTripsStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
+import { useNavigation } from '@react-navigation/native'
 
 const StyledView = styled(View)
 const StyledText = styled(Text)
-// const StyledTouchableOpacity = styled(TouchableOpacity)
+const StyledTouchableOpacity = styled(TouchableOpacity)
 
 interface PassengerDetail {
   ageGroup: string
@@ -26,6 +28,7 @@ interface BookingDetails {
 interface TripBookingProps {
   totalTripBookingAmount: number
   bookingDetails?: BookingDetails
+  tripBookingID?: number
   currency?: string
 }
 
@@ -57,15 +60,22 @@ const PricingRow: React.FC<{
 export const CustomerInfoPrice: React.FC<TripBookingProps> = ({
   totalTripBookingAmount,
   bookingDetails,
+  tripBookingID,
   currency = 'VND'
 }) => {
+  const navigation = useNavigation<CustomerTripsStackNavigationProp>()
+  const handleNavigate = () => {
+    if (tripBookingID) {
+      navigation.navigate('PassengerInformation', { tripBookingID })
+    }
+  }
   return (
     <StyledView className='p-5 w-full'>
       <StyledView className='flex-row justify-between items-center mb-6'>
         <StyledText className='text-base font-semibold text-blue'>Customer Information</StyledText>
-        {/* <StyledTouchableOpacity>
+        <StyledTouchableOpacity onPress={handleNavigate}>
           <StyledText className='text-blue text-sm'>View Details</StyledText>
-        </StyledTouchableOpacity> */}
+        </StyledTouchableOpacity>
       </StyledView>
 
       <StyledView className='bg-white rounded-lg p-3 pb-0 mb-5 border border-gray-300'>
