@@ -74,30 +74,28 @@ export default function QuotationDetailsScreen() {
           <Text className='text-base font-semibold text-blue'>Farms to Visit</Text>
         </View>
 
-        <View pointerEvents='none'>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingVertical: 10 }}
-            style={{ height: 370 }}
-          >
-            {farmError ? (
-              <Text className='text-center text-red-500'>{farmError}</Text>
-            ) : farmList.length > 0 ? (
-              farmList.map((farm) => (
-                <View key={farm.id} className='mb-4'>
-                  <FarmCard farm={farm} />
-                </View>
-              ))
-            ) : (
-              <Text className='text-center text-gray-500'>Loading...</Text>
-            )}
-          </ScrollView>
-        </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 10 }}
+          style={{ height: 370 }}
+        >
+          {farmError ? (
+            <Text className='text-center text-red-500'>{farmError}</Text>
+          ) : farmList.length > 0 ? (
+            farmList.map((farm) => (
+              <View key={farm.id} className='mb-4'>
+                <FarmCard farm={farm} />
+              </View>
+            ))
+          ) : (
+            <Text className='text-center text-gray-500'>Loading...</Text>
+          )}
+        </ScrollView>
       </View>
 
       <Divider />
 
-      <CustomerInfoRequest tripRequest={tripRequestDetails} />
+      <CustomerInfoRequest tripRequest={tripRequestDetails} tripBookingID={tripRequestDetails?.tripBookingId} />
 
       <Divider />
 

@@ -90,7 +90,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       <View className='px-4 mb-6'>
         <View className='flex-row justify-between items-center px-4 py-4'>
           <Text className='text-base font-semibold'>Upcoming Tours</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Booking')}>
             <Text className='text-blue text-sm'>View more</Text>
           </TouchableOpacity>
         </View>
@@ -114,7 +114,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       <View className='px-4 mb-6'>
         <View className='flex-row justify-between items-center px-4 py-4'>
           <Text className='text-base font-semibold'>Top Koi Farms</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('Farms')}>
             <Text className='text-blue text-sm'>View more</Text>
           </TouchableOpacity>
         </View>
@@ -141,9 +141,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       <View className='px-4 mb-6'>
         <View className='flex-row justify-between items-center px-4 py-4'>
           <Text className='text-base font-semibold'>Our Customer Feedbacks</Text>
-          <TouchableOpacity>
-            <Text className='text-blue text-sm'>View more</Text>
-          </TouchableOpacity>
         </View>
 
         <ScrollView

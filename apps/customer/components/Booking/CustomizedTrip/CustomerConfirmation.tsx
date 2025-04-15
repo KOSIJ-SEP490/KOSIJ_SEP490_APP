@@ -11,13 +11,14 @@ const StyledTouchableOpacity = styled(TouchableOpacity)
 interface CustomerConfirmationProps {
   tripRequestId: number
   onSubmit?: (confirmed: boolean) => void
+  onRefetch?: () => void
 }
 
-const CustomerConfirmation: React.FC<CustomerConfirmationProps> = ({ tripRequestId, onSubmit }) => {
+const CustomerConfirmation: React.FC<CustomerConfirmationProps> = ({ tripRequestId, onSubmit, onRefetch }) => {
   const [confirmed, setConfirmed] = useState<boolean | null>(null)
   const [successModalVisible, setSuccessModalVisible] = useState(false)
   const [apiResponse, setApiResponse] = useState<string | null>(null)
-  const { tripRequestDetails } = useTripRequestById(tripRequestId)
+  const { tripRequestDetails, refetch } = useTripRequestById(tripRequestId)
 
   const { updateTripRequest, loading } = useUpdateTripRequest()
 
@@ -30,6 +31,14 @@ const CustomerConfirmation: React.FC<CustomerConfirmationProps> = ({ tripRequest
       if (result && 'value' in result) {
         setApiResponse(result.value)
         setSuccessModalVisible(true)
+
+        // Refetch data after successful submission
+        await refetch()
+
+        // Optionally call external refetch if provided
+        if (onRefetch) {
+          onRefetch()
+        }
       }
 
       if (onSubmit) {

@@ -86,37 +86,46 @@ export function useTripRequestByAll() {
 export function useTripRequestById(tripRequestId: number) {
   const [tripRequestDetails, setTrip] = useState<TripRequestDetailsType | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
   const authContext = useContext(AuthContext)
-
   const userToken = authContext?.user?.token
 
-  useEffect(() => {
+  const fetchTrip = async () => {
     if (!tripRequestId || !userToken) {
       setError('User is not authenticated or invalid trip ID.')
       return
     }
 
-    const fetchTrip = async () => {
-      try {
-        const response = await axios.get<{ message: string; value: TripRequestDetailsType }>(
-          `${API_BASE_URL}customer/trip-request/${tripRequestId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`
-            }
+    setLoading(true)
+    try {
+      const response = await axios.get<{ message: string; value: TripRequestDetailsType }>(
+        `${API_BASE_URL}customer/trip-request/${tripRequestId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`
           }
-        )
-        setTrip(response.data.value)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        setError(err.response?.data?.detail || 'Failed to fetch the request details.')
-      }
+        }
+      )
+      setTrip(response.data.value)
+      setError(null)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Failed to fetch the request details.')
+    } finally {
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchTrip()
   }, [tripRequestId, userToken])
 
-  return { tripRequestDetails, error }
+  return {
+    tripRequestDetails,
+    error,
+    loading,
+    refetch: fetchTrip
+  }
 }
 
 interface TripRequestResponse {

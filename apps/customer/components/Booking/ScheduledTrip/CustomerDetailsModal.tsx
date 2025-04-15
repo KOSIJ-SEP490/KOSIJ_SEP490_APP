@@ -216,11 +216,12 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
       if (!validatePhone(details.phoneNumber)) {
         return
       }
+    }
 
-      if (!details.passport?.trim()) {
-        Alert.alert('Validation Error', 'Passport number is required for the representative.')
-        return
-      }
+    // Check if hasVisa is true but passport is empty
+    if (details.hasVisa === true && !details.passport?.trim()) {
+      Alert.alert('Validation Error', 'Passport number is required when "Has Visa" is selected.')
+      return
     }
 
     const allCustomers = [
@@ -258,8 +259,7 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
     onClose()
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-inferrable-types
-  const renderRequiredAsterisk = (isRequired: boolean = true) => {
+  const renderRequiredAsterisk = (isRequired = true) => {
     return isRequired ? <Text className='text-red-600'>*</Text> : null
   }
 
@@ -355,13 +355,13 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                     className='flex-row items-center mr-5'
                   >
                     <View
-                      className={`w-5 h-5 border border-blue rounded-full mr-2 ${customerDetails.hasVisa ? 'bg-blue' : 'border-gray-400'}`}
+                      className={`w-5 h-5 border border-blue rounded-full mr-2 ${customerDetails.hasVisa === true ? 'bg-blue' : 'border-gray-400'}`}
                     />
                     <Text>Has Visa</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleChange('hasVisa', null)} className='flex-row items-center'>
+                  <TouchableOpacity onPress={() => handleChange('hasVisa', false)} className='flex-row items-center'>
                     <View
-                      className={`w-5 h-5 border border-blue rounded-full mr-2 ${!customerDetails.hasVisa ? 'bg-blue' : 'border-gray-400'}`}
+                      className={`w-5 h-5 border border-blue rounded-full mr-2 ${customerDetails.hasVisa === false ? 'bg-blue' : 'border-gray-400'}`}
                     />
                     <Text>No Visa</Text>
                   </TouchableOpacity>
@@ -393,11 +393,11 @@ const CustomerDetailModal: React.FC<CustomerDetailModalProps> = ({
                 {phoneError ? <Text className='text-red-500 text-sm mb-3 pl-3'>{phoneError}</Text> : null}
 
                 <Text className='text-base mb-2 pl-3 font-medium'>
-                  Passport Number {renderRequiredAsterisk(isRepresentative)}
+                  Passport Number {renderRequiredAsterisk(customerDetails.hasVisa === true)}
                 </Text>
                 <TextInput
                   className='border border-gray-300 rounded-lg p-2 mb-5 py-4 w-full'
-                  placeholder='Enter passport number'
+                  placeholder={customerDetails.hasVisa === true ? 'Required for visa' : 'Optional'}
                   value={customerDetails.passport}
                   onChangeText={(text) => handleChange('passport', text)}
                 />
