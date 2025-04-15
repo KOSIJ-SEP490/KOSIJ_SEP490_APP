@@ -59,6 +59,8 @@ export default function TripBookingDetailsScreen() {
     }
   }
 
+  console.log('id: ', tripBookingID)
+
   return (
     <MainLayout
       title={tripBookingDetail?.tourName || ''}
@@ -182,15 +184,17 @@ export default function TripBookingDetailsScreen() {
           </TouchableOpacity>
         </View>
       ) : (
-        <View className='p-4 bg-white mb-5'>
-          <TouchableOpacity
-            className='rounded-lg py-3'
-            style={{ backgroundColor: '#264eca' }}
-            onPress={() => navigation.navigate('RateTripDetails', { tripBookingID: tripBookingID })}
-          >
-            <Text className='text-white text-center text-lg font-semibold'>Rate Trip</Text>
-          </TouchableOpacity>
-        </View>
+        !tripBookingDetail?.hasFeedback && (
+          <View className='p-4 bg-white mb-5'>
+            <TouchableOpacity
+              className='rounded-lg py-3'
+              style={{ backgroundColor: '#264eca' }}
+              onPress={() => navigation.navigate('RateTripDetails', { tripBookingID: tripBookingID })}
+            >
+              <Text className='text-white text-center text-lg font-semibold'>Rate Trip</Text>
+            </TouchableOpacity>
+          </View>
+        )
       )}
 
       <Modal

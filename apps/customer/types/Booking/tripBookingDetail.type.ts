@@ -28,6 +28,7 @@ export interface TripBookingDetailType {
   remaining?: number | null
   totalAmount: number
   cancelTripBookingDetails?: CancelTripBooking | null
+  hasFeedback: boolean
 }
 
 export interface CancelTripBooking {
