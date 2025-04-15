@@ -40,14 +40,8 @@ export default function QuotationConfirmSuccess({
             onPress={() => {
               resetBookingRequest()
               onClose()
-              navigation.reset({
-                index: 0,
-                routes: [
-                  {
-                    name: 'TripBookingDetails',
-                    params: { tripBookingID: tripBookingId } as CustomerTripsStackParamList['Trips']
-                  }
-                ]
+              navigation.navigate('TripBookingDetails', {
+                tripBookingID: tripBookingId
               })
             }}
             className='bg-blue py-3 rounded-lg mt-8'

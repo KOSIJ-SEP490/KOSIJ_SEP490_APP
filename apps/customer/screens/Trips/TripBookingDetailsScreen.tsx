@@ -16,6 +16,7 @@ import React, { useState } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput } from 'react-native'
 import CancelSuccessModal from '@apps/customer/components/Booking/CancelSuccessModal'
 import { AirplaneTicketCard } from '@apps/customer/components/Booking/AirplaneTicketCard'
+import CancelledTripBookingCard from '@apps/customer/components/Card/TripBooking/CancelledTripBookingCard'
 
 type TripBookingDetailScreenRouteProp = RouteProp<CustomerTripsStackParamList, 'TripBookingDetails'>
 
@@ -89,6 +90,13 @@ export default function TripBookingDetailsScreen() {
           </>
         )}
 
+      {tripBookingDetail?.tripBookingStatus === 'Cancelled' && (
+        <>
+          <CancelledTripBookingCard tripBookingDetails={tripBookingDetail?.cancelTripBookingDetails} />
+          <Divider />
+        </>
+      )}
+
       <TripBookingInfo tripBooking={tripBookingDetail} />
 
       <Divider />
@@ -112,6 +120,7 @@ export default function TripBookingDetailsScreen() {
       <CustomerInfoPrice
         totalTripBookingAmount={tripBookingDetail?.totalTripBookingAmount ?? 0}
         bookingDetails={tripBookingDetail?.bookingDetails}
+        tripBookingID={tripBookingID}
       />
 
       <Divider />

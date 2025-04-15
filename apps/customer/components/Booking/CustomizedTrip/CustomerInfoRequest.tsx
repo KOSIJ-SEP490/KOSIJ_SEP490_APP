@@ -2,6 +2,8 @@ import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { styled } from 'nativewind'
 import { TripRequestDetailsType } from '@apps/customer/types/Trip/tripRequestDetails.type'
+import { useNavigation } from '@react-navigation/native'
+import { CustomerTripsStackNavigationProp } from '@apps/customer/types/navigationCustomerType'
 
 const StyledView = styled(View)
 const StyledText = styled(Text)
@@ -9,6 +11,7 @@ const StyledTouchableOpacity = styled(TouchableOpacity)
 
 interface CustomerInfoRequestProps {
   tripRequest: TripRequestDetailsType | null
+  tripBookingID?: number | null
   onViewDetails?: () => void
 }
 
@@ -16,7 +19,7 @@ const formatPrice = (price: number | undefined) => {
   return price ? `${new Intl.NumberFormat('vi-VN').format(price)} VND` : '0 VND'
 }
 
-const CustomerInfoRequest: React.FC<CustomerInfoRequestProps> = ({ tripRequest, onViewDetails }) => {
+const CustomerInfoRequest: React.FC<CustomerInfoRequestProps> = ({ tripRequest, tripBookingID }) => {
   const getAgeGroupQuantity = (ageGroup: string) => {
     return (
       tripRequest?.quotationResponse?.quotationDetail
@@ -28,12 +31,18 @@ const CustomerInfoRequest: React.FC<CustomerInfoRequestProps> = ({ tripRequest, 
   const adultCount = getAgeGroupQuantity('Adult')
   const childCount = getAgeGroupQuantity('Child')
   const infantCount = getAgeGroupQuantity('Infant')
+  const navigation = useNavigation<CustomerTripsStackNavigationProp>()
+  const handleNavigate = () => {
+    if (tripBookingID) {
+      navigation.navigate('PassengerInformation', { tripBookingID })
+    }
+  }
 
   return (
     <StyledView className='mb-4 px-5 my-5'>
       <StyledView className='flex-row justify-between items-center mb-4'>
         <StyledText className='text-base font-bold text-blue'>Customer Information</StyledText>
-        <StyledTouchableOpacity onPress={onViewDetails}>
+        <StyledTouchableOpacity onPress={handleNavigate}>
           <StyledText className='text-blue text-sm'>View Details</StyledText>
         </StyledTouchableOpacity>
       </StyledView>
