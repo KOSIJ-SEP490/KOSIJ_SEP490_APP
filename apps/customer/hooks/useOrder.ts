@@ -4,6 +4,8 @@ import AuthContext from '@shared/context/AuthContext'
 import { Orders } from '@shared/types/Order.dto'
 import { API_BASE_URL } from '@env'
 import { useMutation } from '@tanstack/react-query'
+import * as FileSystem from 'expo-file-system'
+import * as Sharing from 'expo-sharing'
 
 const API_URL = 'https://kosij.azurewebsites.net/api/orders/current-customer'
 const API2_URL = 'https://kosij.azurewebsites.net/api/order'
@@ -155,5 +157,63 @@ export function useOrders() {
     }
   }
 
-  return { fetchOrders, fetchOrderDetails, updateOrder, fetchOrderDetailed, checkOutPayment, checkOutPayments }
+  async function exportOrderBill(orderId: string | string[]): Promise<void> {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/order/${orderId}/export-bill`,
+        {},
+        {
+          headers: {
+            Accept: 'application/pdf', // Ensure the server returns a PDF
+            Authorization: `Bearer ${user.token}`
+          },
+          responseType: 'blob' // Expect a binary response
+        }
+      )
+
+      // Get the blob from the response
+      const blob = response.data as Blob
+
+      // Create a temporary file path
+      const fileUri = `${FileSystem.documentDirectory}order_${orderId}_bill.pdf`
+
+      // Convert blob to base64 for writing to file
+      const reader = new FileReader()
+      reader.readAsDataURL(blob)
+      const base64Data = await new Promise<string>((resolve) => {
+        reader.onload = () => resolve(reader.result as string)
+      })
+
+      // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
+      const base64 = base64Data.split(',')[1]
+
+      // Write the file to the device's filesystem
+      await FileSystem.writeAsStringAsync(fileUri, base64, {
+        encoding: FileSystem.EncodingType.Base64
+      })
+
+      // Check if sharing is available and share/open the file
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: 'application/pdf',
+          dialogTitle: 'Download or share bill'
+        })
+      } else {
+        console.error('Sharing is not available on this device')
+        throw new Error('Unable to share the file')
+      }
+    } catch (error) {
+      console.error('Error exporting bill:', error)
+      throw error
+    }
+  }
+  return {
+    fetchOrders,
+    fetchOrderDetails,
+    updateOrder,
+    fetchOrderDetailed,
+    checkOutPayment,
+    checkOutPayments,
+    exportOrderBill
+  }
 }

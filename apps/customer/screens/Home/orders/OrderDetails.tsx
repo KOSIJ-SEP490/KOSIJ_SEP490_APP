@@ -21,7 +21,8 @@ import {
   ActivityIndicator,
   ImageSourcePropType,
   Modal,
-  RefreshControl
+  RefreshControl,
+  Platform
 } from 'react-native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
 import { format } from 'date-fns'
@@ -85,7 +86,7 @@ const OrderProgressBar = ({ status }: { status: 'unpacked' | 'deposited' | 'pack
 export default function OrderDetailsScreen() {
   const navigation = useNavigation<NavigationProps>()
   // const orderId = '#Order2412'
-  const { fetchOrderDetails } = useOrders()
+  const { fetchOrderDetails, exportOrderBill } = useOrders()
 
   const handleCopy = () => {
     Clipboard.setString(orderId.toString())
@@ -101,6 +102,7 @@ export default function OrderDetailsScreen() {
   const [visible, setVisible] = useState(false)
   const [selectedImages, setSelectedImages] = useState([])
   const [refreshing, setRefreshing] = useState(false)
+  const [loadingExport, setLoadingExport] = useState(false)
 
   const statusMap: Record<string, 'unpacked' | 'deposited' | 'packed' | 'delivering' | 'delivered'> = {
     pending: 'unpacked',
@@ -142,6 +144,20 @@ export default function OrderDetailsScreen() {
       console.error('Error refreshing the page:', error)
     } finally {
       setRefreshing(false)
+    }
+  }
+
+  const handleExportBill = async () => {
+    setLoadingExport(true)
+    try {
+      await exportOrderBill(orderId.toString())
+      Alert.alert('Success', 'Bill exported successfully.')
+    } catch (error) {
+      console.error('Failed to export bill:', error)
+      Alert.alert('Error', 'Failed to export bill. Please try again.')
+    } finally {
+      setLoadingExport(false)
+      setVisibleButton(false)
     }
   }
 
@@ -309,6 +325,14 @@ export default function OrderDetailsScreen() {
                   title='Cancel Order'
                   titleStyle={{ fontSize: 12 }}
                   style={{ height: 30, justifyContent: 'center', paddingVertical: 2 }}
+                />
+                <Divider />
+                <Menu.Item
+                  onPress={handleExportBill}
+                  title={loadingExport ? 'Exporting...' : 'Export Bill'}
+                  titleStyle={{ fontSize: 12 }}
+                  style={{ height: 30, justifyContent: 'center', paddingVertical: 2 }}
+                  disabled={loadingExport}
                 />
               </Menu>
             </View>
