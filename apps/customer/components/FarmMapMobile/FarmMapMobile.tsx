@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, Platform, Linking, Alert } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import axios from 'axios'
 import LottieView from 'lottie-react-native'
@@ -17,6 +17,7 @@ const FarmMapMobile: React.FC<Props> = ({ address, farmName }) => {
   const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+
   useEffect(() => {
     let isMounted = true
 
@@ -86,6 +87,29 @@ const FarmMapMobile: React.FC<Props> = ({ address, farmName }) => {
       isMounted = false
     }
   }, [address])
+
+  // Hàm mở bản đồ tương thích Android/iOS
+  const openMap = async () => {
+    if (!coordinates) return
+
+    const { lat, lon } = coordinates
+
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`
+    const appleMapsUrl = `http://maps.apple.com/?ll=${lat},${lon}`
+    const androidGeoUrl = `geo:${lat},${lon}?q=${lat},${lon}(${farmName || 'Vị trí trang trại'})`
+
+    let url = ''
+
+    if (Platform.OS === 'ios') {
+      const canOpenGoogle = await Linking.canOpenURL(googleMapsUrl)
+      url = canOpenGoogle ? googleMapsUrl : appleMapsUrl
+    } else {
+      url = androidGeoUrl
+    }
+
+    Linking.openURL(url).catch(() => Alert.alert('Lỗi', 'Không thể mở ứng dụng bản đồ.'))
+  }
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -123,6 +147,7 @@ const FarmMapMobile: React.FC<Props> = ({ address, farmName }) => {
         <Marker
           coordinate={{ latitude: coordinates.lat, longitude: coordinates.lon }}
           title={farmName || 'Vị trí trang trại'}
+          onPress={openMap}
         />
       </MapView>
     </View>
