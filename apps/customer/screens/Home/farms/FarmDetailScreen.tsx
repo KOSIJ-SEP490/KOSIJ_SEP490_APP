@@ -11,6 +11,7 @@ import { useFeedbackByFarmId } from '@apps/customer/hooks/useFeedback'
 import FeedbackCard from '@apps/customer/components/Card/FeedBackCard'
 import KoiCard from '@apps/customer/components/Card/Koi/KoiCard'
 import { CustomerHomeStackParamList } from '@apps/customer/types/navigationCustomerType'
+import FarmMapMobile from '@apps/customer/components/FarmMapMobile/FarmMapMobile'
 
 type FarmDetailScreenRouteProp = RouteProp<CustomerHomeStackParamList, 'FarmDetail'>
 
@@ -77,6 +78,12 @@ export default function FarmDetailScreen() {
           <Text className='text-lg font-semibold'>About the Farm:</Text>
           <Text className='mt-2'>{farm.description}</Text>
         </View>
+      </View>
+      <View className='px-4 mb-5'>
+        <View className='ml-4'>
+          <Text className='text-lg font-semibold mb-2'>Farm Location</Text>
+        </View>
+        <FarmMapMobile address={farm.location} />
       </View>
 
       <Divider />
