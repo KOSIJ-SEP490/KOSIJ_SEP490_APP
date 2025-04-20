@@ -2,7 +2,7 @@ import React from 'react'
 import { Alert, SafeAreaView, ScrollView } from 'react-native'
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native'
 import SubLayout from '@shared/layouts/SubLayout'
-import EditProfile from './EditProfile'
+import EditProfile from './EditedProfile'
 import { AccountType } from '@shared/types/Account.dto'
 import { useUpdateAccount } from '../api/useAccount.api'
 
