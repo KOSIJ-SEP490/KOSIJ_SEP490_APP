@@ -274,7 +274,7 @@ const CreateOrder = () => {
         <TouchableOpacity onPress={() => navigation.navigate('TourDetails', { id: id })}>
           <ChevronLeft color={'#292D32'} size={24} />
         </TouchableOpacity>
-        <Text className='text-lg font-semibold text-center flex-1'>Create Order</Text>
+        <Text className='text-lg font-semibold text-center flex-1'>Record Order</Text>
         <View style={{ width: 24 }} />
       </View>
 

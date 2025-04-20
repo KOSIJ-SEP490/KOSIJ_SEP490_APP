@@ -279,7 +279,7 @@ export default function TourDetailsScreen() {
                   style={{ borderColor: '#264eca', borderWidth: 1 }}
                 >
                   <Text className='font-semibold' style={{ color: '#264eca' }}>
-                    Create Order
+                    Record Order
                   </Text>
                 </TouchableOpacity>
               </View>
