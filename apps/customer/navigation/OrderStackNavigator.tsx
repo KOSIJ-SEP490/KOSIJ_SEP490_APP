@@ -1,12 +1,12 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import { CustomerOrderStackParamList } from '../types/navigationCustomerType'
-import OrderDetailsScreen from '../screens/Home/orders/OrderDetails'
+import OrderDetailsScreen from '../screens/Home/orders/OrderDetailed'
 import OrdersScreen from '../screens/navbar/OrdersScreen'
-import CancelledScreen from '../screens/Home/orders/CancelledScreen'
-import UpdatedScreen from '../screens/Home/orders/UpdatedScreen'
-import PaymentDetails from '../screens/Home/orders/PaymentDetails'
-import PaymentSuccess from '../screens/Home/orders/PaymentSuccess'
-import PaymentFailed from '../screens/Home/orders/PaymentFailed'
+import CancelledScreen from '../screens/Home/orders/CanceledScreen'
+import UpdatedScreen from '../screens/Home/orders/UpdateScreen'
+import PaymentDetails from '../screens/Home/orders/PaymentDetailed'
+import PaymentSuccess from '../screens/Home/orders/PaymentsSuccess'
+import PaymentFailed from '../screens/Home/orders/PaymentsFailed'
 
 const Stack = createStackNavigator<CustomerOrderStackParamList>()
 

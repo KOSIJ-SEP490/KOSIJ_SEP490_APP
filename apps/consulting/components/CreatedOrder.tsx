@@ -256,13 +256,13 @@ const CreateOrder = () => {
 
       // Call API to create order
       const response = await createOrder(orderData)
-      console.log('Order created successfully:', response)
+      console.log('Order recorded successfully:', response)
 
-      Alert.alert('Success', 'Order has been created successfully!')
+      Alert.alert('Success', 'Order has been recorded successfully!')
       navigation.goBack()
     } catch (error) {
-      console.error('Failed to create order:', error)
-      Alert.alert('Error', 'Failed to create order. Please try again.')
+      console.error('Failed to record order:', error)
+      Alert.alert('Error', 'Failed to record order. Please try again.')
     } finally {
       setLoading(false)
     }
