@@ -649,6 +649,7 @@ const CreateOrder = () => {
 
         <TouchableOpacity
           className={`px-4 py-2 rounded-full flex-row items-center ${currentStep === 1 ? '#264eca' : 'bg-green-600'}`}
+          style={{ backgroundColor: currentStep === 1 ? '#264eca' : 'green' }}
           onPress={() => (currentStep === 1 ? setCurrentStep(2) : handleSubmitOrder())}
         >
           <Text className='text-white mr-2'>{currentStep === 1 ? 'Next' : 'Done'}</Text>

@@ -167,7 +167,7 @@ export default function TourDetailsScreen() {
                         ? '#A94064'
                         : tourDetails?.value?.tripStatus === 'Registration Closed'
                           ? '#FFA500'
-                          : tourDetails?.value?.tripStatus === 'Not Started'
+                          : tourDetails?.value?.tripStatus === 'NotStarted'
                             ? '#FFD700'
                             : tourDetails?.value?.tripStatus === 'On Going'
                               ? '#0000FF'
@@ -255,10 +255,10 @@ export default function TourDetailsScreen() {
         </View>
         <View className='mt-10 ml-5 w-80'>
           <View>
-            {getButtonText() === 'Trip Completion' ? (
-              <View className='flex-row gap-2'>
-                {/* Trip Completion */}
-                <TouchableOpacity
+            {/* {getButtonText() === 'Trip Completion' ? (
+              <View className='flex-row gap-2'> */}
+            {/* Trip Completion */}
+            {/* <TouchableOpacity
                   style={{ backgroundColor: '#264eca' }}
                   className='flex-1 p-3 rounded-lg items-center bottom-4 right-4'
                   onPress={() => {
@@ -270,10 +270,10 @@ export default function TourDetailsScreen() {
                   }}
                 >
                   <Text className='text-white font-semibold'>Trip Completion</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
-                {/* Create Order */}
-                <TouchableOpacity
+            {/* Create Order */}
+            {/* <TouchableOpacity
                   className='flex-2 p-3 rounded-lg items-center bottom-4 right-4'
                   onPress={() => navigation.navigate('CreateOrder', { id: id })}
                   style={{ borderColor: '#264eca', borderWidth: 1 }}
@@ -297,7 +297,38 @@ export default function TourDetailsScreen() {
               >
                 <Text className='text-white font-semibold'>{getButtonText()}</Text>
               </TouchableOpacity>
-            )}
+            )} */}
+            {tourDetails?.value?.tripStatus === 'On Going' ? (
+              <View className='flex-row gap-2'>
+                {/* Trip Completion */}
+                <TouchableOpacity
+                  style={{ backgroundColor: '#264eca' }}
+                  className='flex-1 p-3 rounded-lg items-center bottom-4 right-4'
+                  onPress={() => navigation.navigate('CheckOutTrip', { ticketImage: apiImageUrl, tripId: id })}
+                >
+                  <Text className='text-white font-semibold'>Trip Completion</Text>
+                </TouchableOpacity>
+
+                {/* Create Order */}
+                <TouchableOpacity
+                  className='flex-2 p-3 rounded-lg items-center bottom-4 right-4'
+                  onPress={() => navigation.navigate('CreateOrder', { id: id })}
+                  style={{ borderColor: '#264eca', borderWidth: 1 }}
+                >
+                  <Text className='font-semibold' style={{ color: '#264eca' }}>
+                    Record Order
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : tourDetails?.value?.tripStatus === 'NotStarted' ? (
+              <TouchableOpacity
+                style={{ backgroundColor: '#264eca' }}
+                className='p-3 rounded-lg items-center mt-2 bottom-4 right-4'
+                onPress={() => navigation.navigate('CollectTicket', { ticketImage: apiImageUrl, tripId: id })}
+              >
+                <Text className='text-white font-semibold'>Start Trip</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         </View>
       </View>

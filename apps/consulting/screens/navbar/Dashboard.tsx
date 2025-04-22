@@ -3,6 +3,8 @@ import { View, Text, FlatList, TouchableOpacity, ScrollView, ActivityIndicator }
 import { Picker } from '@react-native-picker/picker'
 import { styled } from 'nativewind'
 import { useDashboardData } from '@apps/consulting/api/useDashboard.api'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { useNavigation } from '@react-navigation/native'
 
 const StyledView = styled(View)
 const StyledText = styled(Text)
@@ -25,10 +27,18 @@ const months = [
 ]
 const years = Array.from({ length: 10 }, (_, i) => 2025 + i)
 
+type RootStackParamList = {
+  Dashboard: undefined
+  TourDetails: { id: number }
+}
+
+type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Dashboard'>
+
 const DashboardScreen = () => {
   const currentDate = new Date()
   const currentMonth = months[currentDate.getMonth()]
   const currentYear = currentDate.getFullYear()
+  const navigation = useNavigation<DashboardScreenNavigationProp>()
 
   const [selectedMonthYear, setSelectedMonthYear] = useState(`${currentMonth} ${currentYear}`)
 
@@ -99,6 +109,7 @@ const DashboardScreen = () => {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-GB')
   }
+
   return (
     <ScrollView className='bg-white flex-1'>
       <StyledView style={{ backgroundColor: '#264ECA' }} className='p-4 rounded-b-3xl'>
@@ -172,86 +183,96 @@ const DashboardScreen = () => {
             <StyledText className='text-lg font-bold'>{data?.value.totalOrders}</StyledText>
           </StyledView>
         </StyledView>
-        <StyledText className='text-xl font-bold mt-6 px-4'>Current Trip</StyledText>
-        <StyledView className='bg-white mx-4 p-4 mt-2 mb-5 rounded-xl shadow-lg border border-gray-300'>
-          /* Header Section */
-          <StyledView className='flex-row justify-between items-center flex-wrap'>
-            <StyledText className='text-base font-semibold break-words truncate max-w-[75%]'>
-              {data?.value.currentTripResponse.tourName || ''}
-            </StyledText>
-            <StyledText
-              className='text-xs px-3 py-1 rounded-full text-white'
-              style={{
-                backgroundColor:
-                  data?.value.currentTripResponse.tripStatus === 'Not Started'
-                    ? '#FFD700'
-                    : data?.value.currentTripResponse.tripStatus === 'Ongoing'
-                      ? '#0000FF'
-                      : data?.value.currentTripResponse.tripStatus === 'Completed'
-                        ? '#008000'
-                        : '#D3D3D3'
-              }}
-            >
-              {data?.value.currentTripResponse.tripStatus || ''}
-            </StyledText>
-          </StyledView>
-          <StyledText className='text-gray-500 mt-1'>
-            Trip ID: {data?.value.currentTripResponse.tripId || ''}
-          </StyledText>
-          {/* Info Grid Section */}
-          <StyledView className='gap-y-2'>
-            <StyledView className='flex-row justify-between gap-x-2'>
-              {/* Start Time */}
-              <StyledView
-                style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
-                className='p-3 rounded-lg items-center w-36'
+        {data?.value.currentTripResponse && (
+          <>
+            <StyledText className='text-xl font-bold mt-6 px-4'>Current Trip</StyledText>
+            <StyledView className='bg-white mx-4 p-4 mt-2 mb-5 rounded-xl shadow-lg border border-gray-300'>
+              /* Header Section */
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('TourDetails', { id: data?.value.currentTripResponse.tripId })
+                }}
               >
-                <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
-                  Start time
+                <StyledView className='flex-row justify-between items-center flex-wrap'>
+                  <StyledText className='text-base font-semibold break-words truncate max-w-[75%]'>
+                    {data?.value.currentTripResponse.tourName || ''}
+                  </StyledText>
+                  <StyledText
+                    className='text-xs px-3 py-1 rounded-full text-white'
+                    style={{
+                      backgroundColor:
+                        data?.value.currentTripResponse.tripStatus === 'Not Started'
+                          ? '#FFD700'
+                          : data?.value.currentTripResponse.tripStatus === 'Ongoing'
+                            ? '#0000FF'
+                            : data?.value.currentTripResponse.tripStatus === 'Completed'
+                              ? '#008000'
+                              : '#D3D3D3'
+                    }}
+                  >
+                    {data?.value.currentTripResponse.tripStatus || ''}
+                  </StyledText>
+                </StyledView>
+                <StyledText className='text-gray-500 mt-1'>
+                  Trip ID: {data?.value.currentTripResponse.tripId || ''}
                 </StyledText>
-                <StyledText className='text-black'>
-                  {formatDate(data?.value.currentTripResponse.departureDate) || ''}
-                </StyledText>
-              </StyledView>
+                {/* Info Grid Section */}
+                <StyledView className='gap-y-2'>
+                  <StyledView className='flex-row justify-between gap-x-2'>
+                    {/* Start Time */}
+                    <StyledView
+                      style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
+                      className='p-3 rounded-lg items-center w-36'
+                    >
+                      <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
+                        Start time
+                      </StyledText>
+                      <StyledText className='text-black'>
+                        {formatDate(data?.value.currentTripResponse.departureDate) || ''}
+                      </StyledText>
+                    </StyledView>
 
-              {/* End Time */}
-              <StyledView
-                style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
-                className='w-36 bg-blue-50 p-3 rounded-lg items-center'
-              >
-                <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
-                  End time
-                </StyledText>
-                <StyledText className='text-black'>
-                  {formatDate(data?.value.currentTripResponse.returnDate) || ''}
-                </StyledText>
-              </StyledView>
-            </StyledView>
-            <StyledView className='flex-row justify-between gap-x-2'>
-              {/* Duration */}
-              <StyledView
-                style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
-                className='w-36 p-3 rounded-lg items-center'
-              >
-                <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
-                  Duration
-                </StyledText>
-                <StyledText className='text-black'>{data?.value.currentTripResponse.durations || ''}</StyledText>
-              </StyledView>
+                    {/* End Time */}
+                    <StyledView
+                      style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
+                      className='w-36 bg-blue-50 p-3 rounded-lg items-center'
+                    >
+                      <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
+                        End time
+                      </StyledText>
+                      <StyledText className='text-black'>
+                        {formatDate(data?.value.currentTripResponse.returnDate) || ''}
+                      </StyledText>
+                    </StyledView>
+                  </StyledView>
+                  <StyledView className='flex-row justify-between gap-x-2'>
+                    {/* Duration */}
+                    <StyledView
+                      style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
+                      className='w-36 p-3 rounded-lg items-center'
+                    >
+                      <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
+                        Duration
+                      </StyledText>
+                      <StyledText className='text-black'>{data?.value.currentTripResponse.durations || ''}</StyledText>
+                    </StyledView>
 
-              {/* Type */}
-              <StyledView
-                style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
-                className='w-36 p-3 rounded-lg items-center'
-              >
-                <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
-                  Type
-                </StyledText>
-                <StyledText className='text-black'>{data?.value.currentTripResponse.tripType || ''}</StyledText>
-              </StyledView>
+                    {/* Type */}
+                    <StyledView
+                      style={{ backgroundColor: '#f6feff', borderColor: '#e9f1f2' }}
+                      className='w-36 p-3 rounded-lg items-center'
+                    >
+                      <StyledText style={{ color: '#3359ce' }} className='font-semibold'>
+                        Type
+                      </StyledText>
+                      <StyledText className='text-black'>{data?.value.currentTripResponse.tripType || ''}</StyledText>
+                    </StyledView>
+                  </StyledView>
+                </StyledView>
+              </TouchableOpacity>
             </StyledView>
-          </StyledView>
-        </StyledView>
+          </>
+        )}
       </StyledView>
     </ScrollView>
   )

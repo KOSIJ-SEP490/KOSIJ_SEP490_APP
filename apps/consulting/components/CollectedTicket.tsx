@@ -127,11 +127,29 @@ const CollectTicket = ({ route }: Props) => {
     {}
   )
 
+  // const updateAttendance = (id: any, status: string) => {
+  //   setAttendance((prev) => ({
+  //     ...prev,
+  //     [id]: status === 'yes' ? { isCheckIn: true, isAbsent: null } : { isCheckIn: null, isAbsent: true }
+  //   }))
+  // }
+
   const updateAttendance = (id: any, status: string) => {
-    setAttendance((prev) => ({
-      ...prev,
-      [id]: status === 'yes' ? { isCheckIn: true, isAbsent: null } : { isCheckIn: null, isAbsent: true }
-    }))
+    setAttendance((prev) => {
+      const current = prev[id] || { isCheckIn: null, isAbsent: null }
+
+      if (status === 'yes') {
+        return {
+          ...prev,
+          [id]: current.isCheckIn ? { isCheckIn: null, isAbsent: null } : { isCheckIn: true, isAbsent: null }
+        }
+      } else {
+        return {
+          ...prev,
+          [id]: current.isAbsent ? { isCheckIn: null, isAbsent: null } : { isCheckIn: null, isAbsent: true }
+        }
+      }
+    })
   }
 
   const handleSubmit = async () => {
@@ -211,7 +229,7 @@ const CollectTicket = ({ route }: Props) => {
               .filter((passenger) => !passenger.isCheckIn)
               .map((passenger, index) => (
                 <View key={passenger.id} className='flex-row justify-between p-2 bg-white rounded-md mb-2'>
-                  <Text>{passenger.fullName}</Text>
+                  <Text className='break-words truncate max-w-[75%]'>{passenger.fullName}</Text>
                   <View className='flex-row'>
                     <TouchableOpacity
                       onPress={() => updateAttendance(passenger.id, 'yes')}
@@ -221,7 +239,7 @@ const CollectTicket = ({ route }: Props) => {
                         borderRadius: 16
                       }}
                     >
-                      <Text>Yes</Text>
+                      <Text>Present</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => updateAttendance(passenger.id, 'no')}
@@ -232,7 +250,7 @@ const CollectTicket = ({ route }: Props) => {
                         marginLeft: 10
                       }}
                     >
-                      <Text>No</Text>
+                      <Text>Absent</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
