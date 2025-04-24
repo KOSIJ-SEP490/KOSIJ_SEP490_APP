@@ -5,23 +5,26 @@ import TourCard from './TourCard'
 import { TourCardType } from '../../../types/Tour/tourCard.type'
 import TourFilter from '../../Filter/TourFilter'
 
+interface FilterValues {
+  priceRange: [number, number]
+  departurePoint: string
+  numberOfFarms: string
+}
+
 const TourListCard: React.FC<{ tourCards: TourCardType[] }> = ({ tourCards }) => {
   const [filterVisible, setFilterVisible] = useState(false)
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<FilterValues>({
     priceRange: [0, 100000000],
     departurePoint: '',
     numberOfFarms: ''
   })
 
   const filteredTours = tourCards.filter((tour) => {
-    const isDefaultFilter = filters.departurePoint === '' && filters.numberOfFarms === ''
-
     const withinPriceRange = tour.standardPrice >= filters.priceRange[0] && tour.standardPrice <= filters.priceRange[1]
+    const matchesDeparture = !filters.departurePoint || tour.departurePoint === filters.departurePoint
+    const matchesFarmCount = !filters.numberOfFarms || tour.totalFarmVisit.toString() === filters.numberOfFarms
 
-    const matchesDeparture = filters.departurePoint === '' || tour.departurePoint.includes(filters.departurePoint)
-    const matchesFarmCount = filters.numberOfFarms === '' || tour.totalFarmVisit.toString() === filters.numberOfFarms
-
-    return withinPriceRange && (isDefaultFilter || (matchesDeparture && matchesFarmCount))
+    return withinPriceRange && matchesDeparture && matchesFarmCount
   })
 
   return (
@@ -31,11 +34,6 @@ const TourListCard: React.FC<{ tourCards: TourCardType[] }> = ({ tourCards }) =>
           <Feather name='sliders' size={24} color='#000' />
           <Text className='text-sm font-medium mt-1'>Filter</Text>
         </TouchableOpacity>
-
-        <View className='items-center'>
-          <Feather name='align-left' size={24} color='#000' />
-          <Text className='text-sm font-medium mt-1'>Sort</Text>
-        </View>
       </View>
 
       <ScrollView className='flex-1' showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
@@ -54,13 +52,13 @@ const TourListCard: React.FC<{ tourCards: TourCardType[] }> = ({ tourCards }) =>
         visible={filterVisible}
         onClose={() => setFilterVisible(false)}
         onApply={(newFilters) => {
-          setFilters((prevFilters) => ({
-            ...prevFilters,
-            ...newFilters,
-            priceRange: newFilters.priceRange ?? prevFilters.priceRange
-          }))
+          setFilters({
+            ...filters,
+            ...newFilters
+          })
           setFilterVisible(false)
         }}
+        currentFilters={filters}
       />
     </View>
   )
