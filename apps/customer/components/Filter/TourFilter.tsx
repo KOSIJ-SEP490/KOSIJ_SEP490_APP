@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, Modal, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, Modal, Pressable, ScrollView } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import MultiSlider from '@ptomasroos/react-native-multi-slider'
 
@@ -7,6 +7,7 @@ interface TourFilterProps {
   visible: boolean
   onClose: () => void
   onApply: (filters: Partial<FilterValues>) => void
+  currentFilters: FilterValues
 }
 
 interface FilterValues {
@@ -15,29 +16,42 @@ interface FilterValues {
   numberOfFarms: string
 }
 
-export default function TourFilter({ visible, onClose, onApply }: TourFilterProps) {
-  const [priceRange, setPriceRange] = useState<[number, number]>([1000000, 10000000])
-  const [departurePoint, setDeparturePoint] = useState('')
-  const [numberOfFarms, setNumberOfFarms] = useState('')
+const departurePoints = [
+  { id: '1', name: 'Ha Noi (Noi Bai Airport)' },
+  { id: '2', name: 'Ho Chi Minh (Tan Son Nhat Airport)' }
+]
+
+export default function TourFilter({ visible, onClose, onApply, currentFilters }: TourFilterProps) {
+  const [priceRange, setPriceRange] = useState<[number, number]>(currentFilters.priceRange)
+  const [departurePoint, setDeparturePoint] = useState(currentFilters.departurePoint)
+  const [numberOfFarms, setNumberOfFarms] = useState(currentFilters.numberOfFarms)
 
   const handleClear = () => {
-    setPriceRange([1000000, 10000000])
-    setDeparturePoint('')
-    setNumberOfFarms('')
+    const clearedFilters = {
+      priceRange: [0, 100000000] as [number, number],
+      departurePoint: '',
+      numberOfFarms: ''
+    }
+
+    setPriceRange(clearedFilters.priceRange)
+    setDeparturePoint(clearedFilters.departurePoint)
+    setNumberOfFarms(clearedFilters.numberOfFarms)
+
+    onApply(clearedFilters)
   }
 
   const handleApply = () => {
     const filters: Partial<FilterValues> = {}
 
-    if (priceRange[0] !== 1000000 || priceRange[1] !== 10000000) {
+    if (priceRange[0] !== 0 || priceRange[1] !== 100000000) {
       filters.priceRange = priceRange
     }
 
-    if (departurePoint.trim()) {
+    if (departurePoint) {
       filters.departurePoint = departurePoint
     }
 
-    if (numberOfFarms.trim()) {
+    if (numberOfFarms) {
       filters.numberOfFarms = numberOfFarms
     }
 
@@ -61,14 +75,14 @@ export default function TourFilter({ visible, onClose, onApply }: TourFilterProp
             </TouchableOpacity>
           </View>
 
-          <View className='p-6 space-y-8'>
+          <ScrollView className='p-6 space-y-8'>
             <View>
               <Text className='text-base font-medium mb-2'>Price Range (per person)</Text>
               <View className='ml-6'>
                 <MultiSlider
                   values={priceRange}
-                  min={1000000}
-                  max={10000000}
+                  min={0}
+                  max={100000000}
                   step={100000}
                   sliderLength={320}
                   selectedStyle={{ backgroundColor: '#2C52ED' }}
@@ -100,25 +114,36 @@ export default function TourFilter({ visible, onClose, onApply }: TourFilterProp
 
             <View>
               <Text className='text-base font-medium mb-2'>Departure Point</Text>
-              <TextInput
-                className='border border-gray-300 rounded-lg p-4'
-                placeholder='Enter departure point'
-                value={departurePoint}
-                onChangeText={setDeparturePoint}
-              />
+              <View className='space-y-2'>
+                {departurePoints.map((point) => (
+                  <Pressable
+                    key={point.id}
+                    className={`p-4 border rounded-lg ${departurePoint === point.name ? 'border-[#2C52ED] bg-blue-50' : 'border-gray-300'}`}
+                    onPress={() => setDeparturePoint(point.name)}
+                  >
+                    <Text className={`${departurePoint === point.name ? 'text-[#2C52ED] font-medium' : ''}`}>
+                      {point.name}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
 
             <View>
               <Text className='text-base font-medium mb-2'>Number of Farms to Visit</Text>
-              <TextInput
-                className='border border-gray-300 rounded-lg p-4'
-                value={numberOfFarms}
-                onChangeText={setNumberOfFarms}
-                keyboardType='numeric'
-                placeholder='Enter number of farms'
-              />
+              <View className='flex-row space-x-2'>
+                {['1', '2', '3', '4+'].map((num) => (
+                  <Pressable
+                    key={num}
+                    className={`flex-1 p-4 border rounded-lg items-center ${numberOfFarms === num ? 'border-[#2C52ED] bg-blue-50' : 'border-gray-300'}`}
+                    onPress={() => setNumberOfFarms(num === numberOfFarms ? '' : num)}
+                  >
+                    <Text className={`${numberOfFarms === num ? 'text-[#2C52ED] font-medium' : ''}`}>{num}</Text>
+                  </Pressable>
+                ))}
+              </View>
             </View>
-          </View>
+          </ScrollView>
 
           <View className='p-6 pt-0'>
             <TouchableOpacity className='bg-[#2C52ED] py-4 rounded-full' onPress={handleApply}>
