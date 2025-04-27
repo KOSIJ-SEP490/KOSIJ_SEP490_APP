@@ -298,7 +298,7 @@ export default function TourDetailsScreen() {
                 <Text className='text-white font-semibold'>{getButtonText()}</Text>
               </TouchableOpacity>
             )} */}
-            {tourDetails?.value?.tripStatus === 'On Going' ? (
+            {tourDetails?.value?.tripStatus === 'Ongoing' ? (
               <View className='flex-row gap-2'>
                 {/* Trip Completion */}
                 <TouchableOpacity

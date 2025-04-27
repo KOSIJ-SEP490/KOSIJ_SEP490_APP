@@ -63,7 +63,7 @@ export default function OrderDetailsScreen() {
         const data = await fetchOrderDetails(orderId)
         setOrder(data)
       } catch (error) {
-        console.error('Failed to load order details')
+        // console.error('Failed to load order details')
       } finally {
         setLoading(false)
       }

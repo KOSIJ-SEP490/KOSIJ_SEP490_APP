@@ -135,7 +135,7 @@ export function useOrders() {
       throw error
     }
   }
-  async function checkOutPayments(orderId: number): Promise<CheckOutPaymentResponse['value']> {
+  async function checkedOutPayments(orderId: number): Promise<CheckOutPaymentResponse['value']> {
     try {
       const response = await axios.post<CheckOutPaymentResponse>(
         `${API_BASE_URL}order/${orderId}/check-out-payment`,
@@ -164,35 +164,29 @@ export function useOrders() {
         {},
         {
           headers: {
-            Accept: 'application/pdf', // Ensure the server returns a PDF
+            Accept: 'application/pdf',
             Authorization: `Bearer ${user.token}`
           },
-          responseType: 'blob' // Expect a binary response
+          responseType: 'blob'
         }
       )
 
-      // Get the blob from the response
       const blob = response.data as Blob
 
-      // Create a temporary file path
       const fileUri = `${FileSystem.documentDirectory}order_${orderId}_bill.pdf`
 
-      // Convert blob to base64 for writing to file
       const reader = new FileReader()
       reader.readAsDataURL(blob)
       const base64Data = await new Promise<string>((resolve) => {
         reader.onload = () => resolve(reader.result as string)
       })
 
-      // Remove the data URL prefix (e.g., "data:application/pdf;base64,")
       const base64 = base64Data.split(',')[1]
 
-      // Write the file to the device's filesystem
       await FileSystem.writeAsStringAsync(fileUri, base64, {
         encoding: FileSystem.EncodingType.Base64
       })
 
-      // Check if sharing is available and share/open the file
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(fileUri, {
           mimeType: 'application/pdf',
@@ -213,7 +207,7 @@ export function useOrders() {
     updateOrder,
     fetchOrderDetailed,
     checkOutPayment,
-    checkOutPayments,
+    checkedOutPayments,
     exportOrderBill
   }
 }

@@ -101,11 +101,8 @@ export default function NotiScreen() {
       {notifications.map((notification) => {
         const title = `${notification.actionType} ${notification.referenceType}`
         return (
-          <TouchableOpacity onPress={() => handleNotificationClick(notification)}>
-            <View
-              key={notification.id}
-              style={[styles.notification, notification.markAsRead == false && styles.unreadNotification]}
-            >
+          <TouchableOpacity key={notification.id} onPress={() => handleNotificationClick(notification)}>
+            <View style={[styles.notification, notification.markAsRead == false && styles.unreadNotification]}>
               <Icon name='plane' size={20} color='#333' style={styles.icon} solid={false} />
               <View style={styles.textContainer}>
                 <Text style={styles.title}>{title}</Text>

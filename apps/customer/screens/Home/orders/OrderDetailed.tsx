@@ -128,7 +128,7 @@ export default function OrderDetailsScreen() {
         setOrder(data)
         console.log('Order Status ne: ', order.orderStatus)
       } catch (error) {
-        console.error('Failed to load order details')
+        // console.error('Failed to load order details')
       } finally {
         setLoading(false)
       }

@@ -45,7 +45,7 @@ const PaymentDetails = () => {
         console.log('Order Status ne: ', order.orderStatus)
         console.log('Wallet:', wallet)
       } catch (error) {
-        console.error('Failed to load order details')
+        // console.error('Failed to load order details')
       } finally {
         setLoading(false)
       }
