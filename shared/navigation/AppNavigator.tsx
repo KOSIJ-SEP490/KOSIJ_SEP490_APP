@@ -26,7 +26,7 @@ const AppNavigator: FC<AppNavigatorProps> = ({ screens }) => {
         return {
           headerShown: false,
           tabBarStyle: mainScreens.includes(routeName)
-            ? { backgroundColor: '#264ECA', paddingTop: 7 }
+            ? { backgroundColor: '#264ECA', paddingTop: 7, height: 93 }
             : { display: 'none' },
           tabBarActiveTintColor: 'white',
           tabBarInactiveTintColor: 'white'
