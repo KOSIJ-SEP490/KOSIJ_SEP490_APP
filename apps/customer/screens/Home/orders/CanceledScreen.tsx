@@ -77,6 +77,10 @@ export default function CancelledScreen() {
     )
   }
 
+  const formatNumber = (num: { toString: () => string }) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  }
+
   return (
     <ScrollView>
       <View className='flex-1 mt-3 bg-white p-4'>
@@ -98,13 +102,13 @@ export default function CancelledScreen() {
                   <Text className='font-bold'>{fish.variety}</Text>
                 </View>
                 <Text className='font-bold'>x{fish.quantity}</Text>
-                <Text className='ml-2'>{fish.koiPrice} VND</Text>
+                <Text className='ml-2'>{formatNumber(fish.koiPrice)} VND</Text>
               </View>
             ))}
           </View>
 
           {/* Total Price */}
-          <Text className='font-bold mt-3 text-right'>Total price: {order.totalAmount}</Text>
+          <Text className='font-bold mt-3 text-right'>Total price: {formatNumber(order.totalOrderAmount)} VND</Text>
         </View>
 
         {/* Cancellation Warning */}

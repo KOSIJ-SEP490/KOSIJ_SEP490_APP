@@ -1,14 +1,198 @@
+// import React, { useEffect, useState } from 'react'
+// import {
+//   View,
+//   Text,
+//   FlatList,
+//   TextInput,
+//   TouchableOpacity,
+//   ActivityIndicator,
+//   ScrollView,
+//   RefreshControl
+// } from 'react-native'
+// import { useNavigation } from '@react-navigation/native'
+// import { StackNavigationProp } from '@react-navigation/stack'
+// import { useTrips } from '@apps/consulting/api/useTrip.api'
+
+// type RootStackParamList = {
+//   Orders: undefined
+//   TourDetails: { id: number }
+//   Trip: undefined
+// }
+
+// type TripScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Trip'>
+
+// const TRIP_STATUSES = [
+//   'All',
+//   'Available',
+//   'NotAvailable',
+//   'Full',
+//   'RegistrationClosed',
+//   'NotStarted',
+//   'Ongoing',
+//   'Completed',
+//   'Canceled'
+// ]
+
+// export default function TripScreen() {
+//   const navigation = useNavigation<TripScreenNavigationProp>()
+//   const { data: trips = [], isLoading, error, refetch } = useTrips()
+//   const [filteredTrips, setFilteredTrips] = useState<any[]>([])
+//   const [searchQuery, setSearchQuery] = useState('')
+//   const [selectedStatus, setSelectedStatus] = useState('All')
+//   const [showDropdown, setShowDropdown] = useState(false)
+//   const [refreshing, setRefreshing] = useState(false)
+
+//   const handleSelectTrip = (id: number) => {
+//     navigation.navigate('TourDetails', { id })
+//   }
+
+//   useEffect(() => {
+//     let filtered = trips
+
+//     if (searchQuery) {
+//       const query = searchQuery.toLowerCase()
+//       filtered = filtered.filter(
+//         (trip) =>
+//           trip.id.toString().includes(query) ||
+//           trip.tourName.toLowerCase().includes(query) ||
+//           trip.tripType.toLowerCase().includes(query)
+//       )
+//     }
+
+//     if (selectedStatus !== 'All') {
+//       filtered = filtered.filter((trip) => trip.tripStatus === selectedStatus)
+//     }
+
+//     setFilteredTrips(filtered)
+//   }, [searchQuery, selectedStatus, trips])
+
+//   const onRefresh = async () => {
+//     setRefreshing(true)
+//     try {
+//       await refetch()
+//     } catch (error) {
+//       console.error('Error refreshing the page:', error)
+//     } finally {
+//       setRefreshing(false)
+//     }
+//   }
+//   console.log('data trips: ', trips)
+
+//   return (
+//     <View className='flex-1 bg-white p-4'>
+//       {/* Show Loading State */}
+//       {isLoading && <ActivityIndicator size='large' color='#0000ff' />}
+
+//       {/* Show Error Message */}
+//       {error && <Text className='text-red-500'>Failed to load trips.</Text>}
+//       {!isLoading && !error && (
+//         <>
+//           {/* Header */}
+//           <Text className='text-center text-lg font-semibold'>Trip History</Text>
+
+//           {/* Search & Filter */}
+//           <View className='flex-row items-center mt-3'>
+//             <TextInput
+//               placeholder='Search'
+//               className='flex-1 p-2 border border-gray-300 rounded-lg'
+//               value={searchQuery}
+//               onChangeText={setSearchQuery}
+//             />
+//             <TouchableOpacity
+//               className='ml-2 px-3 py-2 border border-gray-300 rounded-lg'
+//               onPress={() => setShowDropdown(!showDropdown)}
+//             >
+//               <Text>{selectedStatus} ▼</Text>
+//             </TouchableOpacity>
+//           </View>
+//           {showDropdown && (
+//             <View className='absolute right-4 top-20 bg-white shadow-md border border-gray-300 rounded-lg p-2 z-10'>
+//               {TRIP_STATUSES.map((status) => (
+//                 <TouchableOpacity
+//                   key={status}
+//                   className='p-2'
+//                   onPress={() => {
+//                     setSelectedStatus(status)
+//                     setShowDropdown(false)
+//                   }}
+//                 >
+//                   <Text className={selectedStatus === status ? 'text-blue-500 font-semibold' : 'text-gray-800'}>
+//                     {status}
+//                   </Text>
+//                 </TouchableOpacity>
+//               ))}
+//             </View>
+//           )}
+//           {/* Trip List */}
+//           <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+//             {filteredTrips.length === 0 ? (
+//               <View className='flex-1 justify-center items-center'>
+//                 <Text className='text-gray-500 text-lg'>No Trip is found</Text>
+//               </View>
+//             ) : (
+//               <FlatList
+//                 data={filteredTrips}
+//                 keyExtractor={(item) => item.id.toString()}
+//                 renderItem={({ item }) => (
+//                   <TouchableOpacity
+//                     className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
+//                     onPress={() => handleSelectTrip(item.id)}
+//                   >
+//                     {/* Icon */}
+//                     <View className='mr-3'>
+//                       <Text>🛳️</Text>
+//                     </View>
+
+//                     {/* Trip Details */}
+//                     <View className='flex-1'>
+//                       <Text className='font-semibold'>{item.tourName}</Text>
+//                       <Text className='text-gray-500'>Trip ID: {item.id}</Text>
+//                       <Text className='text-gray-500'>Type: {item.tripType}</Text>
+//                       <View className='flex-row'>
+//                         <Text className='text-blue-500'>{item.departureDate} -</Text>
+//                         <Text className='text-blue-500'> {item.returnDate}</Text>
+//                       </View>
+//                     </View>
+
+//                     {/* Status Badge */}
+//                     <View
+//                       className='px-3 py-1 rounded-full'
+//                       style={{
+//                         backgroundColor:
+//                           item.tripStatus === 'Available'
+//                             ? '#ADD8E6'
+//                             : item.tripStatus === 'Not Available'
+//                               ? '#D3D3D3'
+//                               : item.tripStatus === 'Full'
+//                                 ? '#A94064'
+//                                 : item.tripStatus === 'Registration Closed'
+//                                   ? '#FFA500'
+//                                   : item.tripStatus === 'NotStarted'
+//                                     ? '#FFD700'
+//                                     : item.tripStatus === 'Ongoing'
+//                                       ? '#0000FF'
+//                                       : item.tripStatus === 'Completed'
+//                                         ? '#008000'
+//                                         : item.tripStatus === 'Canceled'
+//                                           ? '#FF0000'
+//                                           : '#D3D3D3'
+//                       }}
+//                     >
+//                       <Text className='text-white text-xs'>{item.tripStatus}</Text>
+//                     </View>
+//                   </TouchableOpacity>
+//                 )}
+//               />
+//             )}
+//           </ScrollView>
+//         </>
+//       )}
+//     </View>
+//   )
+// }
+
 import React, { useEffect, useState } from 'react'
-import {
-  View,
-  Text,
-  FlatList,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  ScrollView,
-  RefreshControl
-} from 'react-native'
+import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { useTrips } from '@apps/consulting/api/useTrip.api'
@@ -76,116 +260,133 @@ export default function TripScreen() {
       setRefreshing(false)
     }
   }
-  console.log('data trips: ', trips)
+
+  if (isLoading) {
+    return (
+      <View className='flex-1 justify-center items-center bg-white'>
+        <ActivityIndicator size='large' color='#0000ff' />
+      </View>
+    )
+  }
+
+  if (error) {
+    return (
+      <View className='flex-1 justify-center items-center bg-white'>
+        <Text className='text-red-500'>Failed to load trips.</Text>
+      </View>
+    )
+  }
 
   return (
-    <View className='flex-1 bg-white p-4'>
-      {/* Show Loading State */}
-      {isLoading && <ActivityIndicator size='large' color='#0000ff' />}
-
-      {/* Show Error Message */}
-      {error && <Text className='text-red-500'>Failed to load trips.</Text>}
-      {!isLoading && !error && (
-        <>
-          {/* Header */}
-          <Text className='text-center text-lg font-semibold'>Trip History</Text>
-
-          {/* Search & Filter */}
-          <View className='flex-row items-center mt-3'>
-            <TextInput
-              placeholder='Search'
-              className='flex-1 p-2 border border-gray-300 rounded-lg'
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            <TouchableOpacity
-              className='ml-2 px-3 py-2 border border-gray-300 rounded-lg'
-              onPress={() => setShowDropdown(!showDropdown)}
-            >
-              <Text>{selectedStatus} ▼</Text>
-            </TouchableOpacity>
-          </View>
-          {showDropdown && (
-            <View className='absolute right-4 top-20 bg-white shadow-md border border-gray-300 rounded-lg p-2 z-10'>
-              {TRIP_STATUSES.map((status) => (
-                <TouchableOpacity
-                  key={status}
-                  className='p-2'
-                  onPress={() => {
-                    setSelectedStatus(status)
-                    setShowDropdown(false)
-                  }}
-                >
-                  <Text className={selectedStatus === status ? 'text-blue-500 font-semibold' : 'text-gray-800'}>
-                    {status}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-          {/* Trip List */}
-          <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            {filteredTrips.length === 0 ? (
-              <View className='flex-1 justify-center items-center'>
-                <Text className='text-gray-500 text-lg'>No Trip is found</Text>
-              </View>
-            ) : (
-              <FlatList
-                data={filteredTrips}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center'
-                    onPress={() => handleSelectTrip(item.id)}
-                  >
-                    {/* Icon */}
-                    <View className='mr-3'>
-                      <Text>🛳️</Text>
-                    </View>
-
-                    {/* Trip Details */}
-                    <View className='flex-1'>
-                      <Text className='font-semibold'>{item.tourName}</Text>
-                      <Text className='text-gray-500'>Trip ID: {item.id}</Text>
-                      <Text className='text-gray-500'>Type: {item.tripType}</Text>
-                      <View className='flex-row'>
-                        <Text className='text-blue-500'>{item.departureDate} -</Text>
-                        <Text className='text-blue-500'> {item.returnDate}</Text>
-                      </View>
-                    </View>
-
-                    {/* Status Badge */}
-                    <View
-                      className='px-3 py-1 rounded-full'
-                      style={{
-                        backgroundColor:
-                          item.tripStatus === 'Available'
-                            ? '#ADD8E6'
-                            : item.tripStatus === 'Not Available'
-                              ? '#D3D3D3'
-                              : item.tripStatus === 'Full'
-                                ? '#A94064'
-                                : item.tripStatus === 'Registration Closed'
-                                  ? '#FFA500'
-                                  : item.tripStatus === 'NotStarted'
-                                    ? '#FFD700'
-                                    : item.tripStatus === 'Ongoing'
-                                      ? '#0000FF'
-                                      : item.tripStatus === 'Completed'
-                                        ? '#008000'
-                                        : item.tripStatus === 'Canceled'
-                                          ? '#FF0000'
-                                          : '#D3D3D3'
-                      }}
-                    >
-                      <Text className='text-white text-xs'>{item.tripStatus}</Text>
-                    </View>
-                  </TouchableOpacity>
-                )}
+    <View className='flex-1 bg-white'>
+      <FlatList
+        data={filteredTrips}
+        keyExtractor={(item) => item.id.toString()}
+        ListHeaderComponent={
+          <>
+            <Text className='text-center text-lg font-semibold pt-4'>Trip History</Text>
+            <View className='flex-row items-center mt-3 px-4'>
+              <TextInput
+                placeholder='Search'
+                className='flex-1 p-2 border border-gray-300 rounded-lg'
+                value={searchQuery}
+                onChangeText={setSearchQuery}
               />
-            )}
-          </ScrollView>
-        </>
+              <TouchableOpacity
+                className='ml-2 px-3 py-2 border border-gray-300 rounded-lg'
+                onPress={() => setShowDropdown(!showDropdown)}
+              >
+                <Text>{selectedStatus} ▼</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        }
+        ListEmptyComponent={
+          <View className='flex-1 justify-center items-center pt-10'>
+            <Text className='text-gray-500 text-lg'>No Trip is found</Text>
+          </View>
+        }
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            className='bg-white shadow-md rounded-lg p-3 mt-3 flex-row items-center mx-4'
+            onPress={() => handleSelectTrip(item.id)}
+          >
+            <View className='mr-3'>
+              <Text>🛳️</Text>
+            </View>
+            <View className='flex-1'>
+              <Text className='font-semibold'>{item.tourName}</Text>
+              <Text className='text-gray-500'>Trip ID: {item.id}</Text>
+              <Text className='text-gray-500'>Type: {item.tripType}</Text>
+              <View className='flex-row'>
+                <Text className='text-blue-500'>{item.departureDate} -</Text>
+                <Text className='text-blue-500'> {item.returnDate}</Text>
+              </View>
+            </View>
+            <View
+              className='px-3 py-1 rounded-full'
+              style={{
+                backgroundColor:
+                  item.tripStatus === 'Available'
+                    ? '#ADD8E6'
+                    : item.tripStatus === 'NotAvailable'
+                      ? '#D3D3D3'
+                      : item.tripStatus === 'Full'
+                        ? '#A94064'
+                        : item.tripStatus === 'RegistrationClosed'
+                          ? '#FFA500'
+                          : item.tripStatus === 'NotStarted'
+                            ? '#FFD700'
+                            : item.tripStatus === 'Ongoing'
+                              ? '#0000FF'
+                              : item.tripStatus === 'Completed'
+                                ? '#008000'
+                                : item.tripStatus === 'Canceled'
+                                  ? '#FF0000'
+                                  : '#D3D3D3'
+              }}
+            >
+              <Text className='text-white text-xs'>{item.tripStatus}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      />
+      {showDropdown && (
+        <View
+          style={{
+            position: 'absolute',
+            right: 16,
+            top: 96, // Adjusted to align below the filter button
+            backgroundColor: 'white',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 4,
+            elevation: 5,
+            borderWidth: 1,
+            borderColor: '#D1D5DB',
+            borderRadius: 8,
+            padding: 8,
+            zIndex: 1000
+          }}
+        >
+          {TRIP_STATUSES.map((status) => (
+            <TouchableOpacity
+              key={status}
+              className='p-2'
+              onPress={() => {
+                setSelectedStatus(status)
+                setShowDropdown(false)
+              }}
+            >
+              <Text className={selectedStatus === status ? 'text-blue-500 font-semibold' : 'text-gray-800'}>
+                {status}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       )}
     </View>
   )

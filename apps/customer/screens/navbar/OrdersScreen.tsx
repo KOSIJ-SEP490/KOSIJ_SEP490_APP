@@ -264,7 +264,6 @@ export default function OrdersScreen() {
     )
   }
 
-  // Data for the main FlatList
   const sections = [
     {
       type: 'header',
@@ -294,7 +293,7 @@ export default function OrdersScreen() {
           {
             type: 'dropdown',
             render: () => (
-              <View className='absolute right-4 top-20 bg-white shadow-md border border-gray-300 rounded-lg p-2 z-10'>
+              <View className='absolute right-0 top-2 bg-white shadow-md border border-gray-300 rounded-lg p-2 z-10'>
                 {ORDER_STATUSES.map((status) => (
                   <TouchableOpacity
                     key={status}

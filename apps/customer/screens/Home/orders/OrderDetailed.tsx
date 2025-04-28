@@ -279,7 +279,7 @@ export default function OrderDetailsScreen() {
           </View>
           <View className='flex-row gap-2 w-full pt-5'>
             {/* Payment Button */}
-            <View className='flex-1'>
+            {/* <View className='flex-1'>
               <TouchableOpacity
                 className='items-center rounded-lg shadow-md p-3'
                 style={{ backgroundColor: '#F0A500' }}
@@ -287,7 +287,28 @@ export default function OrderDetailsScreen() {
               >
                 <Text className='text-white'>Payment</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
+            {['Pending', 'Delivering'].includes(order.orderStatus) ? (
+              <View className='flex-1'>
+                <TouchableOpacity
+                  className='items-center rounded-lg shadow-md p-3'
+                  style={{ backgroundColor: '#F0A500' }}
+                  onPress={() => navigation.navigate('PaymentDetails', { orderId: orderId })}
+                >
+                  <Text className='text-white'>Payment</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View className='flex-1'>
+                <TouchableOpacity
+                  className='items-center rounded-lg shadow-md p-3 opacity-50'
+                  style={{ backgroundColor: '#F0A500' }}
+                  disabled
+                >
+                  <Text className='text-white'>Payment</Text>
+                </TouchableOpacity>
+              </View>
+            )}
             <View>
               {/* Menu Button */}
               <Menu
