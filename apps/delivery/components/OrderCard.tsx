@@ -41,13 +41,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
       year: 'numeric'
     })
 
-    const formattedTime = date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })
-
-    return `${formattedDate} ${formattedTime}`
+    return `${formattedDate}`
   }
 
   return (
