@@ -28,6 +28,14 @@ export default function TripsScreen() {
   useFocusEffect(
     useCallback(() => {
       reload()
+
+      const interval = setInterval(() => {
+        reload()
+      }, 5000)
+
+      return () => {
+        clearInterval(interval)
+      }
     }, [])
   )
 

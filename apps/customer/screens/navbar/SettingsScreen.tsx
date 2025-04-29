@@ -71,7 +71,6 @@ export default function SettingsScreen() {
           setNotificationsEnabled={setNotificationsEnabled}
           darkModeEnabled={darkModeEnabled}
           setDarkModeEnabled={setDarkModeEnabled}
-          onTermsPress={() => console.log('Navigate to Terms and Policies')}
           onChangePasswordPress={() => navigation2.navigate('ChangePassword', { account: account ?? undefined })}
         />
 

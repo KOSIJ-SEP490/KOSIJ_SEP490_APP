@@ -34,6 +34,7 @@ export type CustomerNotificationsStackParamList = {
   TripRequestDetails: { tripRequestID: number }
   QuotationDetails: { tripRequestID: number }
   Payment: { tripBookingID: number; type: string }
+  PassengerInformation: { tripBookingID: number }
   RateTripDetails: { tripBookingID: number }
 }
 

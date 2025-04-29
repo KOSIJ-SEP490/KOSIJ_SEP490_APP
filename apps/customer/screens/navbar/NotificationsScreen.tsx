@@ -13,6 +13,12 @@ export default function NotificationsScreen() {
   useFocusEffect(
     useCallback(() => {
       reload()
+
+      const interval = setInterval(() => {
+        reload()
+      }, 5000)
+
+      return () => clearInterval(interval)
     }, [reload])
   )
 
@@ -21,7 +27,9 @@ export default function NotificationsScreen() {
     reload()
   }
 
-  const reversedNotifications = notifications ? [...notifications].reverse() : []
+  const reversedNotifications = notifications
+    ? [...notifications].sort((a, b) => new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime())
+    : []
 
   return (
     <SubLayout title='Notifications' showBackButton={false}>

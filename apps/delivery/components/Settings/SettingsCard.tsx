@@ -1,13 +1,12 @@
 import React from 'react'
 import { View, Text, Switch, TouchableOpacity } from 'react-native'
-import { Bell, Moon, FileText, Lock, ChevronRight } from 'react-native-feather'
+import { Bell, Moon, Lock, ChevronRight } from 'react-native-feather'
 
 interface SettingsCardProps {
   notificationsEnabled: boolean
   setNotificationsEnabled: (value: boolean) => void
   darkModeEnabled: boolean
   setDarkModeEnabled: (value: boolean) => void
-  onTermsPress: () => void
   onChangePasswordPress: () => void
 }
 
@@ -16,7 +15,6 @@ export default function SettingsCard({
   setNotificationsEnabled,
   darkModeEnabled,
   setDarkModeEnabled,
-  onTermsPress,
   onChangePasswordPress
 }: SettingsCardProps) {
   return (
@@ -46,17 +44,6 @@ export default function SettingsCard({
           thumbColor='#FFFFFF'
         />
       </View>
-
-      <TouchableOpacity
-        className='flex-row items-center justify-between p-4 border-b border-gray-200'
-        onPress={onTermsPress}
-      >
-        <View className='flex-row items-center'>
-          <FileText width={24} height={24} stroke='#333' />
-          <Text className='ml-4 text-base'>Terms and Policies</Text>
-        </View>
-        <ChevronRight width={24} height={24} stroke='#333' />
-      </TouchableOpacity>
 
       <TouchableOpacity className='flex-row items-center justify-between p-4' onPress={onChangePasswordPress}>
         <View className='flex-row items-center'>

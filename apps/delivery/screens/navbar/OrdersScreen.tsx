@@ -14,7 +14,13 @@ export default function OrdersScreen() {
   useFocusEffect(
     useCallback(() => {
       refetch()
-    }, [])
+
+      const intervalId = setInterval(() => {
+        refetch()
+      }, 5000)
+
+      return () => clearInterval(intervalId)
+    }, [refetch])
   )
 
   if (error) {
