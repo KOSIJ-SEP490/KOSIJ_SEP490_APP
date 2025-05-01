@@ -3,6 +3,8 @@ import React from 'react'
 import { DeliveryHomeStackParamList } from '../types/navigationDelivery.type'
 import HomeScreen from '../screens/navbar/HomeScreen'
 import OrderDetailsScreen from '../screens/Orders/OrderDetailsScreen'
+import ContactScreen from '../screens/message/ContactScreen'
+import MessageScreen from '../screens/message/MessageContact'
 
 const Stack = createStackNavigator<DeliveryHomeStackParamList>()
 
@@ -11,6 +13,8 @@ export default function DeliveryHomeStackNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name='Home' component={HomeScreen} />
       <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
+      <Stack.Screen name='Contact' component={ContactScreen} />
+      <Stack.Screen name='Messages' component={MessageScreen} />
     </Stack.Navigator>
   )
 }

@@ -17,6 +17,7 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, Modal, TextInput } fro
 import CancelSuccessModal from '@apps/customer/components/Booking/CancelSuccessModal'
 import { AirplaneTicketCard } from '@apps/customer/components/Booking/AirplaneTicketCard'
 import CancelledTripBookingCard from '@apps/customer/components/Card/TripBooking/CancelledTripBookingCard'
+import { useTripById } from '@apps/customer/hooks/useTrip'
 
 type TripBookingDetailScreenRouteProp = RouteProp<CustomerTripsStackParamList, 'TripBookingDetails'>
 
@@ -24,6 +25,7 @@ export default function TripBookingDetailsScreen() {
   const route = useRoute<TripBookingDetailScreenRouteProp>()
   const { tripBookingID } = route.params
   const { tripBookingDetail } = useTripBookingById(tripBookingID)
+  const { trip } = useTripById(tripBookingDetail?.tripId || 0)
   const { farmList, error: farmError } = useFarmsByTripBooking(tripBookingDetail?.farmIds ?? [])
   const isExpired = tripBookingDetail?.expiredTime
     ? new Date(tripBookingDetail.expiredTime).getTime() < new Date().getTime()
@@ -43,6 +45,57 @@ export default function TripBookingDetailsScreen() {
     tripBookingDetail?.tripBookingStatus !== 'Completed' &&
     tripBookingDetail?.tripBookingStatus !== 'Refunded'
   const navigation = useNavigation<StackNavigationProp<CustomerTripsStackParamList, 'RateTripDetails'>>()
+
+  const parseDateDDMMYYYY = (dateString: string): Date | null => {
+    const regex = /^(\d{2})-(\d{2})-(\d{4})$/
+    const match = dateString.match(regex)
+    if (!match) {
+      console.log(`Invalid date format for ${dateString}, expected DD-MM-YYYY`)
+      return null
+    }
+
+    const day = parseInt(match[1], 10)
+    const month = parseInt(match[2], 10) - 1
+    const year = parseInt(match[3], 10)
+
+    const date = new Date(year, month, day)
+    if (isNaN(date.getTime())) {
+      console.log(`Parsed date is invalid: ${dateString}`)
+      return null
+    }
+
+    return date
+  }
+
+  const isWithinOneMonthFromEndDate = () => {
+    if (!trip?.returnDate) {
+      console.log('No endDate provided, hiding Rate Trip button')
+      return false
+    }
+
+    const endDate = parseDateDDMMYYYY(trip.returnDate)
+    if (!endDate) {
+      console.log('Failed to parse endDate, hiding Rate Trip button')
+      return false
+    }
+
+    const oneMonthLater = new Date(endDate)
+    oneMonthLater.setDate(endDate.getDate() + 30) // 1 month = 30 days
+    const currentDate = new Date()
+
+    const isWithin = currentDate <= oneMonthLater
+    console.log(
+      `Rate Trip visibility check: status=${tripBookingDetail?.tripBookingStatus}, ` +
+        `endDate=${endDate.toISOString()}, oneMonthLater=${oneMonthLater.toISOString()}, ` +
+        `currentDate=${currentDate.toISOString()}, isWithin=${isWithin}, hasFeedback=${tripBookingDetail?.hasFeedback}`
+    )
+    return isWithin
+  }
+
+  const shouldShowRateTripButton =
+    tripBookingDetail?.tripBookingStatus === 'Completed' &&
+    isWithinOneMonthFromEndDate() &&
+    !tripBookingDetail?.hasFeedback
 
   const handleCancelTrip = async () => {
     if (!cancellationReason.trim()) {
@@ -192,19 +245,17 @@ export default function TripBookingDetailsScreen() {
             <Text className='text-white text-center text-lg font-semibold'>Cancel</Text>
           </TouchableOpacity>
         </View>
-      ) : (
-        !tripBookingDetail?.hasFeedback && (
-          <View className='p-4 bg-white mb-5'>
-            <TouchableOpacity
-              className='rounded-lg py-3'
-              style={{ backgroundColor: '#264eca' }}
-              onPress={() => navigation.navigate('RateTripDetails', { tripBookingID: tripBookingID })}
-            >
-              <Text className='text-white text-center text-lg font-semibold'>Rate Trip</Text>
-            </TouchableOpacity>
-          </View>
-        )
-      )}
+      ) : shouldShowRateTripButton ? (
+        <View className='p-4 bg-white mb-5'>
+          <TouchableOpacity
+            className='rounded-lg py-3'
+            style={{ backgroundColor: '#264eca' }}
+            onPress={() => navigation.navigate('RateTripDetails', { tripBookingID: tripBookingID })}
+          >
+            <Text className='text-white text-center text-lg font-semibold'>Rate Trip</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       <Modal
         transparent

@@ -44,6 +44,12 @@ const menuItems: MenuItem[] = [
     icon: 'fish',
     screen: 'Kois',
     iconType: 'material'
+  },
+  {
+    name: 'Message',
+    icon: 'message',
+    screen: 'Contact',
+    iconType: 'material'
   }
 ]
 

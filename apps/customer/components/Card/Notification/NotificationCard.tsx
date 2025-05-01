@@ -6,6 +6,7 @@ import { useMarkAsRead } from '@apps/customer/hooks/useNotifications'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import {
+  CustomerOrderStackParamList,
   CustomerSettingsStackParamList,
   CustomerTripsStackParamList
 } from '@apps/customer/types/navigationCustomerType'
@@ -19,6 +20,7 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ notification, onMar
   const { markAsRead, loading } = useMarkAsRead()
   const navigation = useNavigation<StackNavigationProp<CustomerTripsStackParamList>>()
   const navigation1 = useNavigation<StackNavigationProp<CustomerSettingsStackParamList>>()
+  const navigation2 = useNavigation<StackNavigationProp<CustomerOrderStackParamList>>()
 
   if (!notification) {
     return null
@@ -60,6 +62,9 @@ const NotificationCard: React.FC<NotificationCardProps> = ({ notification, onMar
         break
       case 'WithdrawalRequest':
         navigation1.navigate('WithdrawDetails', { withdrawID: refId })
+        break
+      case 'Order':
+        navigation2.navigate('OrderDetails', { orderId: refId })
         break
       default:
         break

@@ -280,17 +280,19 @@
 
 // export default DashboardScreen
 
-import React, { useState } from 'react'
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native'
+import React, { useRef, useState } from 'react'
+import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Animated } from 'react-native'
 import { Picker } from '@react-native-picker/picker'
 import { styled } from 'nativewind'
 import { useDashboardData } from '@apps/consulting/api/useDashboard.api'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { useNavigation } from '@react-navigation/native'
+import { MessageCircleMore } from 'lucide-react-native'
 
 const StyledView = styled(View)
 const StyledText = styled(Text)
 const StyledTouchableOpacity = styled(TouchableOpacity)
+const StyledAnimatedView = styled(Animated.View)
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat', 'Sun']
 const months = [
@@ -310,13 +312,13 @@ const months = [
 const years = Array.from({ length: 10 }, (_, i) => 2025 + i)
 
 type RootStackParamList = {
-  Dashboard: undefined
+  Home: undefined
   TourDetails: { id: number }
+  Contact: undefined
 }
 
-type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Dashboard'>
+type DashboardScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>
 
-// Calendar Component
 const Calendar = ({
   paddedDates,
   isTripDay,
@@ -411,6 +413,22 @@ const DashboardScreen = () => {
     return date.toLocaleDateString('en-GB')
   }
 
+  const scaleAnim = useRef(new Animated.Value(1)).current
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.9,
+      useNativeDriver: true
+    }).start()
+  }
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true
+    }).start()
+  }
+
   if (loading) {
     return (
       <StyledView style={{ backgroundColor: '#264ECA' }} className='p-4 rounded-b-3xl flex-1'>
@@ -427,7 +445,6 @@ const DashboardScreen = () => {
     )
   }
 
-  // Data for the main FlatList
   const sections = [
     {
       type: 'header',
@@ -580,12 +597,36 @@ const DashboardScreen = () => {
   ]
 
   return (
-    <FlatList
-      data={sections}
-      keyExtractor={(item) => item.type}
-      renderItem={({ item }) => item.render()}
-      contentContainerStyle={{ flexGrow: 1, backgroundColor: '#fff' }}
-    />
+    <StyledView className='flex-1'>
+      <FlatList
+        data={sections}
+        keyExtractor={(item) => item.type}
+        renderItem={({ item }) => item.render()}
+        contentContainerStyle={{ flexGrow: 1, backgroundColor: '#fff' }}
+      />
+      <StyledTouchableOpacity
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={() => navigation.navigate('Contact')}
+        activeOpacity={0.8}
+      >
+        <StyledAnimatedView
+          className='absolute bottom-4 right-4 w-14 h-14 bg-blue-600 rounded-full justify-center items-center shadow-lg'
+          style={{
+            backgroundColor: '#264ECA',
+            elevation: 8,
+            zIndex: 10,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 6,
+            transform: [{ scale: scaleAnim }]
+          }}
+        >
+          <MessageCircleMore color='#fff' size={26} />
+        </StyledAnimatedView>
+      </StyledTouchableOpacity>
+    </StyledView>
   )
 }
 

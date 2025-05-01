@@ -4,6 +4,8 @@ import { AccountType } from './Account/account.type'
 export type DeliveryHomeStackParamList = {
   Home: undefined
   OrderDetails: { orderID: number }
+  Messages: { selectedUserId: string } | undefined
+  Contact: undefined
 }
 
 export type DeliveryOrdersStackParamList = {

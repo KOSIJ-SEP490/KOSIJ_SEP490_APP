@@ -14,6 +14,8 @@ export type CustomerHomeStackParamList = {
   Payment: { tripBookingID: number; type: string }
   KoiVarietySelection: undefined
   TravelInformation: undefined
+  Messages: { selectedUserId: string } | undefined
+  Contact: undefined
 }
 
 export type CustomerTripsStackParamList = {
@@ -35,6 +37,7 @@ export type CustomerNotificationsStackParamList = {
   QuotationDetails: { tripRequestID: number }
   Payment: { tripBookingID: number; type: string }
   RateTripDetails: { tripBookingID: number }
+  OrderDetails: { orderId: number }
 }
 
 export type CustomerSettingsStackParamList = {

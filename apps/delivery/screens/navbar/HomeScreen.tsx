@@ -4,8 +4,13 @@ import { useCurrentOrderByAll } from '@apps/delivery/hooks/useOrder'
 import { DeliveryHomeStackNavigationProp } from '@apps/delivery/types/navigationDelivery.type'
 import { useFocusEffect, useNavigation } from '@react-navigation/native'
 import MainLayout from '@shared/layouts/MainLayout'
-import React, { useCallback } from 'react'
-import { ScrollView, View, Text } from 'react-native'
+import { MessageCircleMore } from 'lucide-react-native'
+import { styled } from 'nativewind'
+import React, { useCallback, useRef } from 'react'
+import { ScrollView, View, Text, TouchableOpacity, Animated } from 'react-native'
+
+const StyledTouchableOpacity = styled(TouchableOpacity)
+const StyledAnimatedView = styled(Animated.View)
 
 export default function HomeScreen() {
   const { orders, error, refetch } = useCurrentOrderByAll()
@@ -29,6 +34,22 @@ export default function HomeScreen() {
         </View>
       </MainLayout>
     )
+  }
+
+  const scaleAnim = useRef(new Animated.Value(1)).current
+
+  const handlePressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.9,
+      useNativeDriver: true
+    }).start()
+  }
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true
+    }).start()
   }
 
   const handleOrderPress = (orderId: number) => {
@@ -57,6 +78,28 @@ export default function HomeScreen() {
         ) : (
           <Text className='text-center text-gray-500 mt-6'>No orders found.</Text>
         )}
+        <StyledTouchableOpacity
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          onPress={() => navigation.navigate('Contact')}
+          activeOpacity={0.8}
+        >
+          <StyledAnimatedView
+            className='absolute bottom-4 right-4 w-14 h-14 bg-blue-600 rounded-full justify-center items-center shadow-lg'
+            style={{
+              backgroundColor: '#264ECA',
+              elevation: 8,
+              zIndex: 10,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 6,
+              transform: [{ scale: scaleAnim }]
+            }}
+          >
+            <MessageCircleMore color='#fff' size={26} />
+          </StyledAnimatedView>
+        </StyledTouchableOpacity>
       </ScrollView>
     </MainLayout>
   )

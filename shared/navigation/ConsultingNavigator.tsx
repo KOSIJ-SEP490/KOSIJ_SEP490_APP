@@ -16,6 +16,8 @@ import EditProfile from '@apps/consulting/components/EditedProfile'
 import { AccountType } from '@shared/types/Account.dto'
 import ChangePassword from '@apps/consulting/components/ChangePassword'
 import AccountScreen from '@apps/consulting/components/AccountComponent'
+import MessageScreen from '@apps/consulting/components/MessageScreen'
+import ContactScreen from '@apps/consulting/components/ContactScreen'
 
 type MainTabParamList = {
   Home: undefined
@@ -38,6 +40,8 @@ type RootStackParamList = {
   EditProfile: undefined
   ChangePassword: { account?: AccountType }
   AccountDetails: { account?: AccountType }
+  Messages: { selectedUserId: string } | undefined
+  Contact: undefined
 }
 
 const Stack = createStackNavigator<RootStackParamList>()
@@ -54,6 +58,8 @@ export default function ConsultingNavigator() {
       <Stack.Screen name='EditProfile' component={EditProfile} />
       <Stack.Screen name='ChangePassword' component={ChangePassword} />
       <Stack.Screen name='AccountDetails' component={AccountScreen} />
+      <Stack.Screen name='Messages' component={MessageScreen} />
+      <Stack.Screen name='Contact' component={ContactScreen} />
     </Stack.Navigator>
   )
 }
