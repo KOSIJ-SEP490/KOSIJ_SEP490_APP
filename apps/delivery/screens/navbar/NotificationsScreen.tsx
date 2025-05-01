@@ -21,7 +21,9 @@ export default function NotificationsScreen() {
     reload()
   }
 
-  const reversedNotifications = notifications ? [...notifications].reverse() : []
+  const sortedNotifications = notifications
+    ? [...notifications].sort((a, b) => new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime())
+    : []
 
   return (
     <SubLayout title='Notifications' showBackButton={false}>
@@ -55,7 +57,7 @@ export default function NotificationsScreen() {
             )}
           </TouchableOpacity>
 
-          {reversedNotifications.map((item) => (
+          {sortedNotifications.map((item) => (
             <NotificationCard key={item.id.toString()} notification={item} onMarkAsRead={reload} />
           ))}
         </ScrollView>

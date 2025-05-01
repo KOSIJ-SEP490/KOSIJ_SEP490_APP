@@ -9,6 +9,7 @@ import QuotationDetailsScreen from '../screens/Trips/QuotationDetailsScreen'
 import PaymentScreen from '../screens/Home/booking/PaymentScreen'
 import RateTripDetails from '../screens/Trips/RateTripDetails'
 import OrderDetailsScreen from '../screens/Home/orders/OrderDetailed'
+import PassengerInformationScreen from '../screens/Trips/PassengerInformationScreen'
 
 const Stack = createStackNavigator<CustomerNotificationsStackParamList>()
 
@@ -21,6 +22,7 @@ export default function CustomerNotificationsStackNavigator() {
       <Stack.Screen name='TripRequestDetails' component={TripRequestDetailsScreen} />
       <Stack.Screen name='QuotationDetails' component={QuotationDetailsScreen} />
       <Stack.Screen name='Payment' component={PaymentScreen} />
+      <Stack.Screen name='PassengerInformation' component={PassengerInformationScreen} />
       <Stack.Screen name='RateTripDetails' component={RateTripDetails} />
       <Stack.Screen name='OrderDetails' component={OrderDetailsScreen} />
     </Stack.Navigator>
