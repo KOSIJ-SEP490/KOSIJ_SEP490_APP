@@ -1319,7 +1319,7 @@ export default function MessageScreen({ route }: MessageScreenProps) {
                 }
               }}
             />
-            <Text style={styles.avatarText}>{userName.charAt(0)}</Text>
+            {/* <Text style={styles.avatarText}>{userName.charAt(0)}</Text> */}
           </View>
         )}
         <View style={[styles.messageBubble, isSent ? styles.sentBubble : styles.receivedBubble]}>

@@ -612,7 +612,7 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
               }
             }}
           />
-          <Text style={styles.avatarText}>{item.userName.charAt(0)}</Text>
+          {/* <Text style={styles.avatarText}>{item.userName.charAt(0)}</Text> */}
         </View>
         <View style={styles.conversationDetails}>
           <Text style={styles.userName}>{item.userName}</Text>

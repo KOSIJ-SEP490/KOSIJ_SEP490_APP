@@ -685,7 +685,9 @@ import {
   Platform,
   Image,
   RefreshControl,
-  ScrollView
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { RouteProp, useNavigation } from '@react-navigation/native'
@@ -894,7 +896,7 @@ export default function MessageScreen({ route }: MessageScreenProps) {
                 }
               }}
             />
-            <Text style={styles.avatarText}>{userName.charAt(0)}</Text>
+            {/* <Text style={styles.avatarText}>{userName.charAt(0)}</Text> */}
           </View>
         )}
         <View style={[styles.messageBubble, isSent ? styles.sentBubble : styles.receivedBubble]}>
@@ -919,43 +921,47 @@ export default function MessageScreen({ route }: MessageScreenProps) {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      // behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      // keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-    >
-      <View style={styles.header} className='flex-row items-center'>
-        <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
-          <ChevronLeft color={'#292D32'} size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>{staffUserName}</Text>
-      </View>
-      <FlatList
-        ref={flatListRef}
-        data={filteredMessages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.messageList}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={newMessage}
-          onChangeText={setNewMessage}
-          placeholder='Type a message...'
-          multiline
-        />
-        <TouchableOpacity
-          style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
-          onPress={sendMessage}
-          disabled={!newMessage.trim()}
-        >
-          <Ionicons name='send' size={24} color='#fff' />
-        </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
+        <View style={{ flex: 1 }}>
+          <View style={styles.header} className='flex-row items-center'>
+            <TouchableOpacity onPress={() => navigation.navigate('Contact')}>
+              <ChevronLeft color={'#292D32'} size={24} />
+            </TouchableOpacity>
+            <Text style={styles.headerText}>{staffUserName}</Text>
+          </View>
+          <FlatList
+            ref={flatListRef}
+            data={filteredMessages}
+            renderItem={renderMessage}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={styles.messageList}
+            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          />
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={newMessage}
+              onChangeText={setNewMessage}
+              placeholder='Type a message...'
+              multiline
+            />
+            <TouchableOpacity
+              style={[styles.sendButton, !newMessage.trim() && styles.sendButtonDisabled]}
+              onPress={sendMessage}
+              disabled={!newMessage.trim()}
+            >
+              <Ionicons name='send' size={24} color='#fff' />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   )
 }
 
@@ -977,7 +983,9 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   messageList: {
-    padding: 10
+    padding: 10,
+    flexGrow: 1,
+    justifyContent: 'flex-end'
   },
   messageContainer: {
     flexDirection: 'row',
