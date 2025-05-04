@@ -387,7 +387,7 @@ export default function TourDetailsScreen() {
       })
       return response.data
     } catch (error) {
-      console.error('Error fetching tour details:', error)
+      console.log('Error fetching tour details:', error)
       throw error
     }
   }
@@ -398,7 +398,7 @@ export default function TourDetailsScreen() {
         const data = await fetchTourDetails()
         setTourDetails(data)
       } catch (error) {
-        console.error('Failed to load tour details.')
+        console.log('Failed to load tour details.')
       } finally {
         setLoading(false)
       }
@@ -417,7 +417,7 @@ export default function TourDetailsScreen() {
         })
         setParticipantList(response.data)
       } catch (error) {
-        console.error('Error fetching tour participants:', error)
+        console.log('Error fetching tour participants:', error)
       } finally {
         setLoading(false)
       }
@@ -441,7 +441,7 @@ export default function TourDetailsScreen() {
       setTourDetails(tourData)
       setParticipantList(participantsData.data)
     } catch (error) {
-      console.error('Error refreshing the page:', error)
+      console.log('Error refreshing the page:', error)
     } finally {
       setRefreshing(false)
     }

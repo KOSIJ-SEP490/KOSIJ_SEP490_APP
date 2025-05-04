@@ -286,7 +286,7 @@ export default function OrdersScreen() {
         const data = await fetchOrders()
         setOrders(data)
       } catch (error) {
-        console.error('Failed to load orders')
+        // console.error('Failed to load orders')
       } finally {
         setLoading(false)
       }
@@ -320,7 +320,7 @@ export default function OrdersScreen() {
       const data = await fetchOrders()
       setOrders(JSON.parse(JSON.stringify(data)))
     } catch (error) {
-      console.error('Error refreshing the page:', error)
+      // console.error('Error refreshing the page:', error)
     } finally {
       setRefreshing(false)
     }

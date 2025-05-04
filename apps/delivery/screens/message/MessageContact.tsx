@@ -27,7 +27,7 @@ interface Message {
   isRead: boolean
   createdTime: string
   createdBy: string
-  fromUserAvatar?: string // Optional, for opponent's avatar
+  fromUserAvatar?: string
 }
 
 type RootStackParamList = {
@@ -58,10 +58,8 @@ export default function MessageScreen({ route }: MessageScreenProps) {
 
   const { user } = authContext
 
-  // Cache failed avatar URLs to avoid retrying
   const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set())
 
-  // Fetch all chat history
   const fetchAllMessages = async () => {
     try {
       const response = await axios.get<{ value: Message[] }>(`${API_BASE_URL}chat/history`, {
@@ -71,7 +69,6 @@ export default function MessageScreen({ route }: MessageScreenProps) {
         }
       })
       const messages = response.data.value || []
-      // Log API response to inspect fromUserAvatar
       console.log(
         'Fetched messages:',
         messages.map((msg) => ({
@@ -82,7 +79,6 @@ export default function MessageScreen({ route }: MessageScreenProps) {
           fromUserAvatar: msg.fromUserAvatar
         }))
       )
-      // Only update state if messages have changed (based on IDs)
       setChatHistory((prev) => {
         const prevIds = new Set(prev.map((msg) => msg.id))
         const newMessages = messages.filter((msg) => !prevIds.has(msg.id))
@@ -92,22 +88,19 @@ export default function MessageScreen({ route }: MessageScreenProps) {
         return prev
       })
     } catch (error) {
-      console.error('Failed to fetch messages:', error)
+      // console.error('Failed to fetch messages:', error)
     }
   }
 
-  // Initial fetch and polling
   useEffect(() => {
     if (!selectedUserId) return
 
-    fetchAllMessages() // Initial fetch
+    fetchAllMessages()
 
-    // Poll every 5 seconds
     const intervalId = setInterval(() => {
       fetchAllMessages()
     }, 5000)
 
-    // Cleanup interval on unmount
     return () => clearInterval(intervalId)
   }, [selectedUserId])
 
@@ -116,56 +109,48 @@ export default function MessageScreen({ route }: MessageScreenProps) {
     try {
       await fetchAllMessages()
     } catch (error) {
-      console.error('Error refreshing messages:', error)
+      // console.error('Error refreshing messages:', error)
     } finally {
       setRefreshing(false)
     }
   }
 
-  // Check if createdBy is Consulting Staff
   const isDeliveringStaffRole = (createdBy: string): boolean => {
     return createdBy.startsWith('Delivery Staff')
   }
 
-  // Check if createdBy is another staff role (excludes Consulting Staff)
   const isOtherStaffRole = (createdBy: string): boolean => {
     const roles = ['Sales Staff', 'Manager', 'FarmBreeder', 'Consulting Staff']
     return roles.some((role) => createdBy.startsWith(role))
   }
 
-  // Check if createdBy is a Customer (not a staff role)
   const isCustomerRole = (createdBy: string): boolean => {
     return !isDeliveringStaffRole(createdBy) && !isOtherStaffRole(createdBy)
   }
 
-  // Get consulting staff info from chat history (for sending messages)
   const getConsultingStaffInfo = () => {
     const staffMsg = chatHistory.find((msg) => isDeliveringStaffRole(msg.createdBy))
     return {
-      id: staffMsg ? staffMsg.fromUserId : Date.now().toString(), // Fallback ID
-      name: staffMsg ? staffMsg.createdBy : 'Delivery Staff' // Fallback name
+      id: staffMsg ? staffMsg.fromUserId : Date.now().toString(),
+      name: staffMsg ? staffMsg.createdBy : 'Delivery Staff'
     }
   }
 
-  // Filter messages for the selected user
   const filteredMessages = chatHistory.filter(
     (msg) =>
       (msg.fromUserId === selectedUserId && msg.toUserId !== selectedUserId) ||
       (msg.toUserId === selectedUserId && msg.fromUserId !== selectedUserId)
   )
 
-  // Get the other participant's username for the header
   const participantUserName = (() => {
     const otherMsg = filteredMessages.find((msg) => !isDeliveringStaffRole(msg.createdBy))
     return otherMsg ? otherMsg.createdBy : 'Chat'
   })()
 
-  // Scroll to bottom when messages update
   useEffect(() => {
     flatListRef.current?.scrollToEnd({ animated: true })
   }, [filteredMessages])
 
-  // Send message
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedUserId) return
 
@@ -187,7 +172,6 @@ export default function MessageScreen({ route }: MessageScreenProps) {
         }
       )
 
-      // Optimistically update UI (no fromUserAvatar for sent messages)
       setChatHistory((prev) => [
         ...prev,
         {
@@ -207,40 +191,33 @@ export default function MessageScreen({ route }: MessageScreenProps) {
   }
 
   const renderMessage = ({ item }: { item: Message }) => {
-    const isSent = isDeliveringStaffRole(item.createdBy) // Consulting Staff messages are sent
+    const isSent = isDeliveringStaffRole(item.createdBy)
     let userName = item.createdBy
 
-    // If the message is from Consulting Staff, get the other participant's name
     if (isSent) {
       const relatedMsg = chatHistory.find((m) => m.fromUserId === item.toUserId)
       userName = relatedMsg ? relatedMsg.createdBy : 'Unknown'
     }
 
-    // Log fromUserAvatar for debugging
     if (!isSent) {
       console.log(`Rendering received message (ID: ${item.id}): fromUserAvatar = ${item.fromUserAvatar}`)
     }
 
-    // Validate URL
     const isValidUrl = (url: string | undefined): url is string => !!url && /^https?:\/\/.+/i.test(url)
 
-    // Get default avatar based on role
     const getDefaultAvatar = (createdBy: string) => {
-      const role = createdBy.split(' ')[0].toLowerCase() // e.g., "sales" or customer name
+      const role = createdBy.split(' ')[0].toLowerCase()
       const defaults: { [key: string]: string } = {
         sales: 'https://picsum.photos/30?random=1',
         manager: 'https://picsum.photos/30?random=2',
         farmbreeder: 'https://picsum.photos/30?random=3',
         delivery: 'https://picsum.photos/30?random=5',
-        // Customers use a generic avatar
         customer: 'https://picsum.photos/30?random=6'
       }
-      // Check if createdBy starts with a staff role
       const roleKey = isOtherStaffRole(createdBy) ? role : 'customer'
       return defaults[roleKey] || 'https://picsum.photos/30'
     }
 
-    // Select image source (only for received messages)
     const imageSource =
       isValidUrl(item.fromUserAvatar) && !failedAvatars.has(item.fromUserAvatar)
         ? { uri: item.fromUserAvatar }
@@ -256,7 +233,7 @@ export default function MessageScreen({ route }: MessageScreenProps) {
               onError={(e) => {
                 console.log(`Failed to load image for message ${item.id}:`, e.nativeEvent.error)
                 if (item.fromUserAvatar) {
-                  const avatarUrl = item.fromUserAvatar // Local variable for type safety
+                  const avatarUrl = item.fromUserAvatar
                   setFailedAvatars((prev) => new Set(prev).add(avatarUrl))
                 }
               }}
@@ -369,11 +346,11 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: '#ccc' // Fallback background for visibility
+    backgroundColor: '#ccc'
   },
   avatarText: {
     position: 'absolute',
-    color: '#000', // Better contrast
+    color: '#000',
     fontSize: 14,
     fontWeight: 'bold'
   },

@@ -476,6 +476,7 @@ interface Conversation {
   lastMessage: string
   timestamp: string
   fromUserAvatar?: string
+  isUnread: boolean
 }
 
 interface ContactScreenProps {
@@ -513,6 +514,35 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
     }
   }
 
+  const markMessagesAsRead = async (fromUserId: string) => {
+    console.log(`Marking messages as read for fromUserId: ${fromUserId}`)
+    try {
+      await axios.put(
+        `${API_BASE_URL}chat/mark-as-read`,
+        { fromUserId },
+        {
+          headers: {
+            accept: 'text/plain',
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      console.log(`Successfully marked messages as read for ${fromUserId}`)
+
+      setChatHistory((prev) =>
+        prev.map((msg) => (msg.fromUserId === fromUserId && !msg.isRead ? { ...msg, isRead: true } : msg))
+      )
+
+      await fetchAllMessages()
+    } catch (error) {
+      console.error(`Failed to mark messages as read for ${fromUserId}:`, error)
+      setChatHistory((prev) =>
+        prev.map((msg) => (msg.fromUserId === fromUserId && !msg.isRead ? { ...msg, isRead: true } : msg))
+      )
+    }
+  }
+
   useEffect(() => {
     fetchAllMessages()
 
@@ -535,7 +565,12 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
   }
 
   const isStaffRole = (createdBy: string): boolean => {
-    const roles = ['Sales Staff', 'Manager', 'FarmBreeder', 'Consulting Staff', 'Delivery Staff']
+    const roles = ['Sales Staff', 'Manager', 'Farm Breeder', 'Consulting Staff', 'Delivery Staff']
+    return roles.some((role) => createdBy.startsWith(role))
+  }
+
+  const isUnreadRole = (createdBy: string): boolean => {
+    const roles = ['Sales Staff', 'Consulting Staff', 'Delivery Staff', 'Manager']
     return roles.some((role) => createdBy.startsWith(role))
   }
 
@@ -555,33 +590,45 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
 
   const getConversations = (): Conversation[] => {
     const convoMap = new Map<string, Conversation>()
+    const userMessages = new Map<string, Message[]>()
 
-    ;[...chatHistory].reverse().forEach((msg) => {
-      let userId: string
+    chatHistory.forEach((msg) => {
+      const userId = isStaffRole(msg.createdBy) ? msg.fromUserId : msg.toUserId
+      if (!userMessages.has(userId)) {
+        userMessages.set(userId, [])
+      }
+      userMessages.get(userId)!.push(msg)
+    })
+
+    userMessages.forEach((messages, userId) => {
+      const sortedMessages = messages.sort(
+        (a, b) => new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime()
+      )
+      const latestMsg = sortedMessages[0]
+
       let userName: string
       let fromUserAvatar: string | undefined
 
-      if (isStaffRole(msg.createdBy)) {
-        userId = msg.fromUserId
-        userName = msg.createdBy
-        fromUserAvatar = msg.fromUserAvatar
+      if (isStaffRole(latestMsg.createdBy)) {
+        userName = latestMsg.createdBy
+        fromUserAvatar = latestMsg.fromUserAvatar
       } else {
-        userId = msg.toUserId
-        const relatedMsg = chatHistory.find((m) => m.fromUserId === msg.toUserId && isStaffRole(m.createdBy))
+        const relatedMsg = chatHistory.find((m) => m.fromUserId === userId && isStaffRole(m.createdBy))
         if (!relatedMsg) return
         userName = relatedMsg.createdBy
         fromUserAvatar = relatedMsg.fromUserAvatar
       }
 
-      if (!convoMap.has(userId)) {
-        convoMap.set(userId, {
-          userId,
-          userName,
-          lastMessage: msg.content,
-          timestamp: msg.createdTime,
-          fromUserAvatar
-        })
-      }
+      const isUnread = sortedMessages.some((msg) => !msg.isRead && isUnreadRole(msg.createdBy))
+
+      convoMap.set(userId, {
+        userId,
+        userName,
+        lastMessage: latestMsg.content,
+        timestamp: latestMsg.createdTime,
+        fromUserAvatar,
+        isUnread
+      })
     })
 
     return Array.from(convoMap.values())
@@ -598,7 +645,12 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
     return (
       <TouchableOpacity
         style={styles.conversationItem}
-        onPress={() => navigation.navigate('Messages', { selectedUserId: item.userId } as any)}
+        onPress={() => {
+          if (item.isUnread) {
+            markMessagesAsRead(item.userId)
+          }
+          navigation.navigate('Messages', { selectedUserId: item.userId } as any)
+        }}
       >
         <View style={styles.avatar}>
           <Image
@@ -612,7 +664,6 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
               }
             }}
           />
-          {/* <Text style={styles.avatarText}>{item.userName.charAt(0)}</Text> */}
         </View>
         <View style={styles.conversationDetails}>
           <Text style={styles.userName}>{item.userName}</Text>
@@ -625,6 +676,7 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
               minute: '2-digit'
             })}
           </Text>
+          {item.isUnread && <View style={styles.unreadDot} />}
         </View>
       </TouchableOpacity>
     )
@@ -632,7 +684,6 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <ChevronLeft color={'#292D32'} size={24} />
@@ -676,7 +727,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
+    borderBottomColor: '#f0f0f0',
+    alignItems: 'center'
   },
   avatar: {
     width: 50,
@@ -691,15 +743,10 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: '#ccc'
   },
-  avatarText: {
-    position: 'absolute',
-    color: '#000',
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
   conversationDetails: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    position: 'relative'
   },
   userName: {
     fontSize: 16,
@@ -714,7 +761,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     position: 'absolute',
-    right: 0,
-    top: 10
+    right: 25,
+    top: 16
+  },
+  unreadDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#007AFF',
+    position: 'absolute',
+    right: 5,
+    top: '50%',
+    transform: [{ translateY: -5 }]
   }
 })

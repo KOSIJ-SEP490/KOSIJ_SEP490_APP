@@ -734,10 +734,11 @@
 import { API_BASE_URL } from '@env'
 import AuthContext from '@shared/context/AuthContext'
 import React, { useState, useEffect, useContext } from 'react'
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, RefreshControl } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, RefreshControl, TextInput } from 'react-native'
 import axios from 'axios'
 import { ChevronLeft } from 'lucide-react-native'
 import { NativeStackNavigationProp } from 'react-native-screens/lib/typescript/native-stack/types'
+import { RouteProp } from '@react-navigation/native'
 
 interface Message {
   id: number
@@ -756,26 +757,31 @@ interface Conversation {
   lastMessage: string
   timestamp: string
   fromUserAvatar?: string
+  isUnread: boolean
 }
 
 type ConsultingStackNavigator = {
   Home: undefined
-  Messages: { selectedUserId: string } | undefined
-  Contact: undefined
+  Messages: { selectedUserId: string; newMessage?: Message } | undefined
+  Contact: { newMessage?: Message } | undefined
   MainTabs: { screen?: string }
 }
 
 type ContactScreenNavigationProp = NativeStackNavigationProp<ConsultingStackNavigator, 'Contact'>
+type ContactScreenRouteProp = RouteProp<ConsultingStackNavigator, 'Contact'>
 
 interface ContactScreenProps {
   navigation: ContactScreenNavigationProp
+  route: ContactScreenRouteProp
 }
 
-export default function ContactScreen({ navigation }: ContactScreenProps) {
+export default function ContactScreen({ navigation, route }: ContactScreenProps) {
   const [chatHistory, setChatHistory] = useState<Message[]>([])
   const [failedAvatars, setFailedAvatars] = useState<Set<string>>(new Set())
   const authContext = useContext(AuthContext)
   const [refreshing, setRefreshing] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [suggestedConversations, setSuggestedConversations] = useState<Conversation[]>([])
 
   if (!authContext || !authContext.user) {
     throw new Error('AuthContext is not available. Ensure the component is wrapped in AuthProvider.')
@@ -808,6 +814,35 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
     }
   }
 
+  const markMessagesAsRead = async (fromUserId: string) => {
+    console.log(`Marking messages as read for fromUserId: ${fromUserId}`)
+    try {
+      await axios.put(
+        `${API_BASE_URL}chat/mark-as-read`,
+        { fromUserId },
+        {
+          headers: {
+            accept: 'text/plain',
+            Authorization: `Bearer ${user.token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      console.log(`Successfully marked messages as read for ${fromUserId}`)
+
+      setChatHistory((prev) =>
+        prev.map((msg) => (msg.fromUserId === fromUserId && !msg.isRead ? { ...msg, isRead: true } : msg))
+      )
+
+      await fetchAllMessages()
+    } catch (error) {
+      console.error(`Failed to mark messages as read for ${fromUserId}:`, error)
+      setChatHistory((prev) =>
+        prev.map((msg) => (msg.fromUserId === fromUserId && !msg.isRead ? { ...msg, isRead: true } : msg))
+      )
+    }
+  }
+
   useEffect(() => {
     fetchAllMessages()
 
@@ -817,6 +852,19 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
 
     return () => clearInterval(intervalId)
   }, [])
+
+  useEffect(() => {
+    if (route.params?.newMessage) {
+      setChatHistory((prev) => {
+        const exists = prev.some((msg) => msg.id === route.params!.newMessage!.id)
+        if (!exists) {
+          return [...prev, route.params!.newMessage!]
+        }
+        return prev
+      })
+      fetchAllMessages()
+    }
+  }, [route.params?.newMessage])
 
   const onRefresh = async () => {
     setRefreshing(true)
@@ -831,6 +879,11 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
 
   const isOtherStaffRole = (createdBy: string): boolean => {
     const roles = ['Sales Staff', 'Manager', 'FarmBreeder', 'Delivery Staff']
+    return roles.some((role) => createdBy.startsWith(role))
+  }
+
+  const isUnreadRole = (createdBy: string): boolean => {
+    const roles = ['Sales Staff', 'Delivery Staff', 'Manager']
     return roles.some((role) => createdBy.startsWith(role))
   }
 
@@ -857,35 +910,114 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
     return defaults[roleKey] || 'https://picsum.photos/50'
   }
 
+  const getSuggestedConversations = (query: string): Conversation[] => {
+    const lowerQuery = query.toLowerCase().trim()
+    if (!lowerQuery) return []
+
+    const roles = [
+      { name: 'Sales Staff', prefix: 'SAL-', count: 5 },
+      { name: 'Delivery Staff', prefix: 'DEL-', count: 5 },
+      { name: 'Manager', prefix: 'MAN-', count: 1 }
+    ]
+
+    const farmBreeders = [
+      { name: 'Ito Koi Farm', userId: 'FAR-010' },
+      { name: 'Saito Koi Farm', userId: 'FAR-009' },
+      { name: 'Ojiya Nishikigoi Farm', userId: 'FAR-003' },
+      { name: 'Omoiya Koi Farm', userId: 'FAR-008' },
+      { name: 'Taniguchi Koi Farm', userId: 'FAR-015' },
+      { name: 'Dainchi Koi Farm', userId: 'FAR-001' },
+      { name: 'Konoike Koi Farm', userId: 'FAR-007' },
+      { name: 'Okawa Koi Farm', userId: 'FAR-013' },
+      { name: 'Yamaguchi Koi Farm', userId: 'FAR-005' },
+      { name: 'Inoue Koi Farm', userId: 'FAR-014' },
+      { name: 'Marukin Koi Farm', userId: 'FAR-002' },
+      { name: 'Shintaro Koi Farm', userId: 'FAR-011' },
+      { name: 'Isa Koi Farm', userId: 'FAR-004' },
+      { name: 'Yamatoya Koi Farm', userId: 'FAR-012' },
+      { name: 'Nishimura Koi Farm', userId: 'FAR-006' }
+    ]
+
+    const suggestions: Conversation[] = []
+
+    roles.forEach((role) => {
+      if (role.name.toLowerCase().includes(lowerQuery)) {
+        const count = role.name === 'Manager' ? 1 : 5
+        for (let i = 1; i <= count; i++) {
+          const userName = role.name === 'Manager' ? 'Manager' : `${role.name} ${i}`
+          const userId = role.name === 'Manager' ? 'MAN-000' : `${role.prefix}${i.toString().padStart(3, '0')}`
+          suggestions.push({
+            userId,
+            userName,
+            lastMessage: '',
+            timestamp: new Date().toISOString(),
+            fromUserAvatar: getDefaultAvatar(userName),
+            isUnread: false
+          })
+        }
+      }
+    })
+
+    farmBreeders.forEach((farm) => {
+      if (farm.name.toLowerCase().includes(lowerQuery)) {
+        suggestions.push({
+          userId: farm.userId,
+          userName: farm.name,
+          lastMessage: '',
+          timestamp: new Date().toISOString(),
+          fromUserAvatar: getDefaultAvatar('FarmBreeder'),
+          isUnread: false
+        })
+      }
+    })
+
+    return suggestions.slice(0, 5)
+  }
+
+  useEffect(() => {
+    setSuggestedConversations(getSuggestedConversations(searchQuery))
+  }, [searchQuery])
+
   const getConversations = (): Conversation[] => {
     const convoMap = new Map<string, Conversation>()
+    const userMessages = new Map<string, Message[]>()
 
-    ;[...chatHistory].reverse().forEach((msg) => {
-      let userId: string
+    chatHistory.forEach((msg) => {
+      const userId = isConsultingStaffRole(msg.createdBy) ? msg.toUserId : msg.fromUserId
+      if (!userMessages.has(userId)) {
+        userMessages.set(userId, [])
+      }
+      userMessages.get(userId)!.push(msg)
+    })
+
+    userMessages.forEach((messages, userId) => {
+      const sortedMessages = messages.sort(
+        (a, b) => new Date(b.createdTime).getTime() - new Date(a.createdTime).getTime()
+      )
+      const latestMsg = sortedMessages[0]
+
       let userName: string
       let fromUserAvatar: string | undefined
 
-      if (isConsultingStaffRole(msg.createdBy)) {
-        userId = msg.toUserId
-        const relatedMsg = chatHistory.find((m) => m.fromUserId === msg.toUserId)
-        if (!relatedMsg) return
-        userName = relatedMsg.createdBy
-        fromUserAvatar = relatedMsg.fromUserAvatar
+      if (isConsultingStaffRole(latestMsg.createdBy)) {
+        const relatedMsg = chatHistory.find((m) => m.fromUserId === userId)
+        userName = relatedMsg ? relatedMsg.createdBy : latestMsg.toUserId
+        fromUserAvatar = relatedMsg ? relatedMsg.fromUserAvatar : getDefaultAvatar(userName)
       } else {
-        userId = msg.fromUserId
-        userName = msg.createdBy
-        fromUserAvatar = msg.fromUserAvatar
+        userName = latestMsg.createdBy
+        fromUserAvatar = latestMsg.fromUserAvatar
       }
 
-      if (!convoMap.has(userId)) {
-        convoMap.set(userId, {
-          userId,
-          userName,
-          lastMessage: msg.content,
-          timestamp: msg.createdTime,
-          fromUserAvatar
-        })
-      }
+      const isUnread = sortedMessages.some((msg) => !msg.isRead && isUnreadRole(msg.createdBy))
+
+      convoMap.set(userId, {
+        userId,
+        userName,
+        lastMessage: latestMsg.content,
+        timestamp: latestMsg.createdTime,
+        fromUserAvatar,
+        isUnread
+      })
     })
 
     return Array.from(convoMap.values())
@@ -902,7 +1034,13 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
     return (
       <TouchableOpacity
         style={styles.conversationItem}
-        onPress={() => navigation.navigate('Messages', { selectedUserId: item.userId })}
+        onPress={() => {
+          if (item.isUnread) {
+            markMessagesAsRead(item.userId)
+          }
+          setSearchQuery('')
+          navigation.navigate('Messages', { selectedUserId: item.userId })
+        }}
       >
         <View style={styles.avatar}>
           <Image
@@ -916,12 +1054,11 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
               }
             }}
           />
-          {/* <Text style={styles.avatarText}>{item.userName.charAt(0)}</Text> */}
         </View>
         <View style={styles.conversationDetails}>
           <Text style={styles.userName}>{item.userName}</Text>
           <Text style={styles.lastMessage} numberOfLines={1}>
-            {item.lastMessage}
+            {item.lastMessage || 'No messages yet'}
           </Text>
           <Text style={styles.timestamp}>
             {new Date(item.timestamp).toLocaleTimeString([], {
@@ -929,14 +1066,46 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
               minute: '2-digit'
             })}
           </Text>
+          {item.isUnread && <View style={styles.unreadDot} />}
         </View>
+      </TouchableOpacity>
+    )
+  }
+
+  const renderSuggestion = ({ item }: { item: Conversation }) => {
+    const imageSource =
+      isValidUrl(item.fromUserAvatar) && !failedAvatars.has(item.fromUserAvatar)
+        ? { uri: item.fromUserAvatar }
+        : { uri: getDefaultAvatar(item.userName) }
+
+    return (
+      <TouchableOpacity
+        style={styles.suggestionItem}
+        onPress={() => {
+          setSearchQuery('')
+          navigation.navigate('Messages', { selectedUserId: item.userId })
+        }}
+      >
+        <View style={styles.avatar}>
+          <Image
+            source={imageSource}
+            style={styles.avatarImage}
+            onError={(e) => {
+              console.log(`Failed to load image for suggestion ${item.userId}:`, e.nativeEvent.error)
+              if (item.fromUserAvatar) {
+                const avatarUrl = item.fromUserAvatar
+                setFailedAvatars((prev) => new Set(prev).add(avatarUrl))
+              }
+            }}
+          />
+        </View>
+        <Text style={styles.suggestionText}>{item.userName}</Text>
       </TouchableOpacity>
     )
   }
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.headerContainer}>
         <TouchableOpacity
           onPress={() =>
@@ -950,6 +1119,22 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
         <Text style={styles.headerText}>Chat</Text>
         <View style={{ width: 24 }} />
       </View>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder='Search for Sales, Delivery, Manager, or FarmBreeder...'
+        />
+      </View>
+      {searchQuery.length > 0 && suggestedConversations.length > 0 && (
+        <FlatList
+          style={styles.suggestionList}
+          data={suggestedConversations}
+          renderItem={renderSuggestion}
+          keyExtractor={(item) => item.userId}
+        />
+      )}
       <FlatList
         data={getConversations()}
         renderItem={renderConversation}
@@ -979,6 +1164,42 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flex: 1
   },
+  searchContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 8
+  },
+  searchInput: {
+    backgroundColor: '#f0f2f5',
+    borderRadius: 20,
+    padding: 10,
+    fontSize: 16
+  },
+  suggestionList: {
+    position: 'absolute',
+    top: 80,
+    left: 16,
+    right: 16,
+    maxHeight: 200,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    zIndex: 1000
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0'
+  },
+  suggestionText: {
+    fontSize: 16,
+    color: '#000'
+  },
   list: {
     paddingHorizontal: 10
   },
@@ -986,7 +1207,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0'
+    borderBottomColor: '#f0f0f0',
+    alignItems: 'center'
   },
   avatar: {
     width: 50,
@@ -1009,7 +1231,8 @@ const styles = StyleSheet.create({
   },
   conversationDetails: {
     flex: 1,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    position: 'relative'
   },
   userName: {
     fontSize: 16,
@@ -1024,7 +1247,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     position: 'absolute',
-    right: 0,
-    top: 10
+    right: 25,
+    top: 16
+  },
+  unreadDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#007AFF',
+    position: 'absolute',
+    right: 5,
+    top: '50%',
+    transform: [{ translateY: -5 }]
   }
 })

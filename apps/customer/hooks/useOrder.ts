@@ -29,7 +29,7 @@ export function useOrders() {
       })
       return response.data.value
     } catch (error) {
-      console.error('Error fetching orders:', error)
+      console.log('Error fetching orders:', error)
       throw error
     }
   }
@@ -44,7 +44,7 @@ export function useOrders() {
       })
       return response.data.value
     } catch (error) {
-      console.error('Error fetching order details:', error)
+      console.log('Error fetching order details:', error)
       throw error
     }
   }
@@ -69,7 +69,7 @@ export function useOrders() {
 
       return response.data.value
     } catch (error: any) {
-      console.error('Error fetching order details:', error.response?.data || error.message)
+      console.log('Error fetching order details:', error.response?.data || error.message)
       throw error
     }
   }
@@ -96,7 +96,7 @@ export function useOrders() {
       )
       return response.data
     } catch (error) {
-      console.error('Error canceling order:', error)
+      console.log('Error canceling order:', error)
       throw error
     }
   }
@@ -131,7 +131,7 @@ export function useOrders() {
 
       return response.data
     } catch (error) {
-      console.error('Error checkout payment order:', error)
+      console.log('Error checkout payment order:', error)
       throw error
     }
   }
@@ -152,7 +152,7 @@ export function useOrders() {
 
       return response.data.value
     } catch (error) {
-      console.error('Error checkout payment order:', error)
+      console.log('Error checkout payment order:', error)
       throw error
     }
   }
@@ -193,11 +193,11 @@ export function useOrders() {
           dialogTitle: 'Download or share bill'
         })
       } else {
-        console.error('Sharing is not available on this device')
+        console.log('Sharing is not available on this device')
         throw new Error('Unable to share the file')
       }
     } catch (error) {
-      console.error('Error exporting bill:', error)
+      console.log('Error exporting bill:', error)
       throw error
     }
   }
