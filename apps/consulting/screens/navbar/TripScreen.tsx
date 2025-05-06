@@ -191,7 +191,7 @@
 //   )
 // }
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { View, Text, FlatList, TextInput, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -219,12 +219,15 @@ const TRIP_STATUSES = [
 
 export default function TripScreen() {
   const navigation = useNavigation<TripScreenNavigationProp>()
-  const { data: trips = [], isLoading, error, refetch } = useTrips()
+  const { data: rawTrips = [], isLoading, error, refetch } = useTrips()
   const [filteredTrips, setFilteredTrips] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('All')
   const [showDropdown, setShowDropdown] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+
+  // Memoize trips to ensure stable reference
+  const trips = useMemo(() => rawTrips, [rawTrips])
 
   const handleSelectTrip = (id: number) => {
     navigation.navigate('TourDetails', { id })

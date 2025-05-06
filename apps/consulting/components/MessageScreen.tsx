@@ -1169,7 +1169,7 @@ export default function MessageScreen({ route }: MessageScreenProps) {
         return prev
       })
     } catch (error) {
-      console.error('Failed to fetch messages:', error)
+      console.log('Failed to fetch messages:', error)
     }
   }
 
@@ -1190,7 +1190,7 @@ export default function MessageScreen({ route }: MessageScreenProps) {
     try {
       await fetchAllMessages()
     } catch (error) {
-      console.error('Error refreshing messages:', error)
+      console.log('Error refreshing messages:', error)
     } finally {
       setRefreshing(false)
     }
@@ -1267,7 +1267,7 @@ export default function MessageScreen({ route }: MessageScreenProps) {
       ])
       setNewMessage('')
     } catch (error) {
-      console.error('Failed to send message:', error)
+      console.log('Failed to send message:', error)
     }
   }
 

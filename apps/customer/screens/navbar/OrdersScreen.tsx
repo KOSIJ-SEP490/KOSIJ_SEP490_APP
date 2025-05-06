@@ -369,6 +369,7 @@ export default function OrdersScreen() {
 
   return (
     <FlatList
+      className='mt-5'
       data={sections}
       keyExtractor={(item) => item.type}
       renderItem={({ item }) => item.render()}

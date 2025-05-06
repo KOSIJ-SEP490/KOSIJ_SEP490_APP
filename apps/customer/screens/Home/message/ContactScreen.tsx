@@ -510,7 +510,7 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
       )
       setChatHistory(messages)
     } catch (error) {
-      console.error('Failed to fetch messages:', error)
+      console.log('Failed to fetch messages:', error)
     }
   }
 
@@ -536,7 +536,7 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
 
       await fetchAllMessages()
     } catch (error) {
-      console.error(`Failed to mark messages as read for ${fromUserId}:`, error)
+      console.log(`Failed to mark messages as read for ${fromUserId}:`, error)
       setChatHistory((prev) =>
         prev.map((msg) => (msg.fromUserId === fromUserId && !msg.isRead ? { ...msg, isRead: true } : msg))
       )
@@ -558,7 +558,7 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
     try {
       await fetchAllMessages()
     } catch (error) {
-      console.error('Error refreshing the page:', error)
+      console.log('Error refreshing the page:', error)
     } finally {
       setRefreshing(false)
     }
@@ -683,7 +683,7 @@ export default function ContactScreen({ navigation }: ContactScreenProps) {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} className='mt-5'>
       <View style={styles.headerContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <ChevronLeft color={'#292D32'} size={24} />

@@ -119,7 +119,7 @@ const CollectTicket = ({ route }: Props) => {
       navigation.navigate('TourDetails', { id: tripId })
     } catch (error) {
       console.error('Error during check-in:', error)
-      alert('Failed to check in passengers.')
+      alert('You cannot check-in if its not the departure date!')
     }
   }
 
@@ -175,7 +175,7 @@ const CollectTicket = ({ route }: Props) => {
       navigation.navigate('TourDetails', { id: tripId })
     } catch (error) {
       console.error('Error during check-in:', error)
-      alert('Failed to check in passengers.')
+      alert('You cannot check-in if its not the departure date!')
     }
   }
 

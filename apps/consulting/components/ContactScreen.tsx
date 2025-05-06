@@ -810,7 +810,7 @@ export default function ContactScreen({ navigation, route }: ContactScreenProps)
       )
       setChatHistory(messages)
     } catch (error) {
-      console.error('Failed to fetch messages:', error)
+      console.log('Failed to fetch messages:', error)
     }
   }
 
@@ -965,7 +965,7 @@ export default function ContactScreen({ navigation, route }: ContactScreenProps)
           userName: farm.name,
           lastMessage: '',
           timestamp: new Date().toISOString(),
-          fromUserAvatar: getDefaultAvatar('FarmBreeder'),
+          fromUserAvatar: getDefaultAvatar('Farm Breeder'),
           isUnread: false
         })
       }

@@ -59,7 +59,7 @@ const CreateOrder = () => {
       id: 1,
       koiName: '',
       koiVariety: '',
-      koiType: 'Retail',
+      // koiType: 'Retail',
       koiImage: [] as string[],
       koiQuantity: 0,
       koiWeight: '',
@@ -88,7 +88,7 @@ const CreateOrder = () => {
         id: forms.length + 1,
         koiName: '',
         koiVariety: '',
-        koiType: 'Retail',
+        // koiType: 'Retail',
         koiImage: [],
         koiQuantity: 0,
         koiWeight: '',
@@ -222,7 +222,7 @@ const CreateOrder = () => {
           // ).then((images) => images.filter(Boolean))
           return {
             variety: form.koiVariety,
-            koiType: form.koiType,
+            // koiType: form.koiType,
             quantity: form.koiQuantity,
             length: Number(form.koiLength),
             weight: Number(form.koiWeight),
@@ -281,7 +281,7 @@ const CreateOrder = () => {
       <Steps currentStep={currentStep} />
 
       {currentStep === 1 ? (
-        <ScrollView className='mt-2' style={{ maxHeight: 400 }}>
+        <ScrollView className='mt-2' style={{ maxHeight: 500 }}>
           {forms.map((form, index) => (
             <View
               key={form.id}
@@ -295,10 +295,10 @@ const CreateOrder = () => {
                   <Picker
                     selectedValue={forms[0]?.koiFarm || ''}
                     onValueChange={(itemValue) => {
-                      console.log('Selected farmId:', itemValue) // ✅ Debugging log
+                      console.log('Selected farmId:', itemValue)
                       setForms((prevForms) => {
                         const updatedForms = [...prevForms]
-                        updatedForms[0].koiFarm = String(itemValue) // ✅ Convert to string
+                        updatedForms[0].koiFarm = String(itemValue)
                         return updatedForms
                       })
                     }}
@@ -400,7 +400,7 @@ const CreateOrder = () => {
                     </TouchableOpacity>
                   </View>
                 </View>
-                <View className='w-36'>
+                {/* <View className='w-36'>
                   <Text>
                     Koi Type <Text style={{ color: 'red' }}>*</Text>
                   </Text>
@@ -415,7 +415,7 @@ const CreateOrder = () => {
                     <Picker.Item label='Retail' value='Retail' />
                     <Picker.Item label='Wholesale' value='Wholesale' />
                   </Picker>
-                </View>
+                </View> */}
               </View>
 
               <View className='flex-row justify-between'>
@@ -528,7 +528,7 @@ const CreateOrder = () => {
           </TouchableOpacity>
         </ScrollView>
       ) : (
-        <ScrollView className='mt-2' style={{ maxHeight: 400 }}>
+        <ScrollView className='mt-2' style={{ maxHeight: 500 }}>
           {forms.length > 0 && (
             <View
               key={forms[0].id}
