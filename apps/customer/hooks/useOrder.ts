@@ -135,27 +135,27 @@ export function useOrders() {
       throw error
     }
   }
-  async function checkedOutPayments(orderId: number): Promise<CheckOutPaymentResponse['value']> {
-    try {
-      const response = await axios.post<CheckOutPaymentResponse>(
-        `${API_BASE_URL}order/${orderId}/check-out-payment`,
-        {},
-        {
-          headers: {
-            Accept: 'application/json',
-            Authorization: `Bearer ${user.token}`
-          }
-        }
-      )
+  // async function checkedOutPayments(orderId: number): Promise<CheckOutPaymentResponse['value']> {
+  //   try {
+  //     const response = await axios.post<CheckOutPaymentResponse>(
+  //       `${API_BASE_URL}order/${orderId}/check-out-payment`,
+  //       {},
+  //       {
+  //         headers: {
+  //           Accept: 'application/json',
+  //           Authorization: `Bearer ${user.token}`
+  //         }
+  //       }
+  //     )
 
-      console.log('API Response:', response.data)
+  //     console.log('API Response:', response.data)
 
-      return response.data.value
-    } catch (error) {
-      console.log('Error checkout payment order:', error)
-      throw error
-    }
-  }
+  //     return response.data.value
+  //   } catch (error) {
+  //     console.log('Error checkout payment order:', error)
+  //     throw error
+  //   }
+  // }
 
   async function exportOrderBill(orderId: string | string[]): Promise<void> {
     try {
@@ -207,7 +207,7 @@ export function useOrders() {
     updateOrder,
     fetchOrderDetailed,
     checkOutPayment,
-    checkedOutPayments,
+    // checkedOutPayments,
     exportOrderBill
   }
 }

@@ -107,6 +107,8 @@ const RateTripDetails = () => {
       )
     }
   }
+  console.log('handle submit: ', handleSubmit)
+
   return (
     <ScrollView>
       <View style={{ flex: 1, backgroundColor: 'white' }}>

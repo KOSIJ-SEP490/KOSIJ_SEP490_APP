@@ -23,7 +23,7 @@ interface Passenger {
 }
 
 interface Ticket {
-  inboundTicketUrl?: string
+  outboundTicketUrl?: string
 }
 
 const CheckOutTrip = ({ route }: Props) => {
@@ -50,7 +50,7 @@ const CheckOutTrip = ({ route }: Props) => {
     const fetchTicket = async () => {
       try {
         const response = await axios.get<{ value: Ticket[] }>(
-          `${API_BASE_URL}trip/${tripId}/airplane-tickets?ticketType=Inbound`,
+          `${API_BASE_URL}trip/${tripId}/airplane-tickets?ticketType=Outbound`,
           {
             headers: {
               Authorization: `Bearer ${user.token}`,
@@ -60,10 +60,10 @@ const CheckOutTrip = ({ route }: Props) => {
         )
 
         const tickets = response.data.value
-        const inboundTicket = tickets.find((ticket: any) => ticket.inboundTicketUrl)
+        const inboundTicket = tickets.find((ticket: any) => ticket.outboundTicketUrl)
 
         if (inboundTicket) {
-          setTicketUrl(inboundTicket.inboundTicketUrl ?? null)
+          setTicketUrl(inboundTicket.outboundTicketUrl ?? null)
         }
       } catch (error) {
         console.error('Error fetching ticket:', error)
@@ -200,7 +200,7 @@ const CheckOutTrip = ({ route }: Props) => {
         <ScrollView style={{ flexGrow: 1, paddingBottom: 80 }}>
           <View className='p-4 rounded-lg mt-4' style={{ backgroundColor: '#264eca' }}>
             <Text className='text-white font-bold'>
-              ℹ️ Please complete the attendance check before proceeding to check-in.
+              ℹ️ Please complete the attendance check before proceeding to check-out.
             </Text>
           </View>
 

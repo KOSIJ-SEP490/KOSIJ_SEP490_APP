@@ -265,45 +265,45 @@ const PaymentSuccess = () => {
   const navigation = useNavigation<NavigationProps>()
   const route = useRoute<PaymentSuccessScreenRouteProp>()
   const { orderId } = route.params
-  const { fetchOrderDetails, checkedOutPayments } = useOrders()
+  const { fetchOrderDetails } = useOrders()
   const [loading, setLoading] = useState(true)
   const [order, setOrder] = useState<any>({})
   const { wallet, refetch: refetchWallet } = useWallet()
   const [balance, setBalance] = useState<any>(null)
   const [paymentData, setPaymentData] = useState<any>(null)
 
-  useEffect(() => {
-    const getOrderDetails = async () => {
-      try {
-        const data = await fetchOrderDetails(orderId)
-        if (wallet) {
-          setBalance(wallet.balance)
-        }
-        setOrder(data)
-        if (order) {
-          console.log('Order Status ne: ', order.orderStatus)
-        }
-        console.log('Wallet:', wallet)
-      } catch (error) {
-        console.error('Failed to load order details')
-      } finally {
-        setLoading(false)
-      }
-    }
-    const fetchPaymentDetails = async () => {
-      try {
-        const response = await checkedOutPayments(orderId)
-        setPaymentData(response)
-      } catch (error) {
-        console.error('Error fetching payment details:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    refetchWallet()
-    fetchPaymentDetails()
-    getOrderDetails()
-  }, [orderId])
+  // useEffect(() => {
+  //   const getOrderDetails = async () => {
+  //     try {
+  //       const data = await fetchOrderDetails(orderId)
+  //       if (wallet) {
+  //         setBalance(wallet.balance)
+  //       }
+  //       setOrder(data)
+  //       if (order) {
+  //         console.log('Order Status ne: ', order.orderStatus)
+  //       }
+  //       console.log('Wallet:', wallet)
+  //     } catch (error) {
+  //       console.error('Failed to load order details')
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+  //   const fetchPaymentDetails = async () => {
+  //     try {
+  //       const response = await checkedOutPayments(orderId)
+  //       setPaymentData(response)
+  //     } catch (error) {
+  //       console.error('Error fetching payment details:', error)
+  //     } finally {
+  //       setLoading(false)
+  //     }
+  //   }
+  //   refetchWallet()
+  //   fetchPaymentDetails()
+  //   getOrderDetails()
+  // }, [orderId])
 
   const formatNumber = (num: { toString: () => string }) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
